@@ -2,9 +2,12 @@ package app;
 
 import java.util.Scanner;
 import java.util.logging.Logger;
+
 import managers.DriverManager;
 import managers.MenuManager;
 import managers.OrderManager;
+import model.Driver;
+import model.Order;
 import validation.ConsoleInputHandler;
 import validation.InputValidatorImpl;
 import validation.PositiveIntegerValidator;
@@ -23,9 +26,9 @@ public class DeliverySystemCLI {
 
     private boolean running = true;
 
-    public DeliverySystemCLI(Scanner scanner, MenuManager menuManager, OrderManager orderManager,
-            DriverManager driverManager, ConsoleInputHandler<Integer> positiveIntegerHandler,
-            ConsoleInputHandler<String> emailHandler, ConsoleInputHandler<String> locationHandler) {
+    public DeliverySystemCLI(final Scanner scanner, final MenuManager menuManager, final OrderManager orderManager,
+            final DriverManager driverManager, final ConsoleInputHandler<Integer> positiveIntegerHandler,
+            final ConsoleInputHandler<String> emailHandler, final ConsoleInputHandler<String> locationHandler) {
         this.scanner = scanner;
         this.menuManager = menuManager;
         this.orderManager = orderManager;
@@ -55,7 +58,7 @@ public class DeliverySystemCLI {
         while (this.running) {
             this.displayMainMenu();
 
-            Integer choice = this.menuManager.getMenuChoiceHandler().handleInput(
+            final Integer choice = this.menuManager.getMenuChoiceHandler().handleInput(
                     this.scanner,
                     "Enter your choice below: ");
 
@@ -107,11 +110,11 @@ public class DeliverySystemCLI {
 
     private void calculateOrderTotal() {
         System.out.print("Enter Order ID to calculate total: ");
-        Long orderId = this.orderManager.getOrderIdHandler().handleInput(this.scanner, "Order ID: ");
+        final Long orderId = this.orderManager.getOrderIdHandler().handleInput(this.scanner, "Order ID: ");
         if (orderId != null) {
-            Order order = this.orderManager.getOrderService().getOrderById(orderId);
+            final Order order = this.orderManager.getOrderService().getOrderById(orderId);
             if (order != null) {
-                double total = new DeliverySystem().calculateOrderTotal(order);
+                final double total = new DeliverySystem().calculateOrderTotal(order);
                 System.out.printf("Total amount for order %d: $%.2f\n", orderId, total);
             } else {
                 System.out.println("Order not found.");
@@ -121,12 +124,12 @@ public class DeliverySystemCLI {
 
     private void manageDriverRatings() {
         System.out.print("Enter Driver ID to manage ratings: ");
-        Long driverId = this.orderManager.getOrderIdHandler().handleInput(this.scanner, "Driver ID: ");
+        final Long driverId = this.orderManager.getOrderIdHandler().handleInput(this.scanner, "Driver ID: ");
         if (driverId != null) {
-            Driver driver = this.driverManager.getDriverService().getDriverById(driverId);
+            final Driver driver = this.driverManager.getDriverService().getDriverById(driverId);
             if (driver != null) {
                 System.out.print("Enter rating (1-5): ");
-                Integer rating = this.positiveIntegerHandler.handleInput(this.scanner, "Rating: ");
+                final Integer rating = this.positiveIntegerHandler.handleInput(this.scanner, "Rating: ");
                 if (rating != null) {
                     new DeliverySystem().manageDriverRatings(driver, rating);
                 } else {
