@@ -5,6 +5,7 @@ import java.util.Map;
 
 import model.Driver;
 import model.Order;
+import model.OrderStatus;
 
 public class DeliverySystem {
    private final Map<Long, String> orderStatuses = new HashMap<>();
@@ -26,5 +27,21 @@ public class DeliverySystem {
 
    public String getOrderStatus(final Long orderId) {
       return this.orderStatuses.getOrDefault(orderId, "Order Not Found");
+   }
+
+   public void updateOrderStatus(final Long orderId, final OrderStatus status) {
+      switch (status) {
+         case PLACED:
+            this.orderStatuses.put(orderId, "Placed");
+            break;
+         case ACCEPTED:
+            this.orderStatuses.put(orderId, "Accepted");
+            break;
+         case DELIVERED:
+            this.orderStatuses.put(orderId, "Delivered");
+            break;
+         default:
+            throw new IllegalArgumentException("Unknown order status: " + status);
+      }
    }
 }

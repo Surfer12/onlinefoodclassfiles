@@ -6,6 +6,7 @@ import java.util.List;
 import model.Driver;
 import model.Order;
 import model.OrderStatus;
+import rating.Rating;
 
 public class DriverServiceImpl implements DriverService {
     private List<Driver> drivers = new ArrayList<>();
@@ -43,8 +44,28 @@ public class DriverServiceImpl implements DriverService {
                 return;
             }
             driver.addRating(rating);
+            ensureMaxRatings(driver);
         } else {
             System.out.println("Driver not found.");
+        }
+    }
+
+    public void addDriverRating(Driver driver, Rating rating) {
+        if (driver != null && rating != null) {
+            driver.addRating(rating);
+            ensureMaxRatings(driver);
+        } else {
+            throw new IllegalArgumentException("Invalid driver or rating");
+        }
+    }
+
+    public void ensureMaxRatings(Driver driver) {
+        if (driver != null) {
+            while (driver.getRatings().size() > 10) {
+                driver.getRatings().remove(0);
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid driver");
         }
     }
 }

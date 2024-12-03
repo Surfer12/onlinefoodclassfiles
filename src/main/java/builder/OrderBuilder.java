@@ -2,13 +2,18 @@ package builder;
 
 import model.MenuItem;
 import model.Order;
+import model.OrderStatus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OrderBuilder {
    private Long customerId;
    private String customerEmail;
-   private MenuItem item;
+   private List<MenuItem> items = new ArrayList<>();
    private String deliveryAddress;
    private String postalCode;
+   private OrderStatus status;
 
    public OrderBuilder withValidatedCustomerId(final Long customerId) {
       this.customerId = customerId;
@@ -21,7 +26,7 @@ public class OrderBuilder {
    }
 
    public OrderBuilder addItem(final MenuItem item) {
-      this.item = item;
+      this.items.add(item);
       return this;
    }
 
@@ -31,10 +36,16 @@ public class OrderBuilder {
       return this;
    }
 
+   public OrderBuilder withStatus(final OrderStatus status) {
+      this.status = status;
+      return this;
+   }
+
    public Order build() {
-      // Create a concrete implementation of Order
-      return new Order(this.customerId, this.customerEmail, this.item, this.deliveryAddress, this.postalCode) {
-         // You can override any methods if needed
+      return new Order(this.customerId, this.customerEmail, this.items, this.deliveryAddress, this.postalCode) {
+         {
+            setStatus(status);
+         }
       };
    }
 }

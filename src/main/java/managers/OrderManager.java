@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import model.MenuItem;
 import model.Order;
+import model.OrderStatus;
 import queue.OrderQueue;
 import services.OrderService;
 import services.impl.OrderServiceImpl;
@@ -67,6 +68,30 @@ public class OrderManager {
         } catch (Exception e) {
             System.out.println("Error checking order status: " + e.getMessage());
             logger.severe("Error in checkOrderStatus: " + e.getMessage());
+        }
+    }
+
+    public void updateOrderStatus(Long orderId, OrderStatus status) {
+        Order order = this.orderService.getOrderById(orderId);
+        if (order != null) {
+            order.setStatus(status);
+            System.out.println("Order status updated to: " + status);
+            logger.info("Order " + orderId + " status updated to: " + status);
+        } else {
+            System.out.println("Order not found.");
+        }
+    }
+
+    public void processOrdersFIFO() {
+        while (!this.orderQueue.isEmpty()) {
+            Order order = this.orderQueue.dequeue().orElse(null);
+            if (order != null) {
+                System.out.println("Processing order: " + order.getOrderId());
+                // Process the order here
+                this.updateOrderStatus(order.getOrderId(), OrderStatus.ACCEPTED);
+                // Simulate delivery
+                this.updateOrderStatus(order.getOrderId(), OrderStatus.DELIVERED);
+            }
         }
     }
 

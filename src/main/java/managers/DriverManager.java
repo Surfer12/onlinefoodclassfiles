@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import model.Driver;
 import model.Order;
+import rating.Rating;
 import services.DriverService;
 import services.impl.DriverServiceImpl;
 import validation.ConsoleInputHandler;
@@ -82,6 +83,28 @@ public class DriverManager {
             this.driverService.rateDriver(driver, rating);
             System.out.println("Thank you for your feedback!");
             logger.info("Driver " + driver.getName() + " rated: " + rating + " stars");
+        }
+    }
+
+    public void addDriverRating(Driver driver, Rating rating) {
+        if (driver != null && rating != null) {
+            driver.addRating(rating);
+            System.out.println("Rating added successfully.");
+            logger.info("Rating added for driver " + driver.getName());
+        } else {
+            System.out.println("Invalid driver or rating.");
+        }
+    }
+
+    public void ensureMaxRatings(Driver driver) {
+        if (driver != null) {
+            while (driver.getRatings().size() > 10) {
+                driver.getRatings().remove(0);
+            }
+            System.out.println("Ensured maximum of 10 ratings for driver " + driver.getName());
+            logger.info("Ensured maximum of 10 ratings for driver " + driver.getName());
+        } else {
+            System.out.println("Invalid driver.");
         }
     }
 

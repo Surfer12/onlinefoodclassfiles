@@ -98,4 +98,24 @@ public class Rating {
     public int getScore() { return score; }
     public Optional<String> getComment() { return Optional.ofNullable(comment); }
     public LocalDateTime getTimestamp() { return timestamp; }
+
+    // New methods to handle driver ratings and ensure only 10 ratings are stored at a time
+    public static void addDriverRating(Driver driver, Rating rating) {
+        if (driver != null && rating != null) {
+            driver.addRating(rating);
+            ensureMaxRatings(driver);
+        } else {
+            throw new IllegalArgumentException("Invalid driver or rating");
+        }
+    }
+
+    public static void ensureMaxRatings(Driver driver) {
+        if (driver != null) {
+            while (driver.getRatings().size() > 10) {
+                driver.getRatings().remove(0);
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid driver");
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package factory;
 
 import model.Drink;
+import model.Fries;
 import model.Hamburger;
 import model.MenuItem;
 import model.Pizza;
@@ -16,6 +17,7 @@ public class MenuItemFactory {
          case "burger" -> new Hamburger(null, name, description, price, size, quantity);
          case "salad" -> new Salad(null, name, description, price, size, quantity);
          case "drink" -> new Drink(null, name, description, price, size, quantity);
+         case "fries" -> new Fries(null, name, description, price, size, quantity);
          default -> throw new IllegalArgumentException("Unknown menu item type: " + type);
       };
    }

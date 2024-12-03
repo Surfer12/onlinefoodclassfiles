@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.MenuItem;
+import model.Drink;
+import model.Fries;
+import model.Size;
 
 public class MenuServiceImpl implements MenuService {
     private List<MenuItem> menuItems = new ArrayList<>();
 
     public MenuServiceImpl() {
-        // Initialize menu items will be handled by the implementing class
+        // Initialize menu items
+        this.menuItems.add(new Drink(null, "Cola", "Refreshing cola drink", 1.99, Size.MEDIUM, 1));
+        this.menuItems.add(new Fries(null, "Crispy Fries", "Golden and crispy fries", 3.49, Size.MEDIUM, 1));
     }
 
     @Override
