@@ -17,7 +17,7 @@ public class MenuManager {
 
     public MenuManager() {
         this.menuService = new MenuServiceImpl();
-        int menuSize = this.menuService.getMenuSize();
+        final int menuSize = this.menuService.getMenuSize();
         this.menuChoiceHandler = new ConsoleInputHandler<>(
                 new InputValidatorImpl<>(
                         new MenuItemValidator(menuSize),
@@ -26,44 +26,54 @@ public class MenuManager {
     }
 
     public void displayMenu() {
-        List<MenuItem> menu = this.menuService.getAllMenuItems();
+        final List<MenuItem> menu = this.menuService.getAllMenuItems();
         System.out.println("\n--- Current Menu ---");
         for (int i = 0; i < menu.size(); i++) {
-            MenuItem item = menu.get(i);
+            final MenuItem item = menu.get(i);
             System.out.printf("%d. %s - $%.2f\n", i + 1, item.getName(), item.getPrice());
         }
     }
 
-    public List<MenuItem> selectMenuItems(Scanner scanner, ConsoleInputHandler<Integer> positiveIntegerHandler) {
+    public List<MenuItem> selectMenuItems(final Scanner scanner, final ConsoleInputHandler<Integer> positiveIntegerHandler) {
         System.out.println("\n=== Place Order ===");
         this.displayMenu();
 
-        List<MenuItem> orderItems = new ArrayList<>();
-        boolean addingItems = true;
+        final List<MenuItem> orderItems = new ArrayList<>();
+        final boolean addingItems = true;
 
         while (addingItems) {
             System.out.print("Enter menu item number to add (0 to finish): ");
-            Integer itemChoice = positiveIntegerHandler.handleInput(
+            final Integer itemChoice = positiveIntegerHandler.handleInput(
                     scanner,
-                    "Select a menu item: ",
-                    input -> input >= 0 && input <= this.menuService.getMenuSize());
+                    "Select a menu item: ");
 
-            if (itemChoice == null || itemChoice == 0) {
-                addingItems = false;
+            if (itemChoice == null) {
+                System.out.println("Invalid input. Please enter a valid menu item number.");
                 continue;
             }
 
-            MenuItem selectedItem = this.menuService.getMenuItemByIndex(itemChoice);
-            System.out.print("Enter quantity: ");
-            Integer quantity = positiveIntegerHandler.handleInput(
-                    scanner,
-                    "Enter quantity: ",
-                    input -> input > 0 && input <= 10);
+            if (itemChoice == 0) {
+                break;
+            }
 
-            if (quantity != null) {
-                for (int i = 0; i < quantity; i++) {
-                    orderItems.add(selectedItem);
-                }
+            if (itemChoice < 1 || itemChoice > this.menuService.getMenuSize()) {
+                System.out.println("Invalid menu item number. Please choose a number between 1 and " + this.menuService.getMenuSize());
+                continue;
+            }
+
+            final MenuItem selectedItem = this.menuService.getMenuItemByIndex(itemChoice);
+            System.out.print("Enter quantity: ");
+            final Integer quantity = positiveIntegerHandler.handleInput(
+                    scanner,
+                    "Enter quantity: ");
+
+            if (quantity == null || quantity <= 0 || quantity > 10) {
+                System.out.println("Invalid quantity. Please enter a number between 1 and 10.");
+                continue;
+            }
+
+            for (int i = 0; i < quantity; i++) {
+                orderItems.add(selectedItem);
             }
         }
 
