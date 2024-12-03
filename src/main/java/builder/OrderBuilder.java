@@ -1,16 +1,17 @@
 package builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import model.Location;
 import model.MenuItem;
 import model.Order;
 import model.OrderStatus;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class OrderBuilder {
    private Long customerId;
    private String customerEmail;
-   private List<MenuItem> items = new ArrayList<>();
+   private final List<MenuItem> items = new ArrayList<>();
    private String deliveryAddress;
    private String postalCode;
    private OrderStatus status;
@@ -42,10 +43,11 @@ public class OrderBuilder {
    }
 
    public Order build() {
-      return new Order(this.customerId, this.customerEmail, this.items, this.deliveryAddress, this.postalCode) {
-         {
-            setStatus(status);
-         }
-      };
+      final Location location = new Location(this.deliveryAddress, this.postalCode);
+      final Order order = new Order(this.customerId, this.customerEmail, this.items, location);
+      if (this.status != null) {
+         order.setStatus(this.status);
+      }
+      return order;
    }
 }

@@ -8,6 +8,7 @@ import factory.MenuItemFactory;
 import model.Driver;
 import model.MenuItem;
 import model.Order;
+import model.OrderStatus;
 import model.Size;
 
 public class Application {
@@ -46,6 +47,17 @@ public class Application {
 
             // Process the next order in the queue
             deliverySystem.processNextOrder();
+            // Update order status
+            order.setStatus(OrderStatus.SUBMITTED);
+            System.out.println("Order Status: " + order.getStatus());
+
+            deliverySystem.assignOrderToDriver(order, driver);
+            order.setStatus(OrderStatus.IN_PROGRESS);
+            System.out.println("Order Status: " + order.getStatus());
+
+            deliverySystem.completeDelivery(order.getOrderId(), driver.getId());
+            order.setStatus(OrderStatus.DELIVERED);
+            System.out.println("Order Status: " + order.getStatus());
 
         } catch (final IllegalArgumentException e) {
             Application.logger.log(Level.SEVERE, "Invalid input provided", e);
