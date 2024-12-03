@@ -2,7 +2,6 @@ package app;
 
 import java.util.Scanner;
 import java.util.logging.Logger;
-
 import managers.DriverManager;
 import managers.MenuManager;
 import managers.OrderManager;
@@ -64,14 +63,11 @@ public class DeliverySystemCLI {
                 System.out.println("Invalid input. Please try again.");
                 continue;
             }
-
             switch (choice) {
                 case 1 -> this.orderManager.processOrderPlacement(
                         this.scanner,
                         this.menuManager,
-                        this.positiveIntegerHandler,
-                        this.emailHandler,
-                        this.locationHandler);
+                        this.positiveIntegerHandler);
                 case 2 -> this.orderManager.checkOrderStatus(this.scanner);
                 case 3 -> this.menuManager.displayMenu();
                 case 4 -> this.driverManager.manageDriverMenu(this.scanner, this.orderManager);
