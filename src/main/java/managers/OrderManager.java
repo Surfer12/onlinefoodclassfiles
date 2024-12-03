@@ -109,13 +109,24 @@ public class OrderManager {
         driverManager.assignDriverToOrder(scanner, order, this.orderIdHandler);
     }
 
-    public void processNextOrder() {
-        Order nextOrder = this.orderQueue.dequeue().orElse(null);
-        if (nextOrder != null) {
-            System.out.println("Processing next order: " + nextOrder.getOrderId());
-            // Add logic to process the order
-        } else {
-            System.out.println("No orders in the queue to process.");
+    public double calculateOrderTotal(Order order) {
+        return order.getItems().stream()
+                .mapToDouble(MenuItem::getPrice)
+                .sum();
+    }
+
+    public void manageDriverRatings(Driver driver, int rating) {
+        driver.addRating(rating);
+        System.out.println("Driver " + driver.getName() + " rated with " + rating + " stars.");
+    }
+
+    public void processOrdersInCorrectOrder(OrderQueue orderQueue) {
+        while (!orderQueue.isEmpty()) {
+            Order order = orderQueue.dequeue().orElse(null);
+            if (order != null) {
+                System.out.println("Processing order: " + order.getOrderId());
+                // Process the order
+            }
         }
     }
 }

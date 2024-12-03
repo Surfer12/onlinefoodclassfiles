@@ -78,11 +78,14 @@ public class DeliverySystemCLI {
                                         this.scanner,
                                         "Enter Order ID to rate driver: ")),
                         this.menuManager.getMenuChoiceHandler());
-                case 6 -> {
+                case 6 -> this.calculateOrderTotal();
+                case 7 -> this.manageDriverRatings();
+                case 8 -> this.processOrdersInCorrectOrder();
+                case 9 -> {
                     System.out.println("Exiting...");
                     this.running = false;
                 }
-                default -> System.out.println("Invalid choice. Please enter a number between 1 and 6.");
+                default -> System.out.println("Invalid choice. Please enter a number between 1 and 9.");
             }
         }
         this.scanner.close();
@@ -95,8 +98,48 @@ public class DeliverySystemCLI {
         System.out.println("3. View Menu");
         System.out.println("4. Manage Drivers");
         System.out.println("5. Rate Driver");
-        System.out.println("6. Exit");
-        System.out.print("Please choose an option from the list above (1-6): ");
+        System.out.println("6. Calculate Order Total");
+        System.out.println("7. Manage Driver Ratings");
+        System.out.println("8. Process Orders in Correct Order");
+        System.out.println("9. Exit");
+        System.out.print("Please choose an option from the list above (1-9): ");
+    }
+
+    private void calculateOrderTotal() {
+        System.out.print("Enter Order ID to calculate total: ");
+        Long orderId = this.orderManager.getOrderIdHandler().handleInput(this.scanner, "Order ID: ");
+        if (orderId != null) {
+            Order order = this.orderManager.getOrderService().getOrderById(orderId);
+            if (order != null) {
+                double total = new DeliverySystem().calculateOrderTotal(order);
+                System.out.printf("Total amount for order %d: $%.2f\n", orderId, total);
+            } else {
+                System.out.println("Order not found.");
+            }
+        }
+    }
+
+    private void manageDriverRatings() {
+        System.out.print("Enter Driver ID to manage ratings: ");
+        Long driverId = this.orderManager.getOrderIdHandler().handleInput(this.scanner, "Driver ID: ");
+        if (driverId != null) {
+            Driver driver = this.driverManager.getDriverService().getDriverById(driverId);
+            if (driver != null) {
+                System.out.print("Enter rating (1-5): ");
+                Integer rating = this.positiveIntegerHandler.handleInput(this.scanner, "Rating: ");
+                if (rating != null) {
+                    new DeliverySystem().manageDriverRatings(driver, rating);
+                } else {
+                    System.out.println("Invalid rating.");
+                }
+            } else {
+                System.out.println("Driver not found.");
+            }
+        }
+    }
+
+    private void processOrdersInCorrectOrder() {
+        new DeliverySystem().processOrdersInCorrectOrder(this.orderManager.getOrderQueue());
     }
 
     public static void main(final String[] args) {
