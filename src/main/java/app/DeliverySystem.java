@@ -5,18 +5,26 @@ import java.util.Map;
 
 import model.Driver;
 import model.Order;
+import queue.OrderQueue;
 
 public class DeliverySystem {
    private final Map<Long, String> orderStatuses = new HashMap<>();
+   private final OrderQueue orderQueue = new OrderQueue(10);
 
    public void submitOrder(final Order order) {
       System.out.println("Order submitted: " + order.getOrderId());
+      this.orderQueue.enqueue(order);
       this.orderStatuses.put(order.getOrderId(), "Pending");
    }
 
    public void assignOrderToDriver(final Order order, final Driver driver) {
-      System.out.println("Order " + order.getOrderId() + " assigned to driver " + driver.getName());
-      this.orderStatuses.put(order.getOrderId(), "In Progress");
+      Order nextOrder = this.orderQueue.dequeue().orElse(null);
+      if (nextOrder != null) {
+         System.out.println("Order " + nextOrder.getOrderId() + " assigned to driver " + driver.getName());
+         this.orderStatuses.put(nextOrder.getOrderId(), "In Progress");
+      } else {
+         System.out.println("No orders in the queue to assign.");
+      }
    }
 
    public void completeDelivery(final Long orderId, final Long driverId) {

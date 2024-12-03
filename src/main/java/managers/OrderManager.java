@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import model.MenuItem;
 import model.Order;
-import model.OrderStatus;
 import queue.OrderQueue;
 import services.OrderService;
 import services.impl.OrderServiceImpl;
@@ -71,30 +70,6 @@ public class OrderManager {
         }
     }
 
-    public void updateOrderStatus(Long orderId, OrderStatus status) {
-        Order order = this.orderService.getOrderById(orderId);
-        if (order != null) {
-            order.setStatus(status);
-            System.out.println("Order status updated to: " + status);
-            logger.info("Order " + orderId + " status updated to: " + status);
-        } else {
-            System.out.println("Order not found.");
-        }
-    }
-
-    public void processOrdersFIFO() {
-        while (!this.orderQueue.isEmpty()) {
-            Order order = this.orderQueue.dequeue().orElse(null);
-            if (order != null) {
-                System.out.println("Processing order: " + order.getOrderId());
-                // Process the order here
-                this.updateOrderStatus(order.getOrderId(), OrderStatus.ACCEPTED);
-                // Simulate delivery
-                this.updateOrderStatus(order.getOrderId(), OrderStatus.DELIVERED);
-            }
-        }
-    }
-
     public ConsoleInputHandler<Long> getOrderIdHandler() {
         return this.orderIdHandler;
     }
@@ -132,5 +107,15 @@ public class OrderManager {
         // This method could be moved to DriverManager if preferred
         DriverManager driverManager = new DriverManager();
         driverManager.assignDriverToOrder(scanner, order, this.orderIdHandler);
+    }
+
+    public void processNextOrder() {
+        Order nextOrder = this.orderQueue.dequeue().orElse(null);
+        if (nextOrder != null) {
+            System.out.println("Processing next order: " + nextOrder.getOrderId());
+            // Add logic to process the order
+        } else {
+            System.out.println("No orders in the queue to process.");
+        }
     }
 }

@@ -9,6 +9,7 @@ import model.MenuItem;
 import model.Order;
 import model.Driver;
 import model.OrderStatus;
+import model.Location;
 
 public class OrderServiceImpl implements OrderService {
     private List<Order> orders = new ArrayList<>();
@@ -22,12 +23,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order createOrder(List<MenuItem> items) {
+    public Order createOrder(List<MenuItem> items, Location deliveryLocation) {
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("Order must contain at least one item");
         }
 
-        Order newOrder = new Order(0L, "New Order", items, null);
+        Order newOrder = new Order(0L, "New Order", items, deliveryLocation);
+        newOrder.setStatus(OrderStatus.SUBMITTED);
         this.orders.add(newOrder);
         return newOrder;
     }
