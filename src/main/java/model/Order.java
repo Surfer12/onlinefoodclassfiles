@@ -93,4 +93,15 @@ public class Order {
    public void setDriver(Driver driver) {
       this.driver = driver;
    }
+
+   public void addItem(MenuItem item) {
+      this.items.add(item);
+      this.calculateTotalAmount();
+   }
+
+   public void calculateTotal() {
+      this.totalAmount = this.items.stream()
+            .mapToDouble(MenuItem::getPrice)
+            .sum();
+   }
 }

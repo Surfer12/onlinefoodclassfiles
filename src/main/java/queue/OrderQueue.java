@@ -73,4 +73,20 @@ public class OrderQueue implements QueueOperations<Order> {
       }
       return -1; // Order not found in queue
    }
+
+   public void processOrder(Order order) {
+      if (order == null) {
+         throw new IllegalArgumentException("Order cannot be null");
+      }
+      this.enqueue(order);
+      System.out.println("Order processed: " + order.getOrderId());
+   }
+
+   public void rateDriver(Driver driver, int rating) {
+      if (rating < 1 || rating > 5) {
+         throw new IllegalArgumentException("Rating must be between 1 and 5");
+      }
+      driver.addRating(rating);
+      System.out.println("Driver " + driver.getName() + " rated: " + rating + " stars");
+   }
 }

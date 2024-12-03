@@ -7,12 +7,11 @@ import java.util.Map;
 
 import model.MenuItem;
 import model.Order;
+import model.Driver;
 import model.OrderStatus;
-import queue.OrderQueue;
 
 public class OrderServiceImpl implements OrderService {
     private List<Order> orders = new ArrayList<>();
-    private OrderQueue orderQueue = new OrderQueue(10);
 
     @Override
     public Order getOrderById(Long orderId) {
@@ -61,24 +60,19 @@ public class OrderServiceImpl implements OrderService {
         return order != null ? order.getStatus().toString() : "Order not found";
     }
 
-    public void updateOrderStatus(Long orderId, OrderStatus status) {
-        Order order = this.getOrderById(orderId);
-        if (order != null) {
-            order.setStatus(status);
-            System.out.println("Order status updated to: " + status);
-        } else {
-            System.out.println("Order not found.");
+    public void processOrder(Order order) {
+        if (order == null) {
+            throw new IllegalArgumentException("Order cannot be null");
         }
+        this.orders.add(order);
+        System.out.println("Order processed: " + order.getOrderId());
     }
 
-    public void processOrdersFIFO() {
-        while (!this.orderQueue.isEmpty()) {
-            Order order = this.orderQueue.dequeue().orElse(null);
-            if (order != null) {
-                System.out.println("Processing order: " + order.getOrderId());
-                this.updateOrderStatus(order.getOrderId(), OrderStatus.ACCEPTED);
-                this.updateOrderStatus(order.getOrderId(), OrderStatus.DELIVERED);
-            }
+    public void rateDriver(Driver driver, int rating) {
+        if (rating < 1 || rating > 5) {
+            throw new IllegalArgumentException("Rating must be between 1 and 5");
         }
+        driver.addRating(rating);
+        System.out.println("Driver " + driver.getName() + " rated: " + rating + " stars");
     }
 }
