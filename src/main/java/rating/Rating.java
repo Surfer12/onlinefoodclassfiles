@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import CustomException.ValidationException;
+import model.Driver;
 
 public class Rating {
     private final Long id;
@@ -15,46 +16,46 @@ public class Rating {
     private final String comment;
     private final LocalDateTime timestamp;
 
-    private Rating(Builder builder) {
+    private Rating(final Builder builder) {
         this.id = builder.id;
         this.customerId = builder.customerId;
         this.driverId = builder.driverId;
         this.score = builder.score;
         this.comment = builder.comment;
         this.timestamp = LocalDateTime.now();
-        
-        validate();
+
+        this.validate();
     }
 
-    public Rating(Long customerId, Long driverId, int score, String comment) {
+    public Rating(final Long customerId, final Long driverId, final int score, final String comment) {
         this.id = null;
         this.customerId = customerId;
         this.driverId = driverId;
         this.score = score;
         this.comment = comment;
         this.timestamp = LocalDateTime.now();
-        
-        validate();
+
+        this.validate();
     }
 
     private void validate() {
-        List<String> errors = new ArrayList<>();
-        
-        if (score < 1 || score > 5) {
+        final List<String> errors = new ArrayList<>();
+
+        if (this.score < 1 || this.score > 5) {
             errors.add("Rating score must be between 1 and 5");
         }
-        if (customerId == null || customerId <= 0) {
+        if (this.customerId == null || this.customerId <= 0) {
             errors.add("Invalid customer ID");
         }
-        if (driverId == null || driverId <= 0) {
+        if (this.driverId == null || this.driverId <= 0) {
             errors.add("Invalid driver ID");
         }
-        if (comment != null && comment.length() > 500) {
+        if (this.comment != null && this.comment.length() > 500) {
             errors.add("Comment cannot exceed 500 characters");
         }
 
         if (!errors.isEmpty()) {
-            throw new ValidationException("Rating validation failed: " + 
+            throw new ValidationException("Rating validation failed: " +
                 String.join(", ", errors));
         }
     }
@@ -66,22 +67,22 @@ public class Rating {
         private int score;
         private String comment;
 
-        public Builder customerId(Long customerId) {
+        public Builder customerId(final Long customerId) {
             this.customerId = customerId;
             return this;
         }
 
-        public Builder driverId(Long driverId) {
+        public Builder driverId(final Long driverId) {
             this.driverId = driverId;
             return this;
         }
 
-        public Builder score(int score) {
+        public Builder score(final int score) {
             this.score = score;
             return this;
         }
 
-        public Builder comment(String comment) {
+        public Builder comment(final String comment) {
             this.comment = comment;
             return this;
         }
@@ -92,24 +93,24 @@ public class Rating {
     }
 
     // Getters only - Rating is immutable
-    public Long getId() { return id; }
-    public Long getCustomerId() { return customerId; }
-    public Long getDriverId() { return driverId; }
-    public int getScore() { return score; }
-    public Optional<String> getComment() { return Optional.ofNullable(comment); }
-    public LocalDateTime getTimestamp() { return timestamp; }
+    public Long getId() { return this.id; }
+    public Long getCustomerId() { return this.customerId; }
+    public Long getDriverId() { return this.driverId; }
+    public int getScore() { return this.score; }
+    public Optional<String> getComment() { return Optional.ofNullable(this.comment); }
+    public LocalDateTime getTimestamp() { return this.timestamp; }
 
     // New methods to handle driver ratings and ensure only 10 ratings are stored at a time
-    public static void addDriverRating(Driver driver, Rating rating) {
+    public static void addDriverRating(final Driver driver, final Rating rating) {
         if (driver != null && rating != null) {
             driver.addRating(rating);
-            ensureMaxRatings(driver);
+            Rating.ensureMaxRatings(driver);
         } else {
             throw new IllegalArgumentException("Invalid driver or rating");
         }
     }
 
-    public static void ensureMaxRatings(Driver driver) {
+    public static void ensureMaxRatings(final Driver driver) {
         if (driver != null) {
             while (driver.getRatings().size() > 10) {
                 driver.getRatings().remove(0);

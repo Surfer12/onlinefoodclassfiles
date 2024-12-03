@@ -10,31 +10,63 @@ import java.util.List;
 
 import model.Driver;
 import model.Order;
+import model.OrderStatus;
 import services.DriverService;
 
 public class DriverServiceImpl implements DriverService {
-    private List<Driver> drivers = new ArrayList<>();
+    private final List<Driver> drivers = new ArrayList<>();
 
     @Override
     public List<Driver> getAvailableDrivers() {
-        // Implementation to retrieve available drivers
-        return this.drivers.stream().filter(Driver::isAvailable).toList();
+        return this.drivers.stream()
+                .filter(Driver::isAvailable)
+                .toList();
     }
 
     @Override
-    public Driver getDriverForOrder(Order order) {
-        // Implementation code
-        return null;
+    public Driver getDriverForOrder(final Order order) {
+        return this.drivers.stream()
+                .filter(Driver::isAvailable)
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
-    public void assignDriverToOrder(Driver driver, Order order) {
-        // Implementation code
+    public void assignDriverToOrder(final Driver driver, final Order order) {
+        if (driver != null && order != null) {
+            driver.setAvailable(false);
+            order.setDriver(driver);
+            // Optionally update order status
+            order.setStatus(OrderStatus.IN_PROGRESS); // Ensure OrderStatus.IN_PROGRESS exists
+        }
     }
 
     @Override
-    public void rateDriver(Driver driver, Integer rating) {
-        // Implementation code
+    public void rateDriver(final Driver driver, final Integer rating) {
+        if (driver != null) {
+            if (rating < 1 || rating > 5) {
+                System.out.println("Rating must be between 1 and 5.");
+                return;
+            }
+            driver.addRating(rating);
+        } else {
+            System.out.println("Driver not found.");
+        }
+    }
+
+    @Override
+    public Driver getDriverById(final Long driverId) {
+        return this.drivers.stream()
+                .filter(driver -> driver.getId().equals(driverId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void processOrder(final Order order) {
+        if (order == null) {
+            throw new IllegalArgumentException("Order cannot be null");
+        }
+        System.out.println("Order processed: " + order.getOrderId());
     }
 
     // ...additional methods...

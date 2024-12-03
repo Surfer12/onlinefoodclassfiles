@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import model.Driver;
 import model.Order;
 import validation.OrderValidator;
 
@@ -13,14 +14,14 @@ public class OrderQueue implements QueueOperations<Order> {
    private final int maxSize;
    private final OrderValidator validator;
 
-   public OrderQueue(int maxSize) {
+   public OrderQueue(final int maxSize) {
       this.queue = new LinkedList<>();
       this.maxSize = maxSize;
       this.validator = new OrderValidator();
    }
 
    @Override
-   public synchronized void enqueue(Order order) throws CustomException.QueueFullException {
+   public synchronized void enqueue(final Order order) throws CustomException.QueueFullException {
       try {
          if (this.queue.size() >= this.maxSize) {
             throw new CustomException.QueueFullException("Order queue is at maximum capacity");
@@ -28,7 +29,7 @@ public class OrderQueue implements QueueOperations<Order> {
 
          this.validator.validateOrder(order);
          this.queue.add(order);
-      } catch (CustomException.QueueFullException e) {
+      } catch (final CustomException.QueueFullException e) {
          System.err.println("Error in enqueue: " + e.getMessage());
          throw e;
       }
@@ -63,9 +64,9 @@ public class OrderQueue implements QueueOperations<Order> {
       return new ArrayList<>(this.queue);
    }
 
-   public synchronized int getPositionInQueue(Order order) {
+   public synchronized int getPositionInQueue(final Order order) {
       int position = 1;
-      for (Order o : this.queue) {
+      for (final Order o : this.queue) {
          if (o.getId().equals(order.getId())) {
             return position;
          }
@@ -74,7 +75,7 @@ public class OrderQueue implements QueueOperations<Order> {
       return -1; // Order not found in queue
    }
 
-   public void processOrder(Order order) {
+   public void processOrder(final Order order) {
       if (order == null) {
          throw new IllegalArgumentException("Order cannot be null");
       }
@@ -82,7 +83,7 @@ public class OrderQueue implements QueueOperations<Order> {
       System.out.println("Order processed: " + order.getOrderId());
    }
 
-   public void rateDriver(Driver driver, int rating) {
+   public void rateDriver(final Driver driver, final int rating) {
       if (rating < 1 || rating > 5) {
          throw new IllegalArgumentException("Rating must be between 1 and 5");
       }
