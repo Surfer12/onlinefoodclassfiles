@@ -33,24 +33,10 @@ public class OrderManager {
                         "Invalid Order ID"));
     }
 
-    public Order createOrder(final List<MenuItem> orderItems) throws CustomException.QueueFullException {
-        if (orderItems.isEmpty()) {
-            System.out.println("No items selected. Order cancelled.");
-            return null;
-        }
-
-        try {
-            final Order newOrder = this.orderService.createOrder(orderItems);
-            this.orderQueue.enqueue(newOrder);
-            this.orderService.displayOrderDetails(newOrder);
-            System.out.println("Order placed successfully! Order ID: " + newOrder.getOrderId());
-            OrderManager.logger.info("New order added to queue: " + newOrder.getOrderId());
-            return newOrder;
-        } catch (final CustomException.QueueFullException e) {
-            System.out.println("Sorry, we are currently at maximum order capacity. Please try again later.");
-            OrderManager.logger.warning("Order queue full: " + e.getMessage());
-            throw e;
-        }
+    public Order createOrder(final List<MenuItem> menuItems) {
+        // Implement order creation logic
+        // You might want to generate a customer ID or use a default
+        return this.createOrder(menuItems, null); // or some default customer ID
     }
 
     public void checkOrderStatus(final Scanner scanner) {

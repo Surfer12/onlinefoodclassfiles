@@ -110,14 +110,10 @@ public class DeliverySystemCLI {
     }
 
     private void handlePlaceNewOrder() {
-        Integer menuItem;
-        do {
-            menuItem = this.positiveIntegerHandler.handleInput(this.scanner, "Enter menu item number to add (0 to finish): ");
-            if (menuItem == null || menuItem < 0) {
-                System.out.println("Invalid positive integer. Please try again.");
-            }
-        } while (menuItem == null || menuItem < 0);
+        // First, display the menu
+        this.menuManager.displayMenu();
 
+        // Then process order placement
         this.orderManager.processOrderPlacement(
                 this.scanner,
                 this.menuManager,

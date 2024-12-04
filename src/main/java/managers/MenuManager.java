@@ -87,4 +87,12 @@ public class MenuManager {
     public MenuService getMenuService() {
         return this.menuService;
     }
+
+    public MenuItem getMenuItemById(final Integer id) {
+        final List<MenuItem> menuItems = this.menuService.getAllMenuItems();
+        return menuItems.stream()
+            .filter(item -> item.getId().equals(id))
+            .findFirst()
+            .orElse(null);
+    }
 }
