@@ -1,5 +1,6 @@
 package managers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Logger;
@@ -79,29 +80,64 @@ public class OrderManager {
         return this.orderService;
     }
 
-    public void processOrderPlacement(final Scanner scanner, final MenuManager menuManager,
-            final ConsoleInputHandler<Integer> positiveIntegerHandler) {
-        try {
-            final List<MenuItem> orderItems = menuManager.selectMenuItems(scanner, positiveIntegerHandler);
+    public void processOrderPlacement(final Scanner scanner, final MenuManager menuManager, final ConsoleInputHandler<Integer> positiveIntegerHandler) {
+        // Prompt for customer ID with option to use default
+        final Long customerId = this.promptForCustomerId(scanner, positiveIntegerHandler);
 
-            if (!orderItems.isEmpty()) {
-                final Order newOrder = this.createOrder(orderItems);
+        // Rest of the existing order placement logic
+        final List<MenuItem> orderItems = new ArrayList<>();
+        Integer menuItem;
+        do {
+            menuItem = positiveIntegerHandler.handleInput(scanner, "Enter menu item number to add (0 to finish): ");
 
-                // Optional: Prompt for driver assignment after order creation
-                if (newOrder != null) {
-                    System.out.println("Would you like to assign a driver now? (Y/N)");
-                    final String response = scanner.nextLine().trim().toUpperCase();
-                    if ("Y".equals(response)) {
-                        // You might want to pass the DriverManager as a parameter
-                        // or create a method to handle driver assignment
-                        this.assignDriverToNewOrder(scanner, newOrder);
+            if (menuItem != null && menuItem > 0) {
+                final MenuItem selectedItem = menuManager.getMenuItemById(menuItem);
+                if (selectedItem != null) {
+                    final Integer quantity = positiveIntegerHandler.handleInput(scanner, "Enter quantity: ");
+                    if (quantity != null && quantity > 0) {
+                        // Add the item to the order with the specified quantity
+                        for (int i = 0; i < quantity; i++) {
+                            orderItems.add(selectedItem);
+                        }
                     }
+                } else {
+                    System.out.println("Invalid menu item. Please try again.");
                 }
             }
-        } catch (final CustomException.QueueFullException e) {
-            OrderManager.logger.warning("Order queue full: " + e.getMessage());
-            System.out.println("Sorry, we cannot accept more orders at the moment.");
+        } while (menuItem == null || menuItem > 0);
+
+        // Create the order with the customer ID
+        this.createOrder(orderItems, customerId);
+    }
+
+    private Long promptForCustomerId(final Scanner scanner, final ConsoleInputHandler<Integer> positiveIntegerHandler) {
+        while (true) {
+            System.out.println("\nCustomer ID Options:");
+            System.out.println("1. Enter a specific Customer ID");
+            System.out.println("2. Use Automatic Customer ID");
+
+            final Integer choice = positiveIntegerHandler.handleInput(scanner, "Enter your choice (1-2): ");
+
+            if (choice == 1) {
+                // Prompt for specific customer ID
+                final Long customerId = this.getOrderIdHandler().handleInput(scanner, "Enter Customer ID: ");
+                if (customerId != null) {
+                    return customerId;
+                }
+                System.out.println("Invalid Customer ID. Please try again.");
+            } else if (choice == 2) {
+                // Use automatic customer ID
+                return this.generateDefaultCustomerId();
+            } else {
+                System.out.println("Invalid choice. Please enter 1 or 2.");
+            }
         }
+    }
+
+    private Long generateDefaultCustomerId() {
+        // This could be a simple incremental ID, a random number, or pulled from a configuration
+        // For this example, we'll use a timestamp-based approach
+        return System.currentTimeMillis();
     }
 
     private void assignDriverToNewOrder(final Scanner scanner, final Order order) {

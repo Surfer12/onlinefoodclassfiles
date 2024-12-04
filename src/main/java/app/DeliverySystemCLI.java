@@ -4,6 +4,10 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import CustomException.OrderProcessingException;
+import CustomException.PaymentException;
+import CustomException.QueueFullException;
+import CustomException.ValidationException;
 import managers.DriverManager;
 import managers.MenuManager;
 import managers.OrderManager;
@@ -12,10 +16,6 @@ import model.Order;
 import validation.ConsoleInputHandler;
 import validation.InputValidatorImpl;
 import validation.PositiveIntegerValidator;
-import CustomException.OrderProcessingException;
-import CustomException.PaymentException;
-import CustomException.QueueFullException;
-import CustomException.ValidationException;
 
 public class DeliverySystemCLI {
     private static final Logger logger = Logger.getLogger(DeliverySystemCLI.class.getName());
@@ -110,6 +110,14 @@ public class DeliverySystemCLI {
     }
 
     private void handlePlaceNewOrder() {
+        Integer menuItem;
+        do {
+            menuItem = this.positiveIntegerHandler.handleInput(this.scanner, "Enter menu item number to add (0 to finish): ");
+            if (menuItem == null || menuItem < 0) {
+                System.out.println("Invalid positive integer. Please try again.");
+            }
+        } while (menuItem == null || menuItem < 0);
+
         this.orderManager.processOrderPlacement(
                 this.scanner,
                 this.menuManager,
