@@ -163,15 +163,30 @@ public class DeliverySystemCLI {
     }
 
     private void handleRateDriver() {
-        Optional<Order> orderOptional = Optional.ofNullable(
-                this.orderManager.getOrderService().getOrderById(
-                        this.orderManager.getOrderIdHandler().handleInput(
-                                this.scanner,
-                                "Enter Order ID to rate driver: ")));
-        orderOptional.ifPresent(order -> this.driverManager.rateDriver(
+        final Long orderId = this.orderManager.getOrderIdHandler().handleInput(
                 this.scanner,
-                order,
-                this.menuManager.getMenuChoiceHandler()));
+                "Enter Order ID to rate driver: ");
+        if (orderId != null) {
+            final Optional<Order> order = Optional.ofNullable(this.orderManager.getOrderService().getOrderById(orderId));
+            if (order.isPresent()) {
+                final Optional<Driver> driver = this.driverManager.getDriverService().getDriverForOrder(order.get());
+                if (driver.isPresent()) {
+                    final Integer rating = this.menuManager.getMenuChoiceHandler().handleInput(
+                            this.scanner,
+                            "Rate the driver (1-5 stars): ",
+                            input -> input >= 1 && input <= 5);
+                    if (rating != null) {
+                        this.driverManager.getDriverService().rateDriver(driver.get(), rating);
+                        System.out.println("Thank you for your feedback!");
+                        DeliverySystemCLI.logger.info("Driver " + driver.get().getName() + " rated: " + rating + " stars");
+                    }
+                } else {
+                    System.out.println("No driver assigned to this order.");
+                }
+            } else {
+                System.out.println("Order not found.");
+            }
+        }
     }
 
     private void handleCalculateOrderTotal() {
@@ -198,12 +213,12 @@ public class DeliverySystemCLI {
             System.out.print("Enter Driver ID to manage ratings: ");
             final Long driverId = this.orderManager.getOrderIdHandler().handleInput(this.scanner, "Driver ID: ");
             if (driverId != null) {
-                final Driver driver = this.driverManager.getDriverService().getDriverById(driverId);
-                if (driver != null) {
+                final Optional<Driver> driver = Optional.ofNullable(this.driverManager.getDriverService().getDriverById(driverId));
+                if (driver.isPresent()) {
                     System.out.print("Enter rating (1-5): ");
                     final Integer rating = this.positiveIntegerHandler.handleInput(this.scanner, "Rating: ");
                     if (rating != null) {
-                        this.driverManager.getDriverService().rateDriver(driver, rating);
+                        this.driverManager.getDriverService().rateDriver(driver.get(), rating);
                     } else {
                         System.out.println("Invalid rating.");
                     }

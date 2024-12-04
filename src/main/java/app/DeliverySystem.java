@@ -31,11 +31,15 @@ public class DeliverySystem {
       }
    }
 
-   public void assignOrderToDriver(final Order order, final Driver driver) {
+   public void assignOrderToDriver(final Order order, final Optional<Driver> driver) {
       try {
-         System.out.println("Order " + order.getOrderId() + " assigned to driver " + driver.getName());
-         this.orderStatuses.put(order.getOrderId(), "In Progress");
-         this.notificationService.sendDriverAssignmentNotification(order, driver);
+         if (driver.isPresent()) {
+            System.out.println("Order " + order.getOrderId() + " assigned to driver " + driver.get().getName());
+            this.orderStatuses.put(order.getOrderId(), "In Progress");
+            this.notificationService.sendDriverAssignmentNotification(order, driver.get());
+         } else {
+            System.out.println("No available driver for order " + order.getOrderId());
+         }
       } catch (Exception e) {
          throw new OrderProcessingException("Failed to assign order to driver: " + e.getMessage(), e);
       }
@@ -75,7 +79,7 @@ public class DeliverySystem {
       final OrderQueue orderQueue = new OrderQueue(10); // Create an instance of OrderQueue
       final Order order = orderQueue.dequeue().orElse(null);
       if (order != null) {
-         final Driver driver = this.selectDriverForOrder(order);
+         final Optional<Driver> driver = this.selectDriverForOrder(order);
          this.assignOrderToDriver(order, driver);
          System.out.println("Order " + order.getOrderId() + " is now being processed.");
       } else {
@@ -83,17 +87,17 @@ public class DeliverySystem {
       }
    }
 
-   private Driver selectDriverForOrder(final Order order) {
-      final Driver availableDriver = this.findAvailableDriverForOrderType(order);
-      if (availableDriver == null) {
+   private Optional<Driver> selectDriverForOrder(final Order order) {
+      final Optional<Driver> availableDriver = this.findAvailableDriverForOrderType(order);
+      if (availableDriver.isEmpty()) {
          throw new OrderProcessingException("No available drivers to assign to the order.");
       }
       return availableDriver;
    }
 
-   private Driver findAvailableDriverForOrderType(final Order order) {
+   private Optional<Driver> findAvailableDriverForOrderType(final Order order) {
       final DriverService driverService = new DriverServiceImpl();
       final List<Driver> availableDrivers = driverService.getAvailableDrivers();
-      return availableDrivers.isEmpty() ? null : availableDrivers.get(0);
+      return availableDrivers.isEmpty() ? Optional.empty() : Optional.of(availableDrivers.get(0));
    }
 }

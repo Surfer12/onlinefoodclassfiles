@@ -1,6 +1,7 @@
 package managers;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,8 +70,8 @@ public class DriverManager {
     }
 
     public void rateDriver(final Scanner scanner, final Order order, final ConsoleInputHandler<Integer> menuChoiceHandler) {
-        final Driver driver = this.driverService.getDriverForOrder(order);
-        if (driver == null) {
+        final Optional<Driver> driver = Optional.ofNullable(this.driverService.getDriverForOrder(order));
+        if (driver.isEmpty()) {
             System.out.println("No driver assigned to this order.");
             return;
         }
@@ -81,9 +82,9 @@ public class DriverManager {
                 input -> input >= 1 && input <= 5);
 
         if (rating != null) {
-            this.driverService.rateDriver(driver, rating);
+            this.driverService.rateDriver(driver.get(), rating);
             System.out.println("Thank you for your feedback!");
-            DriverManager.logger.info("Driver " + driver.getName() + " rated: " + rating + " stars");
+            DriverManager.logger.info("Driver " + driver.get().getName() + " rated: " + rating + " stars");
         }
     }
 
@@ -160,15 +161,5 @@ public class DriverManager {
 
     public DriverService getDriverService() {
         return this.driverService;
-    }
-
-    public void addDriver(final Driver driver) {
-        if (driver != null) {
-            this.driverService.addDriver(driver);
-            System.out.println("Driver added successfully.");
-            DriverManager.logger.log(Level.INFO, "Driver {0} added", driver.getName());
-        } else {
-            System.out.println("Invalid driver.");
-        }
     }
 }

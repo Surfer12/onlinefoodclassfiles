@@ -2,6 +2,7 @@ package managers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -61,9 +62,9 @@ public class OrderManager {
             if (orderId == null)
                 return;
 
-            final Order order = this.orderService.getOrderById(orderId);
-            if (order != null) {
-                System.out.println("Order Status: " + order.getStatus());
+            final Optional<Order> order = Optional.ofNullable(this.orderService.getOrderById(orderId));
+            if (order.isPresent()) {
+                System.out.println("Order Status: " + order.get().getStatus());
             } else {
                 System.out.println("Order not found.");
             }
