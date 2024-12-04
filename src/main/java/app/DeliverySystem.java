@@ -7,10 +7,10 @@ import java.util.Map;
 import CustomException.OrderProcessingException;
 import model.Driver;
 import model.Order;
+import notification.NotificationService;
 import queue.OrderQueue;
 import services.DriverService;
 import services.DriverServiceImpl;
-import notification.NotificationService;
 
 public class DeliverySystem {
    private final Map<Long, String> orderStatuses = new HashMap<>();
@@ -44,7 +44,7 @@ public class DeliverySystem {
       try {
          System.out.println("Delivery completed for order " + orderId + " by driver " + driverId);
          this.orderStatuses.put(orderId, "Delivered");
-         Order order = new Order(orderId, driverId, null, null); // Assuming you have a way to get the Order object
+         Order order = new Order(orderId, null, null, null);
          this.notificationService.sendDeliveryCompletionNotification(order);
       } catch (Exception e) {
          throw new OrderProcessingException("Failed to complete delivery: " + e.getMessage(), e);
@@ -54,7 +54,7 @@ public class DeliverySystem {
    public String getOrderStatus(final Long orderId) {
       return this.orderStatuses.getOrDefault(orderId, "Order Not Found");
    }
-   
+
    public void manageDriverRatings(final Driver driver, final int rating) {
       driver.addRating(rating);
       System.out.println("Driver " + driver.getName() + " rated with " + rating + " stars.");
@@ -83,19 +83,16 @@ public class DeliverySystem {
    }
 
    private Driver selectDriverForOrder(final Order order) {
-      final Driver availableDriver = this.findAvailableDriver();
+      final Driver availableDriver = this.findAvailableDriverForOrderType(order);
       if (availableDriver == null) {
          throw new OrderProcessingException("No available drivers to assign to the order.");
       }
       return availableDriver;
    }
 
-   private Driver findAvailableDriver() {
-      final DriverService driverService = new DriverServiceImpl(); // Assuming you have a way to get the DriverService
+   private Driver findAvailableDriverForOrderType(final Order order) {
+      final DriverService driverService = new DriverServiceImpl();
       final List<Driver> availableDrivers = driverService.getAvailableDrivers();
-      if (availableDrivers.isEmpty()) {
-         return null; // No available drivers
-      }
-      return availableDrivers.get(0); // Return the first available driver (you can implement more complex logic if needed)
+      return availableDrivers.isEmpty() ? null : availableDrivers.get(0);
    }
 }

@@ -59,12 +59,12 @@ public class DeliverySystemCLI {
     }
 
     public void start() {
-        try (Scanner _ = this.scanner) {
+        try (Scanner scannerLocal = this.scanner) {
             while (this.running) {
                 this.displayMainMenu();
 
                 final Integer choice = this.menuManager.getMenuChoiceHandler().handleInput(
-                        this.scanner,
+                        scannerLocal,
                         "Enter your choice below: ");
 
                 if (choice == null) {
@@ -95,25 +95,36 @@ public class DeliverySystemCLI {
     }
 
     private void handleMenuChoice(final int choice) {
-        try {
-            switch (choice) {
-                case 1 -> this.handlePlaceNewOrder();
-                case 2 -> this.handleCheckOrderStatus();
-                case 3 -> this.handleViewMenu();
-                case 4 -> this.handleManageDrivers();
-                case 5 -> this.handleRateDriver();
-                case 6 -> this.handleCalculateOrderTotal();
-                case 7 -> this.handleManageDriverRatings();
-                case 8 -> this.handleProcessOrdersInCorrectOrder();
-                case 9 -> this.handleExit();
-                default -> System.out.println("Invalid choice. Please enter a number between 1 and 9.");
-            }
-        } catch (final ValidationException e) {
-            DeliverySystemCLI.logger.log(Level.SEVERE, "Validation error occurred", e);
-            System.err.println("Validation error: " + e.getMessage());
-        } catch (final OrderProcessingException e) {
-            DeliverySystemCLI.logger.log(Level.SEVERE, "Order processing error occurred", e);
-            System.err.println("Order processing error: " + e.getMessage());
+        switch (choice) {
+            case 1:
+                this.handlePlaceNewOrder();
+                break;
+            case 2:
+                this.handleCheckOrderStatus();
+                break;
+            case 3:
+                this.handleViewMenu();
+                break;
+            case 4:
+                this.handleManageDrivers();
+                break;
+            case 5:
+                this.handleRateDriver();
+                break;
+            case 6:
+                this.handleCalculateOrderTotal();
+                break;
+            case 7:
+                this.handleManageDriverRatings();
+                break;
+            case 8:
+                this.handleProcessOrdersInCorrectOrder();
+                break;
+            case 9:
+                this.handleExit();
+                break;
+            default:
+                System.out.println("Invalid choice. Please enter a number between 1 and 9.");
         }
     }
 
