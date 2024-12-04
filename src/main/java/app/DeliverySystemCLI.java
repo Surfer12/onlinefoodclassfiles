@@ -13,6 +13,8 @@ import managers.MenuManager;
 import managers.OrderManager;
 import model.Driver;
 import model.Order;
+import notification.BasicNotificationService;
+import notification.NotificationService;
 import validation.ConsoleInputHandler;
 import validation.InputValidatorImpl;
 import validation.PositiveIntegerValidator;
@@ -24,74 +26,72 @@ public class DeliverySystemCLI {
     private final MenuManager menuManager;
     private final OrderManager orderManager;
     private final DriverManager driverManager;
+    private final NotificationService notificationService;
 
     private final ConsoleInputHandler<Integer> positiveIntegerHandler;
-    private final ConsoleInputHandler<String> emailHandler;
-    private final ConsoleInputHandler<String> locationHandler;
 
     private boolean running = true;
 
     public DeliverySystemCLI(final Scanner scanner, final MenuManager menuManager, final OrderManager orderManager,
-            final DriverManager driverManager, final ConsoleInputHandler<Integer> positiveIntegerHandler,
-            final ConsoleInputHandler<String> emailHandler, final ConsoleInputHandler<String> locationHandler) {
+            final DriverManager driverManager, final NotificationService notificationService,
+            final ConsoleInputHandler<Integer> positiveIntegerHandler) {
         this.scanner = scanner;
         this.menuManager = menuManager;
         this.orderManager = orderManager;
         this.driverManager = driverManager;
+        this.notificationService = notificationService;
         this.positiveIntegerHandler = positiveIntegerHandler;
-        this.emailHandler = emailHandler;
-        this.locationHandler = locationHandler;
     }
 
     public DeliverySystemCLI() {
-        this(new Scanner(System.in),
-                new MenuManager(),
-                new OrderManager(),
-                new DriverManager(),
-                new ConsoleInputHandler<>(
-                        new InputValidatorImpl<>(
-                                new PositiveIntegerValidator(),
-                                "Positive Integer",
-                                "Invalid positive integer")),
-                new ConsoleInputHandler<>(
-                        InputValidatorImpl.emailValidator()),
-                new ConsoleInputHandler<>(
-                        InputValidatorImpl.deliveryLocationValidator()));
+        this(
+            new Scanner(System.in),
+            new MenuManager(),
+            new OrderManager(),
+            new DriverManager(),
+            new BasicNotificationService(),
+            new ConsoleInputHandler<>(
+                new InputValidatorImpl<>(
+                    new PositiveIntegerValidator(),
+                    "Positive Integer",
+                    "Invalid positive integer"))
+        );
     }
 
     public void start() {
-        while (this.running) {
-            this.displayMainMenu();
+        try (Scanner _ = this.scanner) {
+            while (this.running) {
+                this.displayMainMenu();
 
-            final Integer choice = this.menuManager.getMenuChoiceHandler().handleInput(
-                    this.scanner,
-                    "Enter your choice below: ");
+                final Integer choice = this.menuManager.getMenuChoiceHandler().handleInput(
+                        this.scanner,
+                        "Enter your choice below: ");
 
-            if (choice == null) {
-                System.out.println("Invalid input. Please try again.");
-                continue;
-            }
+                if (choice == null) {
+                    System.out.println("Invalid input. Please try again.");
+                    continue;
+                }
 
-            try {
-                this.handleMenuChoice(choice);
-            } catch (final ValidationException e) {
-                DeliverySystemCLI.logger.log(Level.SEVERE, "Validation error occurred", e);
-                System.err.println("Validation error: " + e.getMessage());
-            } catch (final PaymentException e) {
-                DeliverySystemCLI.logger.log(Level.SEVERE, "Payment processing error occurred", e);
-                System.err.println("Payment processing error: " + e.getMessage());
-            } catch (final QueueFullException e) {
-                DeliverySystemCLI.logger.log(Level.SEVERE, "Order queue is full", e);
-                System.err.println("Order queue is full: " + e.getMessage());
-            } catch (final OrderProcessingException e) {
-                DeliverySystemCLI.logger.log(Level.SEVERE, "Order processing error occurred", e);
-                System.err.println("Order processing error: " + e.getMessage());
-            } catch (final Exception e) {
-                DeliverySystemCLI.logger.log(Level.SEVERE, "An unexpected error occurred", e);
-                System.err.println("An unexpected error occurred: " + e.getMessage());
+                try {
+                    this.handleMenuChoice(choice);
+                } catch (final ValidationException e) {
+                    DeliverySystemCLI.logger.log(Level.SEVERE, "Validation error occurred", e);
+                    System.err.println("Validation error: " + e.getMessage());
+                } catch (final PaymentException e) {
+                    DeliverySystemCLI.logger.log(Level.SEVERE, "Payment processing error occurred", e);
+                    System.err.println("Payment processing error: " + e.getMessage());
+                } catch (final QueueFullException e) {
+                    DeliverySystemCLI.logger.log(Level.SEVERE, "Order queue is full", e);
+                    System.err.println("Order queue is full: " + e.getMessage());
+                } catch (final OrderProcessingException e) {
+                    DeliverySystemCLI.logger.log(Level.SEVERE, "Order processing error occurred", e);
+                    System.err.println("Order processing error: " + e.getMessage());
+                } catch (final Exception e) {
+                    DeliverySystemCLI.logger.log(Level.SEVERE, "An unexpected error occurred", e);
+                    System.err.println("An unexpected error occurred: " + e.getMessage());
+                }
             }
         }
-        this.scanner.close();
     }
 
     private void handleMenuChoice(final int choice) {
@@ -108,10 +108,10 @@ public class DeliverySystemCLI {
                 case 9 -> this.handleExit();
                 default -> System.out.println("Invalid choice. Please enter a number between 1 and 9.");
             }
-        } catch (ValidationException e) {
+        } catch (final ValidationException e) {
             DeliverySystemCLI.logger.log(Level.SEVERE, "Validation error occurred", e);
             System.err.println("Validation error: " + e.getMessage());
-        } catch (OrderProcessingException e) {
+        } catch (final OrderProcessingException e) {
             DeliverySystemCLI.logger.log(Level.SEVERE, "Order processing error occurred", e);
             System.err.println("Order processing error: " + e.getMessage());
         }
@@ -127,7 +127,7 @@ public class DeliverySystemCLI {
                     this.scanner,
                     this.menuManager,
                     this.positiveIntegerHandler);
-        } catch (OrderProcessingException e) {
+        } catch (final OrderProcessingException e) {
             DeliverySystemCLI.logger.log(Level.SEVERE, "Order processing error occurred", e);
             System.err.println("Order processing error: " + e.getMessage());
         }
@@ -136,7 +136,7 @@ public class DeliverySystemCLI {
     private void handleCheckOrderStatus() {
         try {
             this.orderManager.checkOrderStatus(this.scanner);
-        } catch (OrderProcessingException e) {
+        } catch (final OrderProcessingException e) {
             DeliverySystemCLI.logger.log(Level.SEVERE, "Order processing error occurred", e);
             System.err.println("Order processing error: " + e.getMessage());
         }
@@ -167,13 +167,13 @@ public class DeliverySystemCLI {
             if (orderId != null) {
                 final Order order = this.orderManager.getOrderService().getOrderById(orderId);
                 if (order != null) {
-                    final double total = new DeliverySystem().calculateOrderTotal(order);
+                    final double total = this.orderManager.calculateOrderTotal(order);
                     System.out.printf("Total amount for order %d: $%.2f\n", orderId, total);
                 } else {
                     System.out.println("Order not found.");
                 }
             }
-        } catch (OrderProcessingException e) {
+        } catch (final OrderProcessingException e) {
             DeliverySystemCLI.logger.log(Level.SEVERE, "Order processing error occurred", e);
             System.err.println("Order processing error: " + e.getMessage());
         }
@@ -189,7 +189,7 @@ public class DeliverySystemCLI {
                     System.out.print("Enter rating (1-5): ");
                     final Integer rating = this.positiveIntegerHandler.handleInput(this.scanner, "Rating: ");
                     if (rating != null) {
-                        new DeliverySystem().manageDriverRatings(driver, rating);
+                        this.driverManager.getDriverService().rateDriver(driver, rating);
                     } else {
                         System.out.println("Invalid rating.");
                     }
@@ -197,14 +197,14 @@ public class DeliverySystemCLI {
                     System.out.println("Driver not found.");
                 }
             }
-        } catch (OrderProcessingException e) {
+        } catch (final OrderProcessingException e) {
             DeliverySystemCLI.logger.log(Level.SEVERE, "Order processing error occurred", e);
             System.err.println("Order processing error: " + e.getMessage());
         }
     }
 
     private void handleProcessOrdersInCorrectOrder() {
-        new DeliverySystem().processOrdersInCorrectOrder(this.orderManager.getOrderQueue());
+        new DeliverySystem(this.notificationService).processOrdersInCorrectOrder(this.orderManager.getOrderQueue());
     }
 
     private void handleExit() {
