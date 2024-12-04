@@ -17,6 +17,9 @@ import validation.ConsoleInputHandler;
 import validation.InputValidatorImpl;
 import validation.PositiveIntegerValidator;
 
+/**
+ * The DeliverySystemCLI class provides a command-line interface for the online food delivery system.
+ */
 public class DeliverySystemCLI {
     private static final Logger logger = Logger.getLogger(DeliverySystemCLI.class.getName());
 
@@ -31,6 +34,17 @@ public class DeliverySystemCLI {
 
     private boolean running = true;
 
+    /**
+     * Constructs a DeliverySystemCLI with the specified dependencies.
+     *
+     * @param scanner the Scanner object for reading user input
+     * @param menuManager the MenuManager for managing the menu
+     * @param orderManager the OrderManager for managing orders
+     * @param driverManager the DriverManager for managing drivers
+     * @param positiveIntegerHandler the ConsoleInputHandler for handling positive integer input
+     * @param emailHandler the ConsoleInputHandler for handling email input
+     * @param locationHandler the ConsoleInputHandler for handling location input
+     */
     public DeliverySystemCLI(final Scanner scanner, final MenuManager menuManager, final OrderManager orderManager,
             final DriverManager driverManager, final ConsoleInputHandler<Integer> positiveIntegerHandler,
             final ConsoleInputHandler<String> emailHandler, final ConsoleInputHandler<String> locationHandler) {
@@ -43,6 +57,9 @@ public class DeliverySystemCLI {
         this.locationHandler = locationHandler;
     }
 
+    /**
+     * Constructs a DeliverySystemCLI with default dependencies.
+     */
     public DeliverySystemCLI() {
         this(new Scanner(System.in),
                 new MenuManager(),
@@ -59,6 +76,9 @@ public class DeliverySystemCLI {
                         InputValidatorImpl.deliveryLocationValidator()));
     }
 
+    /**
+     * Starts the command-line interface.
+     */
     public void start() {
         while (this.running) {
             this.displayMainMenu();
@@ -94,6 +114,11 @@ public class DeliverySystemCLI {
         this.scanner.close();
     }
 
+    /**
+     * Handles the user's menu choice.
+     *
+     * @param choice the user's menu choice
+     */
     private void handleMenuChoice(final int choice) {
         switch (choice) {
             case 1 -> this.handlePlaceNewOrder();
@@ -109,6 +134,9 @@ public class DeliverySystemCLI {
         }
     }
 
+    /**
+     * Handles the "Place a New Order" menu option.
+     */
     private void handlePlaceNewOrder() {
         // First, display the menu
         this.menuManager.displayMenu();
@@ -120,18 +148,30 @@ public class DeliverySystemCLI {
                 this.positiveIntegerHandler);
     }
 
+    /**
+     * Handles the "Check Order Status" menu option.
+     */
     private void handleCheckOrderStatus() {
         this.orderManager.checkOrderStatus(this.scanner);
     }
 
+    /**
+     * Handles the "View Menu" menu option.
+     */
     private void handleViewMenu() {
         this.menuManager.displayMenu();
     }
 
+    /**
+     * Handles the "Manage Drivers" menu option.
+     */
     private void handleManageDrivers() {
         this.driverManager.manageDriverMenu(this.scanner, this.orderManager);
     }
 
+    /**
+     * Handles the "Rate Driver" menu option.
+     */
     private void handleRateDriver() {
         this.driverManager.rateDriver(
                 this.scanner,
@@ -142,6 +182,9 @@ public class DeliverySystemCLI {
                 this.menuManager.getMenuChoiceHandler());
     }
 
+    /**
+     * Handles the "Calculate Order Total" menu option.
+     */
     private void handleCalculateOrderTotal() {
         System.out.print("Enter Order ID to calculate total: ");
         final Long orderId = this.orderManager.getOrderIdHandler().handleInput(this.scanner, "Order ID: ");
@@ -156,6 +199,9 @@ public class DeliverySystemCLI {
         }
     }
 
+    /**
+     * Handles the "Manage Driver Ratings" menu option.
+     */
     private void handleManageDriverRatings() {
         System.out.print("Enter Driver ID to manage ratings: ");
         final Long driverId = this.orderManager.getOrderIdHandler().handleInput(this.scanner, "Driver ID: ");
@@ -175,15 +221,24 @@ public class DeliverySystemCLI {
         }
     }
 
+    /**
+     * Handles the "Process Orders in Correct Order" menu option.
+     */
     private void handleProcessOrdersInCorrectOrder() {
         new DeliverySystem().processOrdersInCorrectOrder(this.orderManager.getOrderQueue());
     }
 
+    /**
+     * Handles the "Exit" menu option.
+     */
     private void handleExit() {
         System.out.println("Exiting...");
         this.running = false;
     }
 
+    /**
+     * Displays the main menu.
+     */
     private void displayMainMenu() {
         System.out.println("\n--- Online Food Delivery System ---");
         System.out.println("1. Place a New Order");
@@ -198,6 +253,11 @@ public class DeliverySystemCLI {
         System.out.print("Please choose an option from the list above (1-9): ");
     }
 
+    /**
+     * The main method to start the DeliverySystemCLI.
+     *
+     * @param args the command-line arguments
+     */
     public static void main(final String[] args) {
         final DeliverySystemCLI cli = new DeliverySystemCLI();
         cli.start();

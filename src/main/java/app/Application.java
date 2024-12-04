@@ -11,13 +11,24 @@ import model.Order;
 import model.OrderStatus;
 import model.Size;
 
+/**
+ * The Application class is the entry point for the online food delivery system.
+ */
 public class Application {
     private static final Logger logger = Logger.getLogger(Application.class.getName());
 
+    /**
+     * Interface for sending notifications.
+     */
     interface NotificationService {
         void sendNotification(String message);
     }
 
+    /**
+     * The main method to start the application.
+     *
+     * @param args the command-line arguments
+     */
     public static void main(final String[] args) {
         try {
             final DeliverySystem deliverySystem = new DeliverySystem();
