@@ -10,14 +10,21 @@ import model.Order;
 import queue.OrderQueue;
 import services.DriverService;
 import services.DriverServiceImpl;
+import notification.NotificationService;
 
 public class DeliverySystem {
    private final Map<Long, String> orderStatuses = new HashMap<>();
+   private final NotificationService notificationService;
+
+   public DeliverySystem(NotificationService notificationService) {
+      this.notificationService = notificationService;
+   }
 
    public void submitOrder(final Order order) {
       try {
          System.out.println("Order submitted: " + order.getOrderId());
          this.orderStatuses.put(order.getOrderId(), "Pending");
+         this.notificationService.sendOrderConfirmationToCustomer(order);
       } catch (Exception e) {
          throw new OrderProcessingException("Failed to submit order: " + e.getMessage(), e);
       }
@@ -27,6 +34,7 @@ public class DeliverySystem {
       try {
          System.out.println("Order " + order.getOrderId() + " assigned to driver " + driver.getName());
          this.orderStatuses.put(order.getOrderId(), "In Progress");
+         this.notificationService.sendDriverAssignmentNotification(order, driver);
       } catch (Exception e) {
          throw new OrderProcessingException("Failed to assign order to driver: " + e.getMessage(), e);
       }
@@ -36,6 +44,8 @@ public class DeliverySystem {
       try {
          System.out.println("Delivery completed for order " + orderId + " by driver " + driverId);
          this.orderStatuses.put(orderId, "Delivered");
+         Order order = new Order(orderId, driverId, null, null); // Assuming you have a way to get the Order object
+         this.notificationService.sendDeliveryCompletionNotification(order);
       } catch (Exception e) {
          throw new OrderProcessingException("Failed to complete delivery: " + e.getMessage(), e);
       }
@@ -43,11 +53,6 @@ public class DeliverySystem {
 
    public String getOrderStatus(final Long orderId) {
       return this.orderStatuses.getOrDefault(orderId, "Order Not Found");
-   }
-  public double calculateOrderTotal(final Order order) {
-      return order.getItems().stream()
-            .mapToDouble(MenuItem::getPrice)
-            .sum();
    }
    
    public void manageDriverRatings(final Driver driver, final int rating) {
