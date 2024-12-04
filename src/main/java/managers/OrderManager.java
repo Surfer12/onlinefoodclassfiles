@@ -34,9 +34,24 @@ public class OrderManager {
     }
 
     public Order createOrder(final List<MenuItem> menuItems) {
-        // Implement order creation logic
-        // You might want to generate a customer ID or use a default
-        return this.createOrder(menuItems, null); // or some default customer ID
+        // Validate input
+        if (menuItems == null || menuItems.isEmpty()) {
+            throw new IllegalArgumentException("Order must contain at least one menu item");
+        }
+
+        // Generate a default customer ID if not provided
+        final Long customerId = this.generateDefaultCustomerId();
+
+        // Create the order using the OrderService
+        final Order newOrder = this.orderService.createOrder(menuItems, customerId);
+
+        // Add the order to the order queue
+        this.orderQueue.enqueue(newOrder);
+
+        // Log the order creation
+        OrderManager.logger.info("New order created with ID: " + newOrder.getOrderId());
+
+        return newOrder;
     }
 
     public void checkOrderStatus(final Scanner scanner) {
@@ -104,18 +119,21 @@ public class OrderManager {
 
             final Integer choice = positiveIntegerHandler.handleInput(scanner, "Enter your choice (1-2): ");
 
-            if (choice == 1) {
-                // Prompt for specific customer ID
-                final Long customerId = this.getOrderIdHandler().handleInput(scanner, "Enter Customer ID: ");
-                if (customerId != null) {
-                    return customerId;
-                }
-                System.out.println("Invalid Customer ID. Please try again.");
-            } else if (choice == 2) {
-                // Use automatic customer ID
-                return this.generateDefaultCustomerId();
-            } else {
+            if (null == choice) {
                 System.out.println("Invalid choice. Please enter 1 or 2.");
+            } else switch (choice) {
+                case 1 -> {
+                    // Prompt for specific customer ID
+                    final Long customerId = this.getOrderIdHandler().handleInput(scanner, "Enter Customer ID: ");
+                    if (customerId != null) {
+                        return customerId;
+                    }   System.out.println("Invalid Customer ID. Please try again.");
+                }
+                case 2 -> {
+                    // Use automatic customer ID
+                    return this.generateDefaultCustomerId();
+                }
+                default -> System.out.println("Invalid choice. Please enter 1 or 2.");
             }
         }
     }

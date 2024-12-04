@@ -21,13 +21,13 @@ public class OrderServiceImpl implements OrderService {
                 .orElse(null);
     }
 
-    @Override
-    public Order createOrder(final List<MenuItem> items) {
+       @Override
+    public Order createOrder(final List<MenuItem> items, final Long customerId) {
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("Order must contain at least one item");
         }
 
-        final Order newOrder = new Order(0L, "New Order", items, null);
+        final Order newOrder = new Order(0L, "New Order", items, customerId);
         newOrder.setStatus(OrderStatus.SUBMITTED);
         this.orders.add(newOrder);
         return newOrder;
