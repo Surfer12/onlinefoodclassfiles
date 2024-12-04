@@ -1,5 +1,6 @@
 package app;
 
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -162,13 +163,15 @@ public class DeliverySystemCLI {
     }
 
     private void handleRateDriver() {
-        this.driverManager.rateDriver(
-                this.scanner,
+        Optional<Order> orderOptional = Optional.ofNullable(
                 this.orderManager.getOrderService().getOrderById(
                         this.orderManager.getOrderIdHandler().handleInput(
                                 this.scanner,
-                                "Enter Order ID to rate driver: ")),
-                this.menuManager.getMenuChoiceHandler());
+                                "Enter Order ID to rate driver: ")));
+        orderOptional.ifPresent(order -> this.driverManager.rateDriver(
+                this.scanner,
+                order,
+                this.menuManager.getMenuChoiceHandler()));
     }
 
     private void handleCalculateOrderTotal() {

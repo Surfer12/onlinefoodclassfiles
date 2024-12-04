@@ -161,4 +161,14 @@ public class DriverManager {
     public DriverService getDriverService() {
         return this.driverService;
     }
+
+    public void addDriver(final Driver driver) {
+        if (driver != null) {
+            this.driverService.addDriver(driver);
+            System.out.println("Driver added successfully.");
+            DriverManager.logger.log(Level.INFO, "Driver {0} added", driver.getName());
+        } else {
+            System.out.println("Invalid driver.");
+        }
+    }
 }

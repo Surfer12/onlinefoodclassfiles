@@ -3,6 +3,7 @@ package model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Order {
    private final Long customerId;
@@ -74,24 +75,24 @@ public class Order {
       this.status = status;
    }
 
-   public LocalDateTime getEstimatedDeliveryTime() {
-      return this.estimatedDeliveryTime;
+   public Optional<LocalDateTime> getEstimatedDeliveryTime() {
+      return Optional.ofNullable(this.estimatedDeliveryTime);
    }
 
-   public void setEstimatedDeliveryTime(LocalDateTime estimatedDeliveryTime) {
-      this.estimatedDeliveryTime = estimatedDeliveryTime;
+   public void setEstimatedDeliveryTime(Optional<LocalDateTime> estimatedDeliveryTime) {
+      this.estimatedDeliveryTime = estimatedDeliveryTime.orElse(null);
    }
 
    public Long getId() {
       return this.orderId;
    }
 
-   public Driver getDriver() {
-      return this.driver;
+   public Optional<Driver> getDriver() {
+      return Optional.ofNullable(this.driver);
    }
 
-   public void setDriver(Driver driver) {
-      this.driver = driver;
+   public void setDriver(Optional<Driver> driver) {
+      this.driver = driver.orElse(null);
    }
 
    public void addItem(MenuItem item) {
