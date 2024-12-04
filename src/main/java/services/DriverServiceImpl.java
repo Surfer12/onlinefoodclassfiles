@@ -55,12 +55,8 @@ public class DriverServiceImpl implements DriverService {
         System.out.println("Order processed: " + order.getOrderId());
     }
 
-    public void addDriver(Driver driver) {
-        if (driver != null) {
-            this.drivers.add(driver);
-            System.out.println("Driver added successfully.");
-        } else {
-            System.out.println("Invalid driver.");
-        }
+    @Override
+    public List<Driver> getAllDrivers() {
+        return new ArrayList<>(this.drivers);
     }
 }

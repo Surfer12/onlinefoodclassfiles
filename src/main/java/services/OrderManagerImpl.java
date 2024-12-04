@@ -27,6 +27,7 @@ public class OrderManagerImpl implements OrderManager {
         final String location = locationHandler.getInput("Enter delivery location: ");
 
         // Existing code to process the order with email and location...
+        final List<MenuItem> orderItems = menuManager.getMenuItems();
     }
 
     @Override

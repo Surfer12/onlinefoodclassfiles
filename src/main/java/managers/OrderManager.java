@@ -2,7 +2,6 @@ package managers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -62,9 +61,9 @@ public class OrderManager {
             if (orderId == null)
                 return;
 
-            final Optional<Order> order = Optional.ofNullable(this.orderService.getOrderById(orderId));
-            if (order.isPresent()) {
-                System.out.println("Order Status: " + order.get().getStatus());
+            final Order order = this.orderService.getOrderById(orderId);
+            if (order != null) {
+                System.out.println("Order Status: " + order.getStatus());
             } else {
                 System.out.println("Order not found.");
             }
@@ -148,7 +147,7 @@ public class OrderManager {
     private void assignDriverToNewOrder(final Scanner scanner, final Order order) {
         // This method could be moved to DriverManager if preferred
         final DriverManager driverManager = new DriverManager();
-        driverManager.assignDriverToOrder(scanner, order, this.orderIdHandler);
+        driverManager.assignDriverToOrder(scanner, order);
     }
 
     public double calculateOrderTotal(final Order order) {
