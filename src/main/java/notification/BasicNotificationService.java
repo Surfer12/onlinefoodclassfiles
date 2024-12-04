@@ -4,35 +4,65 @@ import model.Driver;
 import model.Order;
 import model.OrderStatus;
 
+/**
+ * Basic implementation of the NotificationService interface.
+ */
 public class BasicNotificationService implements NotificationService {
    private static final String ORDER_CONFIRMATION_SUBJECT = "Order Confirmation";
    private static final String DRIVER_ASSIGNMENT_SUBJECT = "Driver Assigned";
    private static final String ORDER_STATUS_UPDATE_SUBJECT = "Order Status Update";
    private static final String DELIVERY_COMPLETION_SUBJECT = "Delivery Complete";
 
+   /**
+    * Sends a generic notification message.
+    *
+    * @param message the message to be sent
+    */
    @Override
    public void sendNotification(final String message) {
       System.out.println("Notification: " + message);
    }
 
+   /**
+    * Sends an order confirmation notification to the customer.
+    *
+    * @param order the order for which the confirmation is to be sent
+    */
    @Override
    public void sendOrderConfirmationToCustomer(final Order order) {
       final String message = this.formatOrderConfirmationMessage(order);
       this.sendEmail(order.getCustomerEmail(), BasicNotificationService.ORDER_CONFIRMATION_SUBJECT, message);
    }
 
+   /**
+    * Sends a notification to the customer about the driver assignment.
+    *
+    * @param order  the order for which the driver is assigned
+    * @param driver the driver assigned to the order
+    */
    @Override
    public void sendDriverAssignmentNotification(final Order order, final Driver driver) {
       final String message = this.formatDriverAssignmentMessage(order, driver);
       this.sendEmail(order.getCustomerEmail(), BasicNotificationService.DRIVER_ASSIGNMENT_SUBJECT, message);
    }
 
+   /**
+    * Sends an order status update notification to the customer.
+    *
+    * @param order     the order for which the status update is to be sent
+    * @param newStatus the new status of the order
+    */
    @Override
    public void sendOrderStatusUpdateToCustomer(final Order order, final OrderStatus newStatus) {
       final String message = this.formatStatusUpdateMessage(order, newStatus);
       this.sendEmail(order.getCustomerEmail(), BasicNotificationService.ORDER_STATUS_UPDATE_SUBJECT, message);
    }
 
+   /**
+    * Sends a delivery completion notification to the customer.
+    *
+    * @param order the order for which the delivery is completed
+    */
    @Override
    public void sendDeliveryCompletionNotification(final Order order) {
       final String message = this.formatDeliveryCompletionMessage(order);

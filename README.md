@@ -1,96 +1,98 @@
 ## Getting Started
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+Welcome to the Online Food Delivery System project. This guide will help you set up and run the application.
+
+## Prerequisites
+
+- Java Development Kit (JDK) 8 or higher
+- Apache Maven (for dependency management and building the project)
 
 ## Folder Structure
 
-The workspace contains two folders by default, where:
+The workspace contains the following folders:
 
 - `src`: the folder to maintain sources
+  - `main`: contains the main application code
+    - `java`: contains the Java source files
+      - `app`: contains the main application classes
+      - `CustomException`: contains custom exception classes
+      - `notification`: contains notification-related classes
+      - `observer`: contains observer-related classes
+  - `test`: contains the test code
+    - `java`: contains the Java test files
+      - `app`: contains the test classes for the main application
 - `lib`: the folder to maintain dependencies
+- `bin`: the folder to maintain compiled output files
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
-
-## Project Setup
-
-To set up the project, follow these steps:
+## Setting Up the Application
 
 1. Clone the repository:
-   ```sh
+   ```
    git clone https://github.com/Surfer12/onlinefoodclassfiles.git
    cd onlinefoodclassfiles
    ```
 
-2. Open the project in Visual Studio Code:
-   ```sh
-   code .
+2. Open the project in your preferred IDE (e.g., Visual Studio Code, IntelliJ IDEA).
+
+3. Build the project using Maven:
+   ```
+   mvn clean install
    ```
 
-3. Ensure you have the necessary Java Development Kit (JDK) installed. The project requires JDK 11 or higher. You can download it from [here](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html).
-
-4. Install the required extensions in Visual Studio Code:
-   - Java Extension Pack
-   - CheckStyle for Java
-
-5. Build the project:
-   ```sh
-   ./gradlew build
+4. Run the application:
+   ```
+   java -cp target/onlinefoodclassfiles-1.0-SNAPSHOT.jar app.Application
    ```
 
-## Running the Project
+## Project Overview
 
-To run the project, follow these steps:
+The Online Food Delivery System is a Java-based application that allows users to place and manage food orders. The project is organized into several packages, each responsible for different aspects of the system:
 
-1. Open the terminal in Visual Studio Code.
+- `app`: Contains the main application classes, including the entry point (`Application.java`) and the delivery system logic (`DeliverySystem.java`).
+- `CustomException`: Contains custom exception classes used for error handling.
+- `notification`: Contains classes related to sending notifications to customers and drivers.
+- `observer`: Contains classes implementing the observer pattern for tracking order events.
 
-2. Navigate to the project directory if not already there:
-   ```sh
-   cd onlinefoodclassfiles
-   ```
+## Functionality
 
-3. Run the application:
-   ```sh
-   ./gradlew run
-   ```
+The application provides the following functionality:
 
-## Contributing to the Project
+- Place a new order
+- Check order status
+- View menu
+- Manage drivers
+- Rate drivers
+- Calculate order total
+- Manage driver ratings
+- Process orders in the correct order
 
-We welcome contributions to the project. To contribute, follow these steps:
+## Testing
 
-1. Fork the repository on GitHub.
+The project includes unit tests for major components and services. To run the tests, use the following command:
+```
+mvn test
+```
 
-2. Clone your forked repository:
-   ```sh
-   git clone https://github.com/<your-username>/onlinefoodclassfiles.git
-   cd onlinefoodclassfiles
-   ```
+## Logging
 
-3. Create a new branch for your feature or bug fix:
-   ```sh
-   git checkout -b feature-or-bugfix-name
-   ```
+The application uses Java's built-in logging framework to log messages at different levels (INFO, WARN, ERROR). Log messages are used throughout the application to provide information about the application's execution and to help with debugging.
 
-4. Make your changes and commit them with a descriptive message:
-   ```sh
-   git add .
-   git commit -m "Description of the changes"
-   ```
+## Error Handling
 
-5. Push your changes to your forked repository:
-   ```sh
-   git push origin feature-or-bugfix-name
-   ```
+The application uses custom exception classes (`OrderProcessingException`, `ValidationException`) to handle errors consistently across the system. These exceptions provide meaningful error messages and help in identifying the source of errors.
 
-6. Create a pull request on the original repository, describing your changes and the problem they solve.
+## Dependency Management
 
-7. Wait for the project maintainers to review your pull request. They may request changes or ask for additional information.
+The project uses Maven for dependency management and building the project. Maven helps in maintaining a consistent project structure and simplifies the build process.
 
-8. Once your pull request is approved, it will be merged into the main branch.
+## Code Quality and Readability
 
-Thank you for contributing!
+The codebase follows consistent naming conventions and formatting. Large methods are broken down into smaller, more manageable ones to improve readability and maintainability.
+
+## Modularization
+
+The codebase is modularized by separating different concerns into distinct packages. For example, notification-related classes are in the `notification` package, and observer-related classes are in the `observer` package.
+
+## Documentation
+
+Javadoc comments are added to all public classes and methods to improve code documentation and maintainability. The `README.md` file provides detailed instructions on how to set up and run the application, as well as an overview of the project's structure and functionality.

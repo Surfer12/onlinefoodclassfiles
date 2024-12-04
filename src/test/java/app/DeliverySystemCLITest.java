@@ -110,4 +110,12 @@ public class DeliverySystemCLITest {
         deliverySystemCLI.handleViewMenu();
         verify(deliverySystemCLI.getLogger()).log(eq(Level.SEVERE), eq("An unexpected error occurred"), any(RuntimeException.class));
     }
+
+    @Test
+    public void testHandleMenuChoice() {
+        // Test for handleMenuChoice method
+        when(scanner.nextInt()).thenReturn(1);
+        deliverySystemCLI.handleMenuChoice(1);
+        verify(orderManager).processOrderPlacement(scanner, menuManager, positiveIntegerHandler);
+    }
 }
