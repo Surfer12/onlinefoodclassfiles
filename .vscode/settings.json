@@ -3,8 +3,6 @@
         "src/main/java",
         "src/test/java"
     ],
-    "maven.view": "hierarchical",
-    "maven.executable.path": "mvn",
     "maven.pomfile.autoUpdateEnabled": true,
     "java.configuration.updateBuildConfiguration": "automatic"
 }

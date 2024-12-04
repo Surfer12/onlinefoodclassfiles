@@ -5,7 +5,7 @@ Welcome to the Online Food Delivery System project. This guide will help you set
 ## Prerequisites
 
 - Java Development Kit (JDK) 8 or higher
-- Apache Maven (for dependency management and building the project)
+- Gradle (for dependency management and building the project)
 
 ## Folder Structure
 
@@ -34,14 +34,14 @@ The workspace contains the following folders:
 
 2. Open the project in your preferred IDE (e.g., Visual Studio Code, IntelliJ IDEA).
 
-3. Build the project using Maven:
+3. Build the project using Gradle:
    ```
-   mvn clean install
+   ./gradlew build
    ```
 
 4. Run the application:
    ```
-   java -cp target/onlinefoodclassfiles-1.0-SNAPSHOT.jar app.Application
+   ./gradlew run
    ```
 
 ## Project Overview
@@ -70,7 +70,7 @@ The application provides the following functionality:
 
 The project includes unit tests for major components and services. To run the tests, use the following command:
 ```
-mvn test
+./gradlew test
 ```
 
 ## Logging
@@ -83,7 +83,7 @@ The application uses custom exception classes (`OrderProcessingException`, `Vali
 
 ## Dependency Management
 
-The project uses Maven for dependency management and building the project. Maven helps in maintaining a consistent project structure and simplifies the build process.
+The project uses Gradle for dependency management and building the project. Gradle helps in maintaining a consistent project structure and simplifies the build process.
 
 ## Code Quality and Readability
 

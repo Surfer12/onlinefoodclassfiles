@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:3.3.3'
+}
+
+application {
+    mainClassName = 'app.Application'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
