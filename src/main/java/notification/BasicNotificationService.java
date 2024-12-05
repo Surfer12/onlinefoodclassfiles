@@ -140,7 +140,7 @@ public class BasicNotificationService implements NotificationService {
       try {
          System.out.printf("Sending email to %s%nSubject: %s%nMessage: %s%n",
                recipientEmail, subject, message);
-      } catch (final Exception e) {
+      } catch (final IllegalArgumentException | IllegalStateException | NullPointerException e) {
          System.err.printf("Failed to send email to %s%nSubject: %s%nMessage: %s%nError: %s%n",
                recipientEmail, subject, message, e.getMessage());
          this.sendSMS(recipientEmail, message);

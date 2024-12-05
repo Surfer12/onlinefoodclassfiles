@@ -48,6 +48,17 @@ public class OrderTracker implements OrderSubject {
       }
    }
 
+   public void addOrder(final Order order) {
+      this.orders.put(order.getOrderId(), order);
+      this.orderStatuses.put(order.getOrderId(), order.getStatus());
+   }
+
+   public void removeOrder(final Long orderId) {
+      this.orders.remove(orderId);
+      this.orderStatuses.remove(orderId);
+      this.estimatedDeliveryTimes.remove(orderId);
+   }
+
    private boolean isValidStatusTransition(final Long orderId, final OrderStatus newStatus) {
       final OrderStatus currentStatus = this.orderStatuses.get(orderId);
       if (currentStatus == null) {
@@ -67,12 +78,20 @@ public class OrderTracker implements OrderSubject {
 
    private void updateStatusInDatabase(final Long orderId, final OrderStatus newStatus) {
       this.orderStatuses.put(orderId, newStatus);
+      final Order order = this.orders.get(orderId);
+      if (order != null) {
+         order.setStatus(newStatus);
+      }
    }
 
-   private void updateDeliveryEstimates(final Long orderId, final Driver driver) {
-      if (driver != null) {
-         final LocalDateTime estimatedTime = this.calculateEstimatedDeliveryTime(driver);
+   private void updateDeliveryEstimates(final Long orderId, final Driver assignedDriver) {
+      if (assignedDriver != null) {
+         final LocalDateTime estimatedTime = this.calculateEstimatedDeliveryTime(assignedDriver);
          this.estimatedDeliveryTimes.put(orderId, estimatedTime);
+         final Order order = this.orders.get(orderId);
+         if (order != null) {
+            order.setDriver(Optional.of(assignedDriver));
+         }
       }
    }
 
