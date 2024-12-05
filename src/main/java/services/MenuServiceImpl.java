@@ -3,13 +3,13 @@ package services;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.MenuItem;
 import model.Drink;
 import model.Fries;
+import model.MenuItem;
 import model.Size;
 
 public class MenuServiceImpl implements MenuService {
-    private List<MenuItem> menuItems = new ArrayList<>();
+    private final List<MenuItem> menuItems = new ArrayList<>();
 
     public MenuServiceImpl() {
         // Initialize menu items
@@ -21,7 +21,7 @@ public class MenuServiceImpl implements MenuService {
     public void displayMenu() {
         System.out.println("\n=== Menu ===");
         for (int i = 0; i < this.menuItems.size(); i++) {
-            MenuItem item = this.menuItems.get(i);
+            final MenuItem item = this.menuItems.get(i);
             System.out.printf("%d. %s - $%.2f\n",
                     i + 1,
                     item.getName(),
@@ -35,9 +35,14 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public MenuItem getMenuItemByIndex(int index) {
+    public MenuItem getMenuItemByIndex(final int index) {
+        return this.menuItems.get(index);
+    }
+
+    @Override
+    public String getMenuItemNameByIndex(final int index) {
         if (index > 0 && index <= this.menuItems.size()) {
-            return this.menuItems.get(index - 1);
+            return this.menuItems.get(index).getName();
         }
         throw new IllegalArgumentException("Invalid menu item index");
     }
@@ -50,5 +55,13 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public List<MenuItem> getAllMenuItems() {
         return new ArrayList<>(this.menuItems);
+    }
+
+    @Override
+    public MenuItem getMenuItemById(final long id) {
+        return this.menuItems.stream()
+            .filter(item -> item.getId() != null && item.getId().equals(id))
+            .findFirst()
+            .orElse(null);
     }
 }

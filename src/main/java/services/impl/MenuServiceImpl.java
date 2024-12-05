@@ -51,8 +51,21 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
+    public String getMenuItemNameByIndex(int index) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
     public int getMenuSize() {
         return this.menu.size();
+    }
+
+    @Override
+    public MenuItem getMenuItemById(final long id) {
+        return this.menu.stream()
+                .filter(item -> item.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Menu item not found"));
     }
 
     @Override

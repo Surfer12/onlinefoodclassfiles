@@ -41,7 +41,7 @@ public class MenuManager {
             } else {
                 System.out.printf("%d. %s - %s - $%.2f\n",
                     i + 1,
-                    item.getName(),
+                    this.menuService.getMenuItemNameByIndex(i),
                     item.getDescription(),
                     item.getPrice());
             }
@@ -105,7 +105,7 @@ public class MenuManager {
     public MenuItem getMenuItemById(final Integer id) {
         final List<MenuItem> menuItems = this.menuService.getAllMenuItems();
         return menuItems.stream()
-            .filter(item -> item.getId().equals(Long.valueOf(id)))
+            .filter(item -> item.getId() != null && item.getId().equals(Long.valueOf(id)))
             .findFirst()
             .orElse(null);
     }

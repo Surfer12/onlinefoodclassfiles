@@ -9,9 +9,13 @@ public interface MenuService {
 
     List<MenuItem> getMenu();
 
-    MenuItem getMenuItemByIndex(int index);
+    MenuItem getMenuItemByIndex(final int index);
 
     int getMenuSize();
 
+    String getMenuItemNameByIndex(final int index);
+
     List<MenuItem> getAllMenuItems();
+
+    MenuItem getMenuItemById(final long id);
 }

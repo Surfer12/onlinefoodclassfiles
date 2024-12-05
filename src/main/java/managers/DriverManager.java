@@ -25,7 +25,7 @@ public class DriverManager {
         this.driverService = new DriverServiceImpl();
         this.menuChoiceHandler = new ConsoleInputHandler<>(
                 new InputValidatorImpl<>(
-                        new MenuItemValidator(3),
+                        new MenuItemValidator(9),
                         "Driver Management Choice",
                         "Invalid choice"));
     }
