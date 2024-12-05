@@ -30,7 +30,12 @@ public class MenuManager {
         System.out.println("\n--- Current Menu ---");
         for (int i = 0; i < menu.size(); i++) {
             final MenuItem item = menu.get(i);
-            System.out.printf("%d. %s - $%.2f\n", i + 1, item.getName(), item.getPrice());
+            System.out.printf("%d. %s - %s - $%.2f (Size: %s)\n",
+                i + 1,
+                item.getName(),
+                item.getDescription(),
+                item.getPrice(),
+                item.getSize());
         }
     }
 

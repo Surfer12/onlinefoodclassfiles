@@ -7,11 +7,14 @@ package services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import model.Driver;
 import model.Order;
 import model.OrderStatus;
 import services.DriverService;
+
+
 
 public class DriverServiceImpl implements DriverService {
     private final List<Driver> drivers = new ArrayList<>();
@@ -24,20 +27,18 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Driver getDriverForOrder(final Order order) {
+    public Optional<Driver> getDriverForOrder(final Order order) {
         return this.drivers.stream()
                 .filter(Driver::isAvailable)
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     @Override
     public void assignDriverToOrder(final Driver driver, final Order order) {
         if (driver != null && order != null) {
             driver.setAvailable(false);
-            order.setDriver(driver);
-            // Optionally update order status
-            order.setStatus(OrderStatus.IN_PROGRESS); // Ensure OrderStatus.IN_PROGRESS exists
+            order.setDriver(Optional.of(driver));
+            order.setStatus(OrderStatus.IN_PROGRESS);
         }
     }
 
@@ -55,11 +56,10 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Driver getDriverById(final Long driverId) {
+    public Optional<Driver> getDriverById(final Long driverId) {
         return this.drivers.stream()
                 .filter(driver -> driver.getId().equals(driverId))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     public void processOrder(final Order order) {

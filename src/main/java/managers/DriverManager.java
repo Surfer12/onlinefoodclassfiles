@@ -70,7 +70,7 @@ public class DriverManager {
     }
 
     public void rateDriver(final Scanner scanner, final Order order, final ConsoleInputHandler<Integer> menuChoiceHandler) {
-        final Optional<Driver> driver = Optional.ofNullable(this.driverService.getDriverForOrder(order));
+        final Optional<Driver> driver = this.driverService.getDriverForOrder(order);
         if (driver.isEmpty()) {
             System.out.println("No driver assigned to this order.");
             return;
@@ -155,7 +155,7 @@ public class DriverManager {
         }
     }
 
-    public Driver getDriverById(final Long driverId) {
+    public Optional<Driver> getDriverById(final Long driverId) {
         return this.driverService.getDriverById(driverId);
     }
 

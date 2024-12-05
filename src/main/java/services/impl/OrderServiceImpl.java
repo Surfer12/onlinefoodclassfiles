@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import model.Location;
 import model.MenuItem;
 import model.Order;
 import model.OrderStatus;
@@ -21,13 +22,20 @@ public class OrderServiceImpl implements OrderService {
                 .orElse(null);
     }
 
-       @Override
+    @Override
     public Order createOrder(final List<MenuItem> items, final Long customerId) {
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("Order must contain at least one item");
         }
 
-        final Order newOrder = new Order(0L, "New Order", items, customerId);
+        final Location defaultLocation = new Location("Unknown Address", "00000");
+
+        final Order newOrder = new Order(
+            customerId,
+            "customer@example.com",
+            items,
+            defaultLocation
+        );
         newOrder.setStatus(OrderStatus.SUBMITTED);
         this.orders.add(newOrder);
         return newOrder;
