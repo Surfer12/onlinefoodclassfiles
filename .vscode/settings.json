@@ -4,6 +4,7 @@
         //"src/test/java"
     ],
     "maven.pomfile.autoUpdateEnabled": true,
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "codeQL.createQuery.qlPackLocation": "/Users/ryanoates/onlinefoodclassfiles"
 
 }
