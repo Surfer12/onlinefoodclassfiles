@@ -88,27 +88,21 @@ public class DeliverySystem {
    }
 
    public void processOrdersInCorrectOrder(final OrderQueue orderQueue) {
-      while (!orderQueue.isEmpty()) {
-         final Order order = orderQueue.dequeue().orElse(null);
-         if (order != null) {
+      orderQueue.stream()
+         .forEach(order -> {
             System.out.println("Processing order: " + order.getOrderId());
             final Optional<Driver> driver = this.selectDriverForOrder(order);
             this.assignOrderToDriver(order, driver);
-         }
-      }
+         });
    }
 
    public Optional<Driver> selectDriverForOrder(final Order order) {
-      final Optional<Driver> availableDriver = this.findAvailableDriverForOrderType(order);
-      if (availableDriver.isEmpty()) {
-         throw new OrderProcessingException("No available drivers to assign to the order.");
-      }
-      return availableDriver;
+      return this.findAvailableDriverForOrderType(order)
+         .orElseThrow(() -> new OrderProcessingException("No available drivers to assign to the order."));
    }
 
    private Optional<Driver> findAvailableDriverForOrderType(final Order order) {
       final DriverService driverService = new DriverServiceImpl();
-      final List<Driver> availableDrivers = driverService.getAvailableDrivers();
-      return availableDrivers.isEmpty() ? Optional.empty() : Optional.of(availableDrivers.get(0));
+      return driverService.getAvailableDrivers().stream().findFirst();
    }
 }

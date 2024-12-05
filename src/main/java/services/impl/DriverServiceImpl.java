@@ -14,8 +14,6 @@ import model.Order;
 import model.OrderStatus;
 import services.DriverService;
 
-
-
 public class DriverServiceImpl implements DriverService {
     private final List<Driver> drivers = new ArrayList<>();
 
@@ -69,9 +67,8 @@ public class DriverServiceImpl implements DriverService {
         System.out.println("Order processed: " + order.getOrderId());
     }
 
-   @Override
-public List<Driver> getAllDrivers() {
-    return new ArrayList<>(this.drivers);
-}
-    // ...additional methods...
+    @Override
+    public List<Driver> getAllDrivers() {
+        return new ArrayList<>(this.drivers);
+    }
 }

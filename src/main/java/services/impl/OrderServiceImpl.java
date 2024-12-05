@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import model.Location;
 import model.MenuItem;
@@ -47,13 +48,12 @@ public class OrderServiceImpl implements OrderService {
         System.out.println("Order ID: " + order.getOrderId());
         System.out.println("Items:");
 
-        final Map<MenuItem, Integer> itemCounts = new HashMap<>();
-        double totalPrice = 0;
+        final Map<MenuItem, Long> itemCounts = order.getItems().stream()
+                .collect(Collectors.groupingBy(item -> item, Collectors.counting()));
 
-        for (final MenuItem item : order.getItems()) {
-            itemCounts.put(item, itemCounts.getOrDefault(item, 0) + 1);
-            totalPrice += item.getPrice();
-        }
+        final double totalPrice = order.getItems().stream()
+                .mapToDouble(MenuItem::getPrice)
+                .sum();
 
         itemCounts.forEach((item, count) -> System.out.printf("%s x%d - $%.2f\n",
                 item.getName(),
