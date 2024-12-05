@@ -35,7 +35,6 @@ public class DeliverySystemCLITest {
     private MenuManager menuManager;
     private NotificationService notificationService;
     private ConsoleInputHandler<Integer> positiveIntegerHandler;
-    private Scanner scanner;
 
     @BeforeEach
     void setup() {
@@ -70,42 +69,30 @@ public class DeliverySystemCLITest {
                 statusManager,
                 this.driverManager.getDriverService());
 
-        // Create initial scanner with empty input
-        this.scanner = new Scanner("");
-
-        // Create CLI instance with our scanner
-        this.cli = new DeliverySystemCLI(
-                this.menuManager,
-                        orderManager,
-                this.driverManager,
-                this.notificationService,
-                this.positiveIntegerHandler,
-                deliverySystem,
-                this.scanner); // Pass our scanner instance
+        // Create CLI instance with empty input
+        this.simulateUserInput(""); // This will be overridden in each test
     }
 
     @AfterEach
     void cleanup() {
-        if (this.scanner != null) {
-            this.scanner.close();
-        }
         System.setOut(this.originalOut);
         System.setIn(this.originalIn);
     }
 
     private void simulateUserInput(final String input) {
-        // Close existing scanner
-        if (this.scanner != null) {
-            this.scanner.close();
-        }
-
         // Create new scanner with the test input
         final ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
-        this.scanner = new Scanner(inputStream);
 
-        // Update CLI with new scanner
-        this.cli.setScanner(this.scanner);
+        // Create new CLI instance with the test input
+        this.cli = new DeliverySystemCLI(
+                this.menuManager,
+                orderManager,
+                this.driverManager,
+                this.notificationService,
+                this.positiveIntegerHandler,
+                deliverySystem,
+                new Scanner(inputStream));
     }
 
     private String getOutput() {
