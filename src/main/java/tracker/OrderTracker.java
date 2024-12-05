@@ -49,12 +49,20 @@ public class OrderTracker implements OrderSubject {
    }
 
    private boolean isValidStatusTransition(final Long orderId, final OrderStatus newStatus) {
-      // Implement status transition validation logic
-      return true;
-   }
+      final OrderStatus currentStatus = this.orderStatuses.get(orderId);
+      if (currentStatus == null) {
+         return true; // Allow any status for new orders
+      }
 
-   private boolean isDeliveryInProgress(final OrderStatus status) {
-      return status == OrderStatus.OUT_FOR_DELIVERY;
+      return switch (currentStatus) {
+         case SUBMITTED -> newStatus == OrderStatus.PENDING || newStatus == OrderStatus.CANCELLED;
+         case PENDING -> newStatus == OrderStatus.IN_PROGRESS || newStatus == OrderStatus.CANCELLED;
+         case IN_PROGRESS -> newStatus == OrderStatus.PREPARING || newStatus == OrderStatus.CANCELLED;
+         case PREPARING -> newStatus == OrderStatus.OUT_FOR_DELIVERY || newStatus == OrderStatus.CANCELLED;
+         case OUT_FOR_DELIVERY -> newStatus == OrderStatus.DELIVERED || newStatus == OrderStatus.CANCELLED;
+         case DELIVERED, CANCELLED -> false; // Terminal states
+         default -> false;
+      };
    }
 
    private void updateStatusInDatabase(final Long orderId, final OrderStatus newStatus) {
@@ -62,8 +70,10 @@ public class OrderTracker implements OrderSubject {
    }
 
    private void updateDeliveryEstimates(final Long orderId, final Driver driver) {
-      final LocalDateTime estimatedTime = this.calculateEstimatedDeliveryTime(driver);
-      this.estimatedDeliveryTimes.put(orderId, estimatedTime);
+      if (driver != null) {
+         final LocalDateTime estimatedTime = this.calculateEstimatedDeliveryTime(driver);
+         this.estimatedDeliveryTimes.put(orderId, estimatedTime);
+      }
    }
 
    public Optional<OrderStatus> getOrderStatus(final Long orderId) {

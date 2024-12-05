@@ -1,6 +1,7 @@
 package validation;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -116,5 +117,43 @@ public class ConsoleInputHandler<T> implements InputHandler<T> {
            }
            System.out.println("Input does not meet the required condition.");
        }
+   }
+
+   @SuppressWarnings("unchecked")
+   private T[] getInputArray(final String prompt, final int maxInputs) {
+      final List<T> inputs = new ArrayList<>();
+
+      while (inputs.size() < maxInputs) {
+         try {
+            System.out.print(prompt);
+            final String input = this.scanner.nextLine().trim();
+
+            if ("done".equalsIgnoreCase(input)) {
+               break;
+            }
+
+            final T parsedInput = this.inputValidator.parse(input);
+            if (parsedInput != null && this.inputValidator.validate(parsedInput)) {
+               inputs.add(parsedInput);
+            } else {
+               System.out.println("Invalid input. Please enter a valid " + this.inputValidator.getTypeName() + ".");
+            }
+         } catch (final Exception e) {
+            System.out.println("Error parsing input: " + e.getMessage());
+         }
+      }
+
+      // Create an array of the correct type
+      if (inputs.isEmpty()) {
+         return (T[]) Array.newInstance(this.getGenericType(), 0);
+      }
+
+      // Use reflection to create an array of the correct type
+      return inputs.toArray((T[]) Array.newInstance(inputs.get(0).getClass(), inputs.size()));
+   }
+
+   @SuppressWarnings("unchecked")
+   private Class<T> getGenericType() {
+      return (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
    }
 }

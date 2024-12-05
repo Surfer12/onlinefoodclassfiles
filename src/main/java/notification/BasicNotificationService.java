@@ -38,6 +38,8 @@ public class BasicNotificationService implements NotificationService {
     */
    @Override
    public void sendOrderConfirmationToCustomer(final Order order) {
+      final String message = this.formatOrderConfirmationMessage(order);
+      this.sendEmail(order.getCustomerEmail(), BasicNotificationService.ORDER_CONFIRMATION_SUBJECT, message);
       this.sendNotification(String.format("Order confirmation sent to customer for order ID: %d", order.getOrderId()));
    }
 
@@ -49,6 +51,8 @@ public class BasicNotificationService implements NotificationService {
     */
    @Override
    public void sendDriverAssignmentNotification(final Order order, final Driver driver) {
+      final String message = this.formatDriverAssignmentMessage(order, driver);
+      this.sendEmail(order.getCustomerEmail(), BasicNotificationService.DRIVER_ASSIGNMENT_SUBJECT, message);
       this.sendNotification(String.format("Driver %s assigned to order ID: %d", driver.getName(), order.getOrderId()));
    }
 
@@ -60,6 +64,8 @@ public class BasicNotificationService implements NotificationService {
     */
    @Override
    public void sendOrderStatusUpdateToCustomer(final Order order, final OrderStatus newStatus) {
+      final String message = this.formatStatusUpdateMessage(order, newStatus);
+      this.sendEmail(order.getCustomerEmail(), BasicNotificationService.ORDER_STATUS_UPDATE_SUBJECT, message);
       this.sendNotification(String.format("Order %d status updated to: %s", order.getOrderId(), newStatus));
    }
 
@@ -74,6 +80,7 @@ public class BasicNotificationService implements NotificationService {
          throw new IllegalArgumentException("Order cannot be null");
       }
       final String message = this.formatDeliveryCompletionMessage(order);
+      this.sendEmail(order.getCustomerEmail(), BasicNotificationService.DELIVERY_COMPLETION_SUBJECT, message);
       this.sendNotification(message);
    }
 
