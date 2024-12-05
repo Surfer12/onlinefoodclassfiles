@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="app.DeliverySystemCLITest" tests="7" skipped="0" failures="7" errors="0" timestamp="2024-12-05T19:08:14" hostname="Ryans-MacBook-Pro.local" time="0.021">
+<testsuite name="app.DeliverySystemCLITest" tests="7" skipped="0" failures="7" errors="0" timestamp="2024-12-05T19:09:12" hostname="Ryans-MacBook-Pro.local" time="0.018">
   <properties/>
-  <testcase name="Test order processing" classname="app.DeliverySystemCLITest" time="0.011">
+  <testcase name="Test order processing" classname="app.DeliverySystemCLITest" time="0.009">
     <failure message="java.util.NoSuchElementException: No line found" type="java.util.NoSuchElementException">java.util.NoSuchElementException: No line found
 	at java.base/java.util.Scanner.nextLine(Unknown Source)
 	at validation.ConsoleInputHandler.getInput(ConsoleInputHandler.java:52)
@@ -280,7 +280,7 @@
 	at worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)
 </failure>
   </testcase>
-  <testcase name="Test invalid inputs" classname="app.DeliverySystemCLITest" time="0.002">
+  <testcase name="Test invalid inputs" classname="app.DeliverySystemCLITest" time="0.001">
     <failure message="java.util.NoSuchElementException: No line found" type="java.util.NoSuchElementException">java.util.NoSuchElementException: No line found
 	at java.base/java.util.Scanner.nextLine(Unknown Source)
 	at validation.ConsoleInputHandler.getInput(ConsoleInputHandler.java:52)
@@ -379,7 +379,7 @@
 	at validation.ConsoleInputHandler.getInput(ConsoleInputHandler.java:52)
 	at validation.ConsoleInputHandler.handleInput(ConsoleInputHandler.java:108)
 	at app.DeliverySystemCLI.start(DeliverySystemCLI.java:76)
-	at app.DeliverySystemCLITest.testDriverRating(DeliverySystemCLITest.java:158)
+	at app.DeliverySystemCLITest.testDriverRating(DeliverySystemCLITest.java:155)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
@@ -466,13 +466,13 @@
 	at worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)
 </failure>
   </testcase>
-  <testcase name="Test system shutdown" classname="app.DeliverySystemCLITest" time="0.001">
+  <testcase name="Test system shutdown" classname="app.DeliverySystemCLITest" time="0.0">
     <failure message="java.util.NoSuchElementException: No line found" type="java.util.NoSuchElementException">java.util.NoSuchElementException: No line found
 	at java.base/java.util.Scanner.nextLine(Unknown Source)
 	at validation.ConsoleInputHandler.getInput(ConsoleInputHandler.java:52)
 	at validation.ConsoleInputHandler.handleInput(ConsoleInputHandler.java:108)
 	at app.DeliverySystemCLI.start(DeliverySystemCLI.java:76)
-	at app.DeliverySystemCLITest.testSystemShutdown(DeliverySystemCLITest.java:169)
+	at app.DeliverySystemCLITest.testSystemShutdown(DeliverySystemCLITest.java:171)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
