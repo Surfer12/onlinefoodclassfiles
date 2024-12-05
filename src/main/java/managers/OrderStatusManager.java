@@ -1,4 +1,3 @@
-
 package managers;
 
 import java.util.ArrayList;
@@ -7,6 +6,7 @@ import java.util.List;
 import model.Order;
 import model.OrderStatus;
 import notification.NotificationService;
+import observer.OrderObserver;
 
 public class OrderStatusManager {
     private final NotificationService notificationService;
@@ -16,15 +16,33 @@ public class OrderStatusManager {
         this.notificationService = notificationService;
     }
 
-    public void updateStatus(final Order order, final OrderStatus newStatus) {
+    public void updateOrderStatus(final Order order, final OrderStatus newStatus) {
         final OrderStatus oldStatus = order.getStatus();
-        validateStatusTransition(oldStatus, newStatus);
+        if (this.isValidStatusTransition(oldStatus, newStatus)) {
+            order.setStatus(newStatus);
+            this.notificationService.sendOrderStatusUpdateToCustomer(order, newStatus);
+            this.notifyObservers(order, newStatus);
+        } else {
+            throw new IllegalStateException(
+                    String.format("Invalid status transition from %s to %s", oldStatus, newStatus));
+        }
+    }
 
-        order.setStatus(newStatus);
-        this.notificationService.sendOrderStatusUpdateToCustomer(order, newStatus);
+    private boolean isValidStatusTransition(final OrderStatus current, final OrderStatus next) {
+        return switch (current) {
+            case SUBMITTED -> next == OrderStatus.IN_PROGRESS || next == OrderStatus.CANCELLED;
+            case IN_PROGRESS -> next == OrderStatus.PREPARING || next == OrderStatus.CANCELLED;
+            case PREPARING -> next == OrderStatus.OUT_FOR_DELIVERY || next == OrderStatus.CANCELLED;
+            case OUT_FOR_DELIVERY -> next == OrderStatus.DELIVERED || next == OrderStatus.CANCELLED;
+            case DELIVERED, CANCELLED -> false;
+            default -> false;
+        };
+    }
 
-        // Notify observers
-        this.observers.forEach(observer -> observer.onOrderUpdated(order, newStatus));
+    private void notifyObservers(final Order order, final OrderStatus newStatus) {
+        for (final OrderObserver observer : this.observers) {
+            observer.onOrderUpdated(order, newStatus);
+        }
     }
 
     public void addObserver(final OrderObserver observer) {

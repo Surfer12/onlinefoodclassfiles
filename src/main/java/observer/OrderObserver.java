@@ -25,22 +25,6 @@ public interface OrderObserver {
     void onOrderEvent(Order order, OrderEvent event);
 
     /**
-     * Sends a notification to the customer about the order event.
-     *
-     * @param order the order associated with the event
-     * @param event the event that occurred
-     */
-    void customerNotificationOfOrder(Order order, OrderEvent event);
-
-    /**
-     * Sends a notification to the customer about the driver assignment.
-     *
-     * @param order the order associated with the event
-     * @param event the event that occurred
-     */
-    void driverNotificationToCustomer(Order order, OrderEvent event);
-
-    /**
      * Handles order status updates.
      *
      * @param order     the order to update

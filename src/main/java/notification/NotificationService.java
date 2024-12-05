@@ -41,4 +41,6 @@ public interface NotificationService {
     * @param order the order for which the delivery is completed
     */
    void sendDeliveryCompletionNotification(Order order);
+
+   void sendDeliveryCompletionNotification(Long orderId);
 }
