@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import CustomException.OrderProcessingException;
+import CustomException.PaymentException;
+import CustomException.QueueFullException;
+import CustomException.ValidationException;
 import managers.OrderStatusManager;
 import model.Driver;
 import model.Order;
@@ -33,7 +36,7 @@ public class DeliverySystem {
             } else {
                 throw new OrderProcessingException("Invalid status transition from SUBMITTED to PENDING");
             }
-        } catch (final Exception e) {
+        } catch (final OrderProcessingException | PaymentException | QueueFullException | ValidationException e) {
             throw new OrderProcessingException("Failed to submit order: " + e.getMessage(), e);
         }
     }
@@ -46,7 +49,7 @@ public class DeliverySystem {
             } else {
                 throw new OrderProcessingException("Invalid status transition from " + order.getStatus() + " to " + newStatus);
             }
-        } catch (final IllegalStateException e) {
+        } catch (final OrderProcessingException | PaymentException | QueueFullException | ValidationException e) {
             throw new OrderProcessingException("Failed to update order status: " + e.getMessage(), e);
         }
     }
@@ -74,7 +77,7 @@ public class DeliverySystem {
             } else {
                 System.out.println("No available driver for order " + order.getOrderId());
             }
-        } catch (final Exception e) {
+        } catch (final OrderProcessingException | PaymentException | QueueFullException | ValidationException e) {
             throw new OrderProcessingException("Failed to assign order to driver: " + e.getMessage(), e);
         }
     }
@@ -84,7 +87,7 @@ public class DeliverySystem {
             System.out.println("Delivery completed for order " + orderId + " by driver " + driverId);
             this.orderStatuses.put(orderId, "Delivered");
             this.notificationService.sendDeliveryCompletionNotification(orderId);
-        } catch (final Exception e) {
+        } catch (final OrderProcessingException | PaymentException | QueueFullException | ValidationException e) {
             throw new OrderProcessingException("Failed to complete delivery: " + e.getMessage(), e);
         }
     }
