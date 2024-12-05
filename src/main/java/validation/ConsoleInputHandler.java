@@ -13,7 +13,7 @@ import java.util.function.Predicate;
  * @param <T> the type of input to handle
  *
  *            Usage example:
- * 
+ *
  *            Scanner scanner = new Scanner(System.in);
  *            InputValidator<Integer> validator = new
  *            PositiveIntegerValidator();
@@ -75,7 +75,6 @@ public class ConsoleInputHandler<T> implements InputHandler<T> {
     */
 
    @Override
-   @SuppressWarnings("unchecked")
    public T[] getMultipleInputs(final String prompt, final String stopCommand) {
       final List<T> inputs = new ArrayList<>();
       while (true) {
@@ -102,18 +101,16 @@ public class ConsoleInputHandler<T> implements InputHandler<T> {
       }
 
       // Use reflection to create an array of the correct type
-      @SuppressWarnings("unchecked")
-      final T[] result = inputs.toArray((T[]) Array.newInstance(inputs.get(0).getClass(), inputs.size()));
-      return result;
+      return inputs.toArray((T[]) Array.newInstance(inputs.get(0).getClass(), inputs.size()));
    }
 
-   public T handleInput(Scanner scanner, String prompt) {
+   public T handleInput(final Scanner scanner, final String prompt) {
        return this.getInput(prompt);
    }
 
-   public T handleInput(Scanner scanner, String prompt, Predicate<T> condition) {
+   public T handleInput(final Scanner scanner, final String prompt, final Predicate<T> condition) {
        while (true) {
-           T input = this.getInput(prompt);
+           final T input = this.getInput(prompt);
            if (condition.test(input)) {
                return input;
            }

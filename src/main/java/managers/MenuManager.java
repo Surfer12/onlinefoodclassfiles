@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import model.Drink;
 import model.MenuItem;
 import model.Pizza;
 import services.MenuService;
@@ -32,13 +31,13 @@ public class MenuManager {
         System.out.println("\n--- Current Menu ---");
         for (int i = 0; i < menu.size(); i++) {
             final MenuItem item = menu.get(i);
-            if (item instanceof Pizza || item instanceof Drink) {
+            if (item instanceof final Pizza pizza) {
                 System.out.printf("%d. %s - %s - $%.2f (Size: %s)\n",
                     i + 1,
-                    item.getName(),
-                    item.getDescription(),
-                    item.getPrice(),
-                    ((Pizza) item).getSize());
+                    pizza.getName(),
+                    pizza.getDescription(),
+                    pizza.getPrice(),
+                    pizza.getSize());
             } else {
                 System.out.printf("%d. %s - %s - $%.2f\n",
                     i + 1,
@@ -106,7 +105,7 @@ public class MenuManager {
     public MenuItem getMenuItemById(final Integer id) {
         final List<MenuItem> menuItems = this.menuService.getAllMenuItems();
         return menuItems.stream()
-            .filter(item -> item.getId().equals(id))
+            .filter(item -> item.getId().equals(Long.valueOf(id)))
             .findFirst()
             .orElse(null);
     }

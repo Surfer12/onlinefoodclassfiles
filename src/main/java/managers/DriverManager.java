@@ -84,7 +84,7 @@ public class DriverManager {
         if (rating != null) {
             this.driverService.rateDriver(driver.get(), rating);
             System.out.println("Thank you for your feedback!");
-            DriverManager.logger.info("Driver " + driver.get().getName() + " rated: " + rating + " stars");
+            DriverManager.logger.log(Level.INFO, "Driver {0} rated: {1} stars", new Object[]{driver.get().getName(), rating});
         }
     }
 

@@ -41,13 +41,16 @@ public class OrderTracker implements OrderSubject {
    }
 
    public void updateOrderStatus(final Long orderId, final OrderStatus newStatus, final Driver assignedDriver) {
-      this.validateOrderUpdateRequest(orderId, newStatus);
-      this.updateStatusInDatabase(orderId, newStatus);
-      this.updateDeliveryEstimates(orderId, assignedDriver);
+      if (this.isValidStatusTransition(orderId, newStatus)) {
+         this.updateStatusInDatabase(orderId, newStatus);
+         this.updateDeliveryEstimates(orderId, assignedDriver);
+         this.notifyObserversAboutOrderUpdate(orderId);
+      }
    }
 
-   private void validateOrderUpdateRequest(final Long orderId, final OrderStatus newStatus) {
-      // Validation logic
+   private boolean isValidStatusTransition(final Long orderId, final OrderStatus newStatus) {
+      // Implement status transition validation logic
+      return true;
    }
 
    private boolean isDeliveryInProgress(final OrderStatus status) {

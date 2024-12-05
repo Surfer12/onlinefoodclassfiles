@@ -3,6 +3,7 @@ package managers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import model.Driver;
@@ -46,7 +47,7 @@ public class OrderManager {
         this.orderQueue.enqueue(newOrder);
 
         // Log the order creation
-        OrderManager.logger.info("New order created with ID: " + newOrder.getOrderId());
+        OrderManager.logger.log(Level.INFO, "New order created with ID: {0}", newOrder.getOrderId());
 
         return newOrder;
     }
