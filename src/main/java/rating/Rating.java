@@ -28,7 +28,7 @@ public class Rating {
     }
 
     public Rating(final Long customerId, final Long driverId, final int score, final String comment) {
-        this.id = null;
+        this.id = generateId();
         this.customerId = customerId;
         this.driverId = driverId;
         this.score = score;
@@ -36,6 +36,10 @@ public class Rating {
         this.timestamp = LocalDateTime.now();
 
         this.validate();
+    }
+
+    public long generateId() {
+        return ((long) (Math.random() * 10000));
     }
 
     private void validate() {
@@ -56,7 +60,7 @@ public class Rating {
 
         if (!errors.isEmpty()) {
             throw new ValidationException("Rating validation failed: " +
-                String.join(", ", errors));
+                    String.join(", ", errors));
         }
     }
 
@@ -93,14 +97,32 @@ public class Rating {
     }
 
     // Getters only - Rating is immutable
-    public Long getId() { return this.id; }
-    public Long getCustomerId() { return this.customerId; }
-    public Long getDriverId() { return this.driverId; }
-    public int getScore() { return this.score; }
-    public Optional<String> getComment() { return Optional.ofNullable(this.comment); }
-    public LocalDateTime getTimestamp() { return this.timestamp; }
+    public Long getId() {
+        return this.id;
+    }
 
-    // New methods to handle driver ratings and ensure only 10 ratings are stored at a time
+    public Long getCustomerId() {
+        return this.customerId;
+    }
+
+    public Long getDriverId() {
+        return this.driverId;
+    }
+
+    public int getScore() {
+        return this.score;
+    }
+
+    public Optional<String> getComment() {
+        return Optional.ofNullable(this.comment);
+    }
+
+    public LocalDateTime getTimestamp() {
+        return this.timestamp;
+    }
+
+    // New methods to handle driver ratings and ensure only 10 ratings are stored at
+    // a time
     public static void addDriverRating(final Driver driver, final Rating rating) {
         if (driver != null && rating != null) {
             driver.addRating(rating);

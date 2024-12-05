@@ -1,7 +1,7 @@
 package rating;
 
 import java.util.Optional;
-
+import java.util.concurrent.ConcurrentLinkedQueue;
 import CustomException.QueueFullException;
 
 public interface RatingsBusinessLogic<T> {
@@ -49,4 +49,6 @@ public interface RatingsBusinessLogic<T> {
      * @return The maximum capacity of the ratings queue
      */
     int getMaxRatings();
+
+    void enqueue();
 }

@@ -1,7 +1,7 @@
 package rating;
 
 import java.util.Optional;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -9,7 +9,7 @@ import CustomException.QueueFullException;
 
 public class RatingsHandler<T> implements RatingsBusinessLogic<T> {
    private final int maxRatings;
-   private final ConcurrentLinkedDeque<T> ratingsQueue;
+   private final ConcurrentLinkedQueue<T> ratingsQueue;
    private final Lock ratingsLock = new ReentrantLock();
 
    public RatingsHandler(int maxRatings) {
@@ -18,7 +18,7 @@ public class RatingsHandler<T> implements RatingsBusinessLogic<T> {
             throw new IllegalArgumentException("Maximum ratings must be positive");
          }
          this.maxRatings = maxRatings;
-         this.ratingsQueue = new ConcurrentLinkedDeque<>();
+         this.ratingsQueue = new ConcurrentLinkedQueue<>();
       } catch (IllegalArgumentException e) {
          System.err.println("Error in RatingsHandler constructor: " + e.getMessage());
          throw e;
@@ -26,40 +26,45 @@ public class RatingsHandler<T> implements RatingsBusinessLogic<T> {
    }
 
    @Override
-   public void addRating(T rating) {
+   public void addRating(T rating) { // adds rating to the start of the queue
       ratingsLock.lock();
       try {
-         if (rating == null) {
-            throw new IllegalArgumentException("Rating cannot be null");
+         if (rating.Optional.isEmpty() == true) {
+            throw new IllegalArgumentException("Rating cannot be empty or null");
          }
          if (isRatingQueueFull()) {
             throw new QueueFullException("Ratings queue is at maximum capacity: " + maxRatings);
+            ratingsQueue.removeOldestRating();
          }
-         ratingsQueue.addLast(rating);
+         ratingsQueue.enqueue(rating);
          enforceRatingQueueMaxSize();
-      } catch (IllegalArgumentException | QueueFullException e) {
-         System.err.println("Error in addRating: " + e.getMessage());
-         throw e;
+      }catch(IllegalArgumentException|
+
+   QueueFullException e)
+   {
+      System.err.println("Error in addRating: " + e.getMessage());
+      throw e;
+   }finally
+   {
+      ratingsLock.unlock();
+   }
+   }
+
+   @Override
+   public Optional<T> getLatestRating() { // polls the oldest rating and removes it from the queue
+      ratingsLock.lock();
+      try {
+         return Optional.ofNullable(ratingsQueue.poll()); // impliment across project
       } finally {
          ratingsLock.unlock();
       }
    }
 
    @Override
-   public Optional<T> removeOldestRating() {
+   public Optional<T> removeOldestRating() { // removes the oldest rating from the queue
       ratingsLock.lock();
       try {
-         return Optional.ofNullable(ratingsQueue.pollFirst());
-      } finally {
-         ratingsLock.unlock();
-      }
-   }
-
-   @Override
-   public Optional<T> getLatestRating() {
-      ratingsLock.lock();
-      try {
-         return Optional.ofNullable(ratingsQueue.peekLast());
+         return Optional.ofNullable(ratingsQueue.remove());
       } finally {
          ratingsLock.unlock();
       }
@@ -69,8 +74,11 @@ public class RatingsHandler<T> implements RatingsBusinessLogic<T> {
    public void enforceRatingQueueMaxSize() {
       ratingsLock.lock();
       try {
-         while (ratingsQueue.size() > maxRatings) {
-            ratingsQueue.removeFirst();
+         while (ratingsQueue.size() >= maxRatings) {
+            System.out.println("Ratings queue size: " + ratingsQueue.size());
+            if (ratingsQueue.size() > maxRatings) {
+               ratingsQueue.remove(); // add remove logging here
+            }
          }
       } finally {
          ratingsLock.unlock();
