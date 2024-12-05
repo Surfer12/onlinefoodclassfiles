@@ -134,4 +134,14 @@ public class DeliverySystem {
                 .min((d1, d2) -> Integer.compare(d1.getActiveOrderCount(), d2.getActiveOrderCount()));
         assignOrderToDriver(order, leastBusyDriver);
     }
+
+    public void showRatingStatistics() {
+        Map<Driver, Double> ratingStatistics = new HashMap<>();
+        for (Driver driver : driverService.getAllDrivers()) {
+            ratingStatistics.put(driver, driver.getAverageRating());
+        }
+        ratingStatistics.forEach((driver, avgRating) -> {
+            System.out.println("Driver: " + driver.getName() + ", Average Rating: " + avgRating);
+        });
+    }
 }
