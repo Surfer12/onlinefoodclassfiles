@@ -15,15 +15,25 @@ import validation.MenuItemValidator;
 public class MenuManager {
     private final MenuService menuService;
     private final ConsoleInputHandler<Integer> menuChoiceHandler;
+    private final ConsoleInputHandler<Integer> foodMenuChoiceHandler;
 
     public MenuManager() {
         this.menuService = new MenuServiceImpl();
         final int menuSize = this.menuService.getMenuSize();
+
+        // Handler for main menu choices (1-9)
         this.menuChoiceHandler = new ConsoleInputHandler<>(
                 new InputValidatorImpl<>(
-                        new MenuItemValidator(menuSize),
+                        new MenuItemValidator(9), // Main menu has 9 options
                         "Menu Choice",
                         "Invalid menu choice"));
+
+        // Handler for food menu items
+        this.foodMenuChoiceHandler = new ConsoleInputHandler<>(
+                new InputValidatorImpl<>(
+                        new MenuItemValidator(menuSize),
+                        "Menu Item Choice",
+                        "Invalid menu item choice"));
     }
 
     public void displayMenu() {
@@ -60,7 +70,7 @@ public class MenuManager {
 
         while (addingItems) {
             System.out.print("Enter menu item number to add (0 to finish): ");
-            final Integer itemChoice = positiveIntegerHandler.handleInput(
+            final Integer itemChoice = this.foodMenuChoiceHandler.handleInput(
                     scanner,
                     "Select a menu item: ");
 
@@ -99,6 +109,10 @@ public class MenuManager {
 
     public ConsoleInputHandler<Integer> getMenuChoiceHandler() {
         return this.menuChoiceHandler;
+    }
+
+    public ConsoleInputHandler<Integer> getFoodMenuChoiceHandler() {
+        return this.foodMenuChoiceHandler;
     }
 
     public MenuService getMenuService() {

@@ -11,6 +11,7 @@ import model.Driver;
 import model.Location;
 import model.MenuItem;
 import model.Order;
+import model.OrderStatus;
 import model.Pizza;
 import model.Size;
 import notification.BasicNotificationService;
@@ -49,6 +50,10 @@ public class DeliverySystemDemo {
 
             // Step 2: Find and assign a driver
             System.out.println("\nStep 2: Finding and Assigning Driver");
+            // First update the order status to PENDING
+            this.deliverySystem.updateOrderStatus(sampleOrder, OrderStatus.PENDING);
+            System.out.println("Updated Status: " + this.deliverySystem.getOrderStatus(sampleOrder.getOrderId()));
+
             final Optional<Driver> selectedDriver = this.deliverySystem.selectDriverForOrder(sampleOrder);
             this.deliverySystem.assignOrderToDriver(sampleOrder, selectedDriver);
             System.out.println("Current Status: " + this.deliverySystem.getOrderStatus(sampleOrder.getOrderId()));

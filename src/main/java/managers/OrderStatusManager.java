@@ -30,7 +30,8 @@ public class OrderStatusManager {
 
     private boolean isValidStatusTransition(final OrderStatus current, final OrderStatus next) {
         return switch (current) {
-            case SUBMITTED -> next == OrderStatus.IN_PROGRESS || next == OrderStatus.CANCELLED;
+            case SUBMITTED -> next == OrderStatus.PENDING || next == OrderStatus.CANCELLED;
+            case PENDING -> next == OrderStatus.IN_PROGRESS || next == OrderStatus.CANCELLED;
             case IN_PROGRESS -> next == OrderStatus.PREPARING || next == OrderStatus.CANCELLED;
             case PREPARING -> next == OrderStatus.OUT_FOR_DELIVERY || next == OrderStatus.CANCELLED;
             case OUT_FOR_DELIVERY -> next == OrderStatus.DELIVERED || next == OrderStatus.CANCELLED;
