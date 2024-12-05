@@ -1,149 +1,179 @@
-
 package rating;
 
-import queue.QueueOperations;
-import queue.RatingsQueue;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import CustomException.QueueFullException;
+import queue.QueueOperations;
 
 public class RatingsHandler<T> implements RatingsBusinessLogic<T>, QueueOperations<T> { // impliment queue operations
    private final int maxRatings;
    private final ConcurrentLinkedQueue<T> ratingsQueue;
    private final Lock ratingsLock = new ReentrantLock();
 
-   public RatingsHandler(int maxRatings) {
+   public RatingsHandler(final int maxRatings) {
       try {
          if (maxRatings <= 0) {
             throw new IllegalArgumentException("Maximum ratings must be positive");
          }
          this.maxRatings = maxRatings;
          this.ratingsQueue = new ConcurrentLinkedQueue<>();
-      } catch (IllegalArgumentException e) {
+      } catch (final IllegalArgumentException e) {
          System.err.println("Error in RatingsHandler constructor: " + e.getMessage());
          throw e;
       }
    }
 
    @Override
-   public void addRating(T rating) { // adds rating to the start of the ratingsQueue
-      ratingsLock.lock(); //
+   public void addRating(final T rating) { // adds rating to the start of the ratingsQueue
+      this.ratingsLock.lock(); //
       try {
-         if (rating.Optional.isEmpty() == true) {
-            throw new IllegalArgumentException("Rating cannot be empty or null");
+         if (rating == null) {
+            throw new IllegalArgumentException("Rating cannot be null");
          }
-         if (isRatingQueueFull()) {
-            throw new QueueFullException("Ratings queue is at maximum capacity: " + maxRatings);
-            ratingsQueue.removeOldestRating();
+         if (this.isRatingQueueFull()) {
+            throw new QueueFullException("Ratings queue is at maximum capacity: " + this.maxRatings);
          }
-         ratingsQueue.enqueue(rating);
-         enforceRatingQueueMaxSize();
-      } catch (IllegalArgumentException |
-
-            QueueFullException e) {
+         this.ratingsQueue.add(rating);
+         this.enforceRatingQueueMaxSize();
+      } catch (IllegalArgumentException | QueueFullException e) {
          System.err.println("Error in addRating: " + e.getMessage());
          throw e;
       } finally {
-         ratingsLock.unlock();
+         this.ratingsLock.unlock();
       }
    }
 
    @Override
+   public void enqueue(final T rating) {
+      this.addRating(rating);
+   }
+
+   @Override
    public Optional<T> getLatestRating() { // polls the oldest rating and removes it from the queue
-      ratingsLock.lock();
+      this.ratingsLock.lock();
       try {
-         return Optional.ofNullable(ratingsQueue.poll()); // impliment across project
+         return Optional.ofNullable(this.ratingsQueue.poll()); // impliment across project
       } finally {
-         ratingsLock.unlock();
+         this.ratingsLock.unlock();
       }
    }
 
    @Override
    public Optional<T> removeOldestRating() { // removes the oldest rating from the queue
-      ratingsLock.lock();
+      this.ratingsLock.lock();
       try {
-         return Optional.ofNullable(ratingsQueue.remove());
+         return Optional.ofNullable(this.ratingsQueue.remove());
       } finally {
-         ratingsLock.unlock();
+         this.ratingsLock.unlock();
       }
    }
 
    @Override
    public void enforceRatingQueueMaxSize() {
-      ratingsLock.lock();
+      this.ratingsLock.lock();
       try {
-         while (ratingsQueue.size() >= maxRatings) {
-            System.out.println("Ratings queue size: " + ratingsQueue.size());
-            if (ratingsQueue.size() > maxRatings) {
-               ratingsQueue.remove(); // add remove logging here
+         while (this.ratingsQueue.size() >= this.maxRatings) {
+            System.out.println("Ratings queue size: " + this.ratingsQueue.size());
+            if (this.ratingsQueue.size() > this.maxRatings) {
+               this.ratingsQueue.remove(); // add remove logging here
             }
          }
       } finally {
-         ratingsLock.unlock();
+         this.ratingsLock.unlock();
       }
    }
 
    @Override
    public void clearAllRatings() {
-      ratingsLock.lock();
+      this.ratingsLock.lock();
       try {
-         ratingsQueue.clear();
+         this.ratingsQueue.clear();
       } finally {
-         ratingsLock.unlock();
+         this.ratingsLock.unlock();
       }
    }
 
    @Override
    public boolean isRatingQueueEmpty() {
-      ratingsLock.lock();
+      this.ratingsLock.lock();
       try {
-         return ratingsQueue.isEmpty();
+         return this.ratingsQueue.isEmpty();
       } finally {
-         ratingsLock.unlock();
+         this.ratingsLock.unlock();
       }
    }
 
    @Override
    public boolean isRatingQueueFull() {
-      ratingsLock.lock();
+      this.ratingsLock.lock();
       try {
-         return ratingsQueue.size() >= maxRatings;
+         return this.ratingsQueue.size() >= this.maxRatings;
       } finally {
-         ratingsLock.unlock();
+         this.ratingsLock.unlock();
       }
    }
 
    @Override
    public int getCurrentRatingCount() {
-      ratingsLock.lock();
+      this.ratingsLock.lock();
       try {
-         return ratingsQueue.size();
+         return this.ratingsQueue.size();
       } finally {
-         ratingsLock.unlock();
+         this.ratingsLock.unlock();
       }
    }
 
    @Override
    public double calculateAverageRating() {
-      ratingsLock.lock();
+      this.ratingsLock.lock();
       try {
-         if (ratingsQueue.isEmpty()) {
+         if (this.ratingsQueue.isEmpty()) {
             return 0.0;
          }
-         return ratingsQueue.stream()
+         return this.ratingsQueue.stream()
                .mapToDouble(rating -> (double) rating)
                .average()
                .orElse(0.0);
       } finally {
-         ratingsLock.unlock();
+         this.ratingsLock.unlock();
       }
    }
 
    @Override
    public int getMaxRatings() {
-      return maxRatings;
+      return this.maxRatings;
+   }
+
+   @Override
+   public Optional<T> dequeue() {
+      return this.getLatestRating();
+   }
+
+   @Override
+   public Optional<T> peek() {
+      this.ratingsLock.lock();
+      try {
+         return Optional.ofNullable(this.ratingsQueue.peek());
+      } finally {
+         this.ratingsLock.unlock();
+      }
+   }
+
+   @Override
+   public void clear() {
+      this.clearAllRatings();
+   }
+
+   @Override
+   public boolean isEmpty() {
+      return this.isRatingQueueEmpty();
+   }
+
+   @Override
+   public int size() {
+      return this.getCurrentRatingCount();
    }
 }
