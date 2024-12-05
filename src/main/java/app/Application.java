@@ -10,6 +10,7 @@ import managers.OrderStatusManager;
 import model.Driver;
 import model.MenuItem;
 import model.Order;
+import model.Size;
 import notification.BasicNotificationService;
 import notification.NotificationService;
 

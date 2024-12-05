@@ -116,4 +116,10 @@ public class BasicNotificationService implements NotificationService {
                recipientPhone, message, e.getMessage());
       }
    }
+
+   @Override
+   public void sendDeliveryCompletionNotification(Order order) {
+      // TODO Auto-generated method stub
+
+   }
 }
