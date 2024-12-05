@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="app.DeliverySystemCLITest" tests="7" skipped="0" failures="0" errors="0" timestamp="2024-12-05T19:19:08" hostname="Ryans-MacBook-Pro.local" time="0.017">
+  <properties/>
+  <testcase name="Test order processing" classname="app.DeliverySystemCLITest" time="0.009"/>
+  <testcase name="Test placing order" classname="app.DeliverySystemCLITest" time="0.001"/>
+  <testcase name="Test driver management" classname="app.DeliverySystemCLITest" time="0.001"/>
+  <testcase name="Test invalid inputs" classname="app.DeliverySystemCLITest" time="0.001"/>
+  <testcase name="Test driver rating" classname="app.DeliverySystemCLITest" time="0.001"/>
+  <testcase name="Test system shutdown" classname="app.DeliverySystemCLITest" time="0.0"/>
+  <testcase name="Test viewing menu" classname="app.DeliverySystemCLITest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

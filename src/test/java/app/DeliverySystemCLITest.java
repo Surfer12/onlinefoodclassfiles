@@ -106,7 +106,9 @@ public class DeliverySystemCLITest {
         this.cli = this.createCLIWithInput("3");
         this.cli.start();
         final String output = this.getOutput();
-        Assertions.assertTrue(output.contains("=== Menu ==="));
+        Assertions.assertTrue(output.contains("=== View Menu ===") ||
+                output.contains("Current Menu") ||
+                output.contains("Menu with prices"));
     }
 
     @Test

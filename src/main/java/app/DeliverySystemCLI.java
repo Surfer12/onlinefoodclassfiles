@@ -7,6 +7,9 @@ import java.util.logging.Logger;
 import managers.DriverManager;
 import managers.MenuManager;
 import managers.OrderManager;
+import model.Driver;
+import model.Order;
+import model.OrderStatus;
 import notification.NotificationService;
 import validation.ConsoleInputHandler;
 
@@ -103,17 +106,173 @@ public class DeliverySystemCLI {
 
     private void handleMenuChoice(final int choice) {
         switch (choice) {
-            case 1 -> handlePlaceNewOrder();
-            case 2 -> handleCheckOrderStatus();
-            case 3 -> handleViewMenu();
-            case 4 -> handleManageDrivers();
-            case 5 -> handleRateDriver();
-            case 6 -> handleCalculateOrderTotal();
-            case 7 -> handleManageDriverRatings();
-            case 8 -> handleProcessOrders();
+            case 1 -> this.handlePlaceNewOrder();
+            case 2 -> this.handleCheckOrderStatus();
+            case 3 -> this.handleViewMenu();
+            case 4 -> this.handleManageDrivers();
+            case 5 -> this.handleRateDriver();
+            case 6 -> this.handleCalculateOrderTotal();
+            case 7 -> this.handleManageDriverRatings();
+            case 8 -> this.handleProcessOrders();
             case 9 -> this.running = false;
         }
     }
 
-    // ... rest of the implementation remains the same ...
+    private void handlePlaceNewOrder() {
+        System.out.println("\n=== Place New Order ===");
+        System.out.println("Follow these steps to place your order:");
+        System.out.println("1. First, you'll see the menu");
+        System.out.println("2. Enter the menu item number and quantity for each item you want");
+        System.out.println("3. Enter 0 when you're done adding items");
+        System.out.println();
+
+        this.menuManager.displayMenu();
+        final Order order = this.orderManager.processOrderPlacement(this.scanner, this.menuManager,
+                this.positiveIntegerHandler);
+        if (order != null) {
+            this.deliverySystem.submitOrder(order);
+            System.out.println("Order placed successfully!");
+        }
+    }
+
+    private void handleCheckOrderStatus() {
+        System.out.println("\n=== Check Order Status ===");
+        System.out.println("Enter your order ID to check its current status.");
+        this.orderManager.checkOrderStatus(this.scanner);
+    }
+
+    private void handleViewMenu() {
+        System.out.println("\n=== View Menu ===");
+        System.out.println("Here's our current menu with prices:");
+        System.out.println();
+        this.menuManager.displayMenu();
+    }
+
+    private void handleManageDrivers() {
+        System.out.println("\n=== Manage Drivers ===");
+        while (true) {
+            System.out.println("\nDriver Management Options:");
+            System.out.println("1. Add a new driver");
+            System.out.println("2. Remove a driver");
+            System.out.println("3. View all drivers");
+            System.out.println("4. Return to main menu");
+            System.out.println();
+
+            final Integer choice = this.positiveIntegerHandler.handleInput(this.scanner, "Enter your choice (1-4): ");
+            if (choice == null || choice < 1 || choice > 4) {
+                System.out.println("Invalid choice. Please enter a number between 1 and 4.");
+                continue;
+            }
+
+            if (choice == 4) {
+                break;
+            }
+
+            try {
+                switch (choice) {
+                    case 1 -> this.driverManager.addDriver(this.scanner);
+                    case 2 -> this.driverManager.removeDriver(this.scanner);
+                    case 3 -> this.driverManager.displayAllDrivers();
+                }
+            } catch (final Exception e) {
+                System.out.println("Error managing drivers: " + e.getMessage());
+            }
+        }
+    }
+
+    private void handleRateDriver() {
+        System.out.println("\n=== Rate Driver ===");
+        final Long orderId = this.orderManager.getOrderIdHandler().handleInput(this.scanner,
+                "Enter Order ID to rate driver: ");
+        if (orderId == null) {
+            System.out.println("Invalid order ID.");
+            return;
+        }
+
+        final Order order = this.orderManager.getOrderService().getOrderById(orderId);
+        if (order == null || order.getDriver().isEmpty()) {
+            System.out.println("Order not found or no driver assigned.");
+            return;
+        }
+
+        final Driver driver = order.getDriver().get();
+        final Integer rating = this.positiveIntegerHandler.handleInput(this.scanner, "Rate driver (1-5): ");
+        if (rating != null && rating >= 1 && rating <= 5) {
+            this.driverManager.getDriverService().rateDriver(driver, rating);
+            System.out.println("Rating submitted successfully!");
+        } else {
+            System.out.println("Invalid rating. Please enter a number between 1 and 5.");
+        }
+    }
+
+    private void handleCalculateOrderTotal() {
+        System.out.println("\n=== Calculate Order Total ===");
+        final Long orderId = this.orderManager.getOrderIdHandler().handleInput(this.scanner, "Enter Order ID: ");
+        if (orderId == null) {
+            System.out.println("Invalid order ID.");
+            return;
+        }
+
+        final Order order = this.orderManager.getOrderService().getOrderById(orderId);
+        if (order == null) {
+            System.out.println("Order not found.");
+            return;
+        }
+
+        final double total = this.orderManager.calculateOrderTotal(order);
+        System.out.printf("Total for order %d: $%.2f%n", orderId, total);
+    }
+
+    private void handleManageDriverRatings() {
+        System.out.println("\n=== Manage Driver Ratings ===");
+        final Long driverId = this.orderManager.getOrderIdHandler().handleInput(this.scanner, "Enter Driver ID: ");
+        if (driverId == null) {
+            System.out.println("Invalid driver ID.");
+            return;
+        }
+
+        final Driver driver = this.driverManager.getDriverService().getDriverById(driverId).orElse(null);
+        if (driver == null) {
+            System.out.println("Driver not found.");
+            return;
+        }
+
+        System.out.println("Driver: " + driver.getName());
+        System.out.println("Current ratings: " + driver.getRatings());
+        final double avgRating = driver.getRatings().stream()
+                .mapToDouble(Integer::doubleValue)
+                .average()
+                .orElse(0.0);
+        System.out.printf("Average rating: %.1f%n", avgRating);
+    }
+
+    private void handleProcessOrders() {
+        System.out.println("\n=== Process Orders ===");
+        if (this.orderManager.getOrderQueue().isEmpty()) {
+            System.out.println("No orders to process.");
+            return;
+        }
+
+        while (!this.orderManager.getOrderQueue().isEmpty()) {
+            final Order order = this.orderManager.getOrderQueue().dequeue().orElse(null);
+            if (order == null)
+                continue;
+
+            System.out.println("Processing order: " + order.getOrderId());
+            try {
+                if (order.getDriver().isEmpty()) {
+                    final Driver driver = this.driverManager.getDriverService().getAvailableDrivers().get(0);
+                    this.driverManager.getDriverService().assignDriverToOrder(driver, order);
+                    System.out.println("Assigned driver: " + driver.getName());
+                }
+
+                order.setStatus(OrderStatus.DELIVERED);
+                this.notificationService.sendDeliveryCompletionNotification(order);
+                System.out.println("Order " + order.getOrderId() + " delivered successfully!");
+            } catch (final Exception e) {
+                System.out.println("Error processing order: " + e.getMessage());
+                order.setStatus(OrderStatus.CANCELLED);
+            }
+        }
+    }
 }
