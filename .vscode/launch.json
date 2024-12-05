@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run Main Application",
+            "request": "launch",
+            "mainClass": "app.Main",
+            "projectName": "online-food-delivery"
+        },
+        {
+            "type": "java",
+            "name": "Run CLI Tests",
+            "request": "launch",
+            "mainClass": "app.DeliverySystemCLITest",
+            "projectName": "online-food-delivery"
+        },
+        {
+            "type": "java",
+            "name": "Run Demo",
+            "request": "launch",
+            "mainClass": "app.DeliverySystemDemo",
+            "projectName": "online-food-delivery"
+        }
+    ]
+}

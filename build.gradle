@@ -3,18 +3,46 @@ plugins {
     id 'application'
 }
 
+group = 'com.onlinefood'
+version = '1.0-SNAPSHOT'
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-core:3.3.3'
+    // JUnit 5 dependencies
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+
+    // Mockito for mocking in tests
+    testImplementation 'org.mockito:mockito-core:5.3.1'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.3.1'
+
+    // AssertJ for fluent assertions
+    testImplementation 'org.assertj:assertj-core:3.24.2'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 application {
-    mainClassName = 'app.Application'
+    mainClass = 'app.Main'
 }
 
-sourceCompatibility = '17'
-targetCompatibility = '17'
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+// Custom task for running CLI tests
+task cliTest(type: JavaExec) {
+    group = 'Verification'
+    description = 'Runs the CLI tests'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'app.DeliverySystemCLITest'
+}
