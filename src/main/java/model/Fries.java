@@ -35,4 +35,14 @@ public class Fries implements MenuItem {
     public int getQuantity() {
         return this.quantity;
     }
+
+    @Override
+    public String getDescription() {
+        return this.description;
+    }
+
+    @Override
+    public Long getId() {
+        return this.id;
+    }
 }

@@ -1,15 +1,11 @@
 package model;
 
 public interface MenuItem {
-   Integer getId();
-
    String getName();
-
-   String getDescription();
 
    double getPrice();
 
-   Size getSize();
+   String getDescription();
 
-   int getQuantity();
+   Long getId();
 }

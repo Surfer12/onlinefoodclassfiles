@@ -195,12 +195,12 @@ public class DeliverySystemCLI {
             System.out.print("Enter Driver ID to manage ratings: ");
             final Long driverId = this.orderManager.getOrderIdHandler().handleInput(this.scanner, "Driver ID: ");
             if (driverId != null) {
-                final Driver driver = this.driverManager.getDriverService().getDriverById(driverId);
-                if (driver != null) {
+                final Optional<Driver> driver = this.driverManager.getDriverService().getDriverById(driverId);
+                if (driver.isPresent()) {
                     System.out.print("Enter rating (1-5): ");
                     final Integer rating = this.positiveIntegerHandler.handleInput(this.scanner, "Rating: ");
                     if (rating != null) {
-                        this.driverManager.getDriverService().rateDriver(driver, rating);
+                        this.driverManager.getDriverService().rateDriver(driver.get(), rating);
                     } else {
                         System.out.println("Invalid rating.");
                     }

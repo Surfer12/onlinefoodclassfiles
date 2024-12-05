@@ -39,11 +39,8 @@ public class OrderManager {
             throw new IllegalArgumentException("Order must contain at least one menu item");
         }
 
-        // Generate a default customer ID if not provided
-        final Long customerId = this.generateDefaultCustomerId();
-
         // Create the order using the OrderService
-        final Order newOrder = this.orderService.createOrder(menuItems, customerId);
+        final Order newOrder = this.orderService.createOrder(menuItems);
 
         // Add the order to the order queue
         this.orderQueue.enqueue(newOrder);
@@ -108,7 +105,7 @@ public class OrderManager {
         } while (menuItem == null || menuItem > 0);
 
         // Create the order with the customer ID
-        this.createOrder(orderItems, customerId);
+        this.createOrder(orderItems);
     }
 
     private Long promptForCustomerId(final Scanner scanner, final ConsoleInputHandler<Integer> positiveIntegerHandler) {
@@ -147,7 +144,7 @@ public class OrderManager {
     private void assignDriverToNewOrder(final Scanner scanner, final Order order) {
         // This method could be moved to DriverManager if preferred
         final DriverManager driverManager = new DriverManager();
-        driverManager.assignDriverToOrder(scanner, order);
+        driverManager.assignDriverToOrder(scanner, order, this.orderIdHandler);
     }
 
     public double calculateOrderTotal(final Order order) {

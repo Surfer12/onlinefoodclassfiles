@@ -2,6 +2,7 @@ package services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import model.Driver;
 import model.Order;
@@ -18,11 +19,10 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Driver getDriverForOrder(Order order) {
+    public Optional<Driver> getDriverForOrder(Order order) {
         return this.drivers.stream()
                 .filter(Driver::isAvailable)
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     @Override
@@ -58,5 +58,12 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public List<Driver> getAllDrivers() {
         return new ArrayList<>(this.drivers);
+    }
+
+    @Override
+    public Optional<Driver> getDriverById(Long driverId) {
+        return this.drivers.stream()
+                .filter(driver -> driver.getId().equals(driverId))
+                .findFirst();
     }
 }

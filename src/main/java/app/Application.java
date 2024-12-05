@@ -2,6 +2,7 @@ package app;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Optional;
 
 import builder.OrderBuilder;
 import factory.MenuItemFactory;
@@ -39,7 +40,7 @@ public class Application {
                     .build();
 
             deliverySystem.submitOrder(order);
-            deliverySystem.assignOrderToDriver(order, driver);
+            deliverySystem.assignOrderToDriver(order, Optional.of(driver));
             deliverySystem.completeDelivery(order.getOrderId(), driver.getId());
 
             // Process the next order in the queue
@@ -48,7 +49,7 @@ public class Application {
             order.setStatus(OrderStatus.SUBMITTED);
             System.out.println("Order Status: " + order.getStatus());
 
-            deliverySystem.assignOrderToDriver(order, driver);
+            deliverySystem.assignOrderToDriver(order, Optional.of(driver));
             order.setStatus(OrderStatus.IN_PROGRESS);
             System.out.println("Order Status: " + order.getStatus());
 

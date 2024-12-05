@@ -48,7 +48,7 @@ public class Customer extends Person {
     * @param comment the rating comment
     */
    public void rateDriver(final Driver driver, final int score, final String comment) {
-      final model.Rating rating = new model.Rating.Builder()
+      final Rating rating = new Rating.Builder()
             .customerId(this.getId())
             .driverId(driver.getId())
             .score(score)
