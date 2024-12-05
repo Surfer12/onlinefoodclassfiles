@@ -17,6 +17,8 @@ import model.Driver;
 import model.Order;
 import notification.BasicNotificationService;
 import notification.NotificationService;
+import services.OrderStatusService;
+import services.impl.OrderStatusServiceImpl;
 import validation.ConsoleInputHandler;
 import validation.InputValidatorImpl;
 import validation.PositiveIntegerValidator;
@@ -46,13 +48,16 @@ public class DeliverySystemCLI {
     }
 
     public DeliverySystemCLI() {
+        final OrderStatusService orderStatusService = new OrderStatusServiceImpl();
+        final NotificationService notificationService = new BasicNotificationService(orderStatusService);
+
         this(
             new Scanner(System.in),
             new MenuManager(),
             new OrderManager(),
             new DriverManager(),
-            new BasicNotificationService(),
-            new ConsoleInputHandler<>(
+                notificationService,
+                    new ConsoleInputHandler<>(
                 new InputValidatorImpl<>(
                     new PositiveIntegerValidator(),
                     "Positive Integer",

@@ -1,8 +1,10 @@
 package notification;
 
+import CustomException.OrderProcessingException;
 import model.Driver;
 import model.Order;
 import model.OrderStatus;
+import services.OrderStatusService;
 
 /**
  * Basic implementation of the NotificationService interface.
@@ -12,6 +14,12 @@ public class BasicNotificationService implements NotificationService {
    private static final String DRIVER_ASSIGNMENT_SUBJECT = "Driver Assigned";
    private static final String ORDER_STATUS_UPDATE_SUBJECT = "Order Status Update";
    private static final String DELIVERY_COMPLETION_SUBJECT = "Delivery Complete";
+
+   private final OrderStatusService orderStatusService;
+
+   public BasicNotificationService(final OrderStatusService orderStatusService) {
+      this.orderStatusService = orderStatusService;
+   }
 
    /**
     * Sends a generic notification message.
@@ -67,6 +75,27 @@ public class BasicNotificationService implements NotificationService {
       }
       final String message = this.formatDeliveryCompletionMessage(order);
       this.sendNotification(message);
+   }
+
+   @Override
+   public void sendDeliveryCompletionNotification(final Long orderId) {
+      if (orderId == null) {
+         throw new IllegalArgumentException("Order ID cannot be null");
+      }
+      this.sendNotification(String.format("Delivery completed for order ID: %d", orderId));
+   }
+
+   public void completeDelivery(final Long orderId, final Long driverId) {
+      try {
+         if (orderId == null || driverId == null) {
+            throw new IllegalArgumentException("Order ID and Driver ID cannot be null");
+         }
+         System.out.println("Delivery completed for order " + orderId + " by driver " + driverId);
+         this.orderStatusService.updateOrderStatus(orderId, OrderStatus.DELIVERED);
+         this.sendDeliveryCompletionNotification(orderId);
+      } catch (final Exception e) {
+         throw new OrderProcessingException("Failed to complete delivery: " + e.getMessage(), e);
+      }
    }
 
    private String formatOrderConfirmationMessage(final Order order) {
