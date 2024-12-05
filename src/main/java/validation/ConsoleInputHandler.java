@@ -133,7 +133,7 @@ public class ConsoleInputHandler<T> implements InputHandler<T> {
             }
 
             final T parsedInput = this.inputValidator.parse(input);
-            if (parsedInput != null && this.inputValidator.validate(parsedInput)) {
+            if (parsedInput != null && this.inputValidator.isValid(parsedInput)) {
                inputs.add(parsedInput);
             } else {
                System.out.println("Invalid input. Please enter a valid " + this.inputValidator.getTypeName() + ".");
