@@ -15,14 +15,18 @@ import model.Pizza;
 import model.Size;
 import notification.BasicNotificationService;
 import notification.NotificationService;
+import services.DriverService;
 import services.OrderStatusService;
+import services.impl.DriverServiceImpl;
 import services.impl.OrderStatusServiceImpl;
 
 public class DeliverySystemDemo {
     private final DeliverySystem deliverySystem;
 
     public DeliverySystemDemo(final NotificationService notificationService) {
-        this.deliverySystem = new DeliverySystem(notificationService, new OrderStatusManager(notificationService));
+        final OrderStatusManager statusManager = new OrderStatusManager(notificationService);
+        final DriverService driverService = new DriverServiceImpl();
+        this.deliverySystem = new DeliverySystem(notificationService, statusManager, driverService);
     }
 
     public void runDemonstration() {
