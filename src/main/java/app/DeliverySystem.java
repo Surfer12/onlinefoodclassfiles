@@ -81,10 +81,16 @@ public class DeliverySystem {
                 }
             } else {
                 System.out.println("No available driver for order " + order.getOrderId());
+                handleFailedOrderProcessing(order);
             }
         } catch (final OrderProcessingException | PaymentException | QueueFullException | ValidationException e) {
             throw new OrderProcessingException("Failed to assign order to driver: " + e.getMessage(), e);
         }
+    }
+
+    private void handleFailedOrderProcessing(final Order order) {
+        System.out.println("Failed to process order " + order.getOrderId() + ": No available drivers");
+        this.notificationService.sendNotification("Failed to process order " + order.getOrderId() + ": No available drivers");
     }
 
     public void completeDelivery(final Long orderId, final Long driverId) {
@@ -121,5 +127,11 @@ public class DeliverySystem {
 
     private Optional<Driver> findAvailableDriverForOrderType() {
         return this.driverService.getAvailableDrivers().stream().findFirst();
+    }
+
+    public void assignOrderToLeastBusyDriver(final Order order) {
+        Optional<Driver> leastBusyDriver = this.driverService.getAvailableDrivers().stream()
+                .min((d1, d2) -> Integer.compare(d1.getActiveOrderCount(), d2.getActiveOrderCount()));
+        assignOrderToDriver(order, leastBusyDriver);
     }
 }

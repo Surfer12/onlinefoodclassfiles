@@ -16,4 +16,8 @@
 // remove hardcode of 5 drivers
 // main menu back needs two enter//
 //exit from main menu message
-//
+// input validation for empty or null inputs in handlePlaceNewOrder method
+// input validation for empty or null inputs in handleAddDriver method
+// input validation for empty or null inputs in handleUpdateDriverInfo method
+// assign orders to the least busy driver
+// handle failed order processing in assignOrderToDriver method

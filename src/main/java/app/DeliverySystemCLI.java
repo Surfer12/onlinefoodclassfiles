@@ -159,12 +159,24 @@ public class DeliverySystemCLI {
 
         System.out.print("Enter your email: ");
         final String email = this.scanner.nextLine().trim();
+        if (email.isEmpty()) {
+            System.out.println("Error: Email cannot be empty");
+            return;
+        }
 
         System.out.print("Enter delivery address: ");
         final String address = this.scanner.nextLine().trim();
+        if (address.isEmpty()) {
+            System.out.println("Error: Delivery address cannot be empty");
+            return;
+        }
 
         System.out.print("Enter postal code: ");
         final String postalCode = this.scanner.nextLine().trim();
+        if (postalCode.isEmpty()) {
+            System.out.println("Error: Postal code cannot be empty");
+            return;
+        }
 
         this.menuManager.displayMenu();
         final Order order = new Order(customerId, email, new ArrayList<>(), new Location(address, postalCode));
@@ -407,10 +419,12 @@ public class DeliverySystemCLI {
             case 1 -> {
                 System.out.print("Enter new vehicle (e.g. Toyota Camry 2020): ");
                 final String newVehicle = this.scanner.nextLine().trim();
-                if (!newVehicle.isEmpty()) {
-                    driver.setVehicle(newVehicle);
-                    System.out.println("Vehicle updated successfully!");
+                if (newVehicle.isEmpty()) {
+                    System.out.println("Error: Vehicle cannot be empty");
+                    return;
                 }
+                driver.setVehicle(newVehicle);
+                System.out.println("Vehicle updated successfully!");
             }
             case 2 -> {
                 if (driver.getActiveOrderCount() > 0) {
