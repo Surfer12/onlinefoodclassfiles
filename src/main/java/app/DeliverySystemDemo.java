@@ -19,7 +19,7 @@ public class DeliverySystemDemo {
     private final DeliverySystem deliverySystem;
 
     public DeliverySystemDemo(final NotificationService notificationService) {
-        this.deliverySystem = new DeliverySystem(notificationService);
+        this.deliverySystem = new DeliverySystem(notificationService, new OrderStatusManager(notificationService));
     }
 
     public void runDemonstration() {

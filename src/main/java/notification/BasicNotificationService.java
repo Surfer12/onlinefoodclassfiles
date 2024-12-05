@@ -30,8 +30,7 @@ public class BasicNotificationService implements NotificationService {
     */
    @Override
    public void sendOrderConfirmationToCustomer(final Order order) {
-      final String message = this.formatOrderConfirmationMessage(order);
-      this.sendEmail(order.getCustomerEmail(), BasicNotificationService.ORDER_CONFIRMATION_SUBJECT, message);
+      this.sendNotification(String.format("Order confirmation sent to customer for order ID: %d", order.getOrderId()));
    }
 
    /**
@@ -42,8 +41,7 @@ public class BasicNotificationService implements NotificationService {
     */
    @Override
    public void sendDriverAssignmentNotification(final Order order, final Driver driver) {
-      final String message = this.formatDriverAssignmentMessage(order, driver);
-      this.sendEmail(order.getCustomerEmail(), BasicNotificationService.DRIVER_ASSIGNMENT_SUBJECT, message);
+      this.sendNotification(String.format("Driver %s assigned to order ID: %d", driver.getName(), order.getOrderId()));
    }
 
    /**
@@ -54,8 +52,7 @@ public class BasicNotificationService implements NotificationService {
     */
    @Override
    public void sendOrderStatusUpdateToCustomer(final Order order, final OrderStatus newStatus) {
-      final String message = this.formatStatusUpdateMessage(order, newStatus);
-      this.sendEmail(order.getCustomerEmail(), BasicNotificationService.ORDER_STATUS_UPDATE_SUBJECT, message);
+      this.sendNotification(String.format("Order %d status updated to: %s", order.getOrderId(), newStatus));
    }
 
    /**
@@ -65,8 +62,7 @@ public class BasicNotificationService implements NotificationService {
     */
    @Override
    public void sendDeliveryCompletionNotification(final Long orderId) {
-      final String message = String.format("Delivery completed for order #%d", orderId);
-      this.sendEmail("customer@example.com", BasicNotificationService.DELIVERY_COMPLETION_SUBJECT, message);
+      this.sendNotification(String.format("Delivery completed for order ID: %d", orderId));
    }
 
    private String formatOrderConfirmationMessage(final Order order) {

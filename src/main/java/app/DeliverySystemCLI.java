@@ -197,7 +197,8 @@ public class DeliverySystemCLI {
     }
 
     private void handleProcessOrdersInCorrectOrder() {
-        new DeliverySystem(this.notificationService).processOrdersInCorrectOrder(this.orderManager.getOrderQueue());
+        new DeliverySystem(this.notificationService, new OrderStatusManager(this.notificationService))
+                .processOrdersInCorrectOrder(this.orderManager.getOrderQueue());
     }
 
     private void handleExit() {
