@@ -13,13 +13,16 @@ import model.Order;
 import model.Size;
 import notification.BasicNotificationService;
 import notification.NotificationService;
+import services.OrderStatusService;
+import services.impl.OrderStatusServiceImpl;
 
 public class Application {
     private static final Logger logger = Logger.getLogger(Application.class.getName());
 
     public static void main(final String[] args) {
         try {
-            final NotificationService notificationService = new BasicNotificationService();
+            final OrderStatusService orderStatusService = new OrderStatusServiceImpl();
+            final NotificationService notificationService = new BasicNotificationService(orderStatusService);
             final OrderStatusManager statusManager = new OrderStatusManager(notificationService);
             final DeliverySystem deliverySystem = new DeliverySystem(notificationService, statusManager);
 
