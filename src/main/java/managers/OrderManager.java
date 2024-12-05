@@ -90,23 +90,53 @@ public class OrderManager {
             menuItem = positiveIntegerHandler.handleInput(scanner, "Enter menu item number to add (0 to finish): ");
 
             if (menuItem != null && menuItem > 0) {
-                final MenuItem selectedItem = menuManager.getMenuItemById(menuItem);
-                if (selectedItem != null) {
-                    final Integer quantity = positiveIntegerHandler.handleInput(scanner, "Enter quantity: ");
-                    if (quantity != null && quantity > 0) {
-                        // Add the item to the order with the specified quantity
-                        for (int i = 0; i < quantity; i++) {
-                            orderItems.add(selectedItem);
-                        }
-                    }
-                } else {
-                    System.out.println("Invalid menu item. Please try again.");
+                if (menuItem > menuManager.getMenuService().getMenuSize()) {
+                    System.out.println("Invalid menu item number. Please choose a number between 1 and "
+                            + menuManager.getMenuService().getMenuSize());
+                    continue;
                 }
+
+                try {
+                    // Get the menu item using the correct index (menuItem - 1)
+                    final List<MenuItem> menuItems = menuManager.getMenuService().getAllMenuItems();
+                    final MenuItem selectedItem = menuItems.get(menuItem - 1);
+
+                    Integer quantity;
+                    do {
+                        quantity = positiveIntegerHandler.handleInput(scanner, "Enter quantity (1-10): ");
+                        if (quantity != null) {
+                            if (quantity <= 0) {
+                                System.out.println("Quantity must be greater than 0. Please try again.");
+                            } else if (quantity > 10) {
+                                System.out.println("Maximum quantity is 10. Please try again.");
+                            } else {
+                                // Add the item to the order with the specified quantity
+                                for (int i = 0; i < quantity; i++) {
+                                    orderItems.add(selectedItem);
+                                }
+                                System.out.printf("Added %d x %s to your order%n", quantity, selectedItem.getName());
+                                break;
+                            }
+                        }
+                    } while (quantity == null || quantity <= 0 || quantity > 10);
+                } catch (final IndexOutOfBoundsException e) {
+                    System.out.println("Invalid menu item number. Please choose a number between 1 and "
+                            + menuManager.getMenuService().getMenuSize());
+                }
+            } else if (menuItem != null && menuItem < 0) {
+                System.out.println("Please enter a valid menu item number (1-"
+                        + menuManager.getMenuService().getMenuSize() + ") or 0 to finish.");
             }
         } while (menuItem == null || menuItem > 0);
 
+        if (orderItems.isEmpty()) {
+            System.out.println("Order cancelled - no items were added.");
+            return;
+        }
+
         // Create the order with the customer ID
-        this.createOrder(orderItems);
+        final Order order = this.createOrder(orderItems);
+        System.out.println("Order created successfully with ID: " + order.getOrderId());
     }
 
     private Long promptForCustomerId(final Scanner scanner, final ConsoleInputHandler<Integer> positiveIntegerHandler) {
