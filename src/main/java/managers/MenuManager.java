@@ -75,7 +75,7 @@ public class MenuManager {
                 continue;
             }
 
-            final MenuItem selectedItem = this.menuService.getMenuItemByIndex(itemChoice);
+            final MenuItem selectedItem = this.menuService.getMenuItemByIndex(itemChoice - 1);
             System.out.print("Enter quantity: ");
             final Integer quantity = positiveIntegerHandler.handleInput(
                     scanner,
