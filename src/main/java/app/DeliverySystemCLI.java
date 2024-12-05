@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -309,22 +308,62 @@ public class DeliverySystemCLI {
     private void handleAddDriver() {
         System.out.println("\n=== Add New Driver ===");
 
-        // Generate random license plate first so we can provide it to the user
+        // Get driver name with validation
+        String name = null;
+        while (name == null || name.trim().isEmpty()) {
+            System.out.print("Enter driver name: ");
+            name = this.scanner.nextLine().trim();
+            if (name.isEmpty()) {
+                System.out.println("Driver name cannot be empty");
+            }
+        }
+
+        // Get phone number with validation
+        String phoneNumber = null;
+        while (phoneNumber == null || !phoneNumber.matches("\\d{10}")) {
+            System.out.print("Enter phone number (10 digits): ");
+            phoneNumber = this.scanner.nextLine().trim();
+            if (!phoneNumber.matches("\\d{10}")) {
+                System.out.println("Please enter a valid 10-digit phone number");
+            }
+        }
+
+        // Get vehicle type with validation
+        String vehicleType = null;
+        while (vehicleType == null || vehicleType.trim().isEmpty()) {
+            System.out.print("Enter vehicle type (e.g., Sedan, SUV): ");
+            vehicleType = this.scanner.nextLine().trim();
+            if (vehicleType.isEmpty()) {
+                System.out.println("Vehicle type cannot be empty");
+            }
+        }
+
+        // Generate license plate
         final String licensePlate = this.generateLicensePlate();
         System.out.println("Generated license plate: " + licensePlate);
 
-        // Now let the DriverManager handle the rest of the input
-        this.driverManager.addDriver(this.scanner);
+        try {
+            // Create and add the driver
+            final Driver driver = new Driver(
+                    (long) (Math.random() * 10000), // Generate random ID
+                    name,
+                    vehicleType,
+                    licensePlate);
+            this.driverManager.getDriverService().addDriver(driver);
+            System.out.println("Driver added successfully!");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error adding driver: " + e.getMessage());
+        }
     }
 
     private String generateLicensePlate() {
         final StringBuilder plate = new StringBuilder();
-        // Generate 3 random letters
+        // Generate 3 random uppercase letters
         for (int i = 0; i < 3; i++) {
-            plate.append((char) ('A' + Math.random() * 26));
+            plate.append((char) ('A' + (int) (Math.random() * 26)));
         }
-        plate.append("-");
-        // Generate 4 random numbers
+        plate.append('-');
+        // Generate 4 random digits
         for (int i = 0; i < 4; i++) {
             plate.append((int) (Math.random() * 10));
         }
@@ -402,18 +441,29 @@ public class DeliverySystemCLI {
         }
 
         System.out.println("Rating Driver: " + driver.getName());
-        System.out.println("Current average rating: " + driver.getAverageRating());
-        final Integer rating = this.positiveIntegerHandler.handleInput(this.scanner, "Enter rating (1-5): ");
-        if (rating != null && rating >= 1 && rating <= 5) {
+        System.out.println("Current average rating: " + String.format("%.1f", driver.getAverageRating()));
+
+        Integer rating = null;
+        while (rating == null) {
             try {
-                driver.addRating(rating);
-                System.out.println("Rating submitted successfully!");
-                System.out.println("New average rating: " + driver.getAverageRating());
-            } catch (final IllegalArgumentException e) {
-                System.out.println("Error adding rating: " + e.getMessage());
+                rating = this.positiveIntegerHandler.handleInput(this.scanner, "Enter rating (1-5): ");
+                if (rating == null || rating < 1 || rating > 5) {
+                    System.out.println("Invalid rating. Please enter a number between 1 and 5");
+                    rating = null;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid rating. Please enter a number between 1 and 5");
+                rating = null;
             }
-        } else {
-            System.out.println("Invalid rating. Please enter a number between 1 and 5.");
+        }
+
+        try {
+            this.driverManager.getDriverService().rateDriver(driver, rating);
+            System.out.println("Rating submitted successfully!");
+            System.out.println("New average rating: " + String.format("%.1f", driver.getAverageRating()));
+            System.out.println("Total ratings: " + driver.getRatings().size());
+        } catch (final IllegalArgumentException e) {
+            System.out.println("Error adding rating: " + e.getMessage());
         }
     }
 
@@ -433,7 +483,7 @@ public class DeliverySystemCLI {
 
         System.out.println("Driver: " + driver.getName());
         System.out.println("All ratings: " + driver.getRatings());
-        System.out.printf("Average rating: %.1f%n", driver.getAverageRating());
+        System.out.println("Average rating: " + String.format("%.1f", driver.getAverageRating()));
         System.out.println("Total ratings: " + driver.getRatings().size());
     }
 
@@ -481,12 +531,15 @@ public class DeliverySystemCLI {
     private void handleProcessOrders() {
         System.out.println("\n=== Process Orders ===");
         if (this.orderManager.getOrderQueue().isEmpty()) {
-            System.out.println("No orders to process.");
+            System.out.println("No orders to process");
             return;
         }
 
-        int processedCount = 0;
-        int failedCount = 0;
+        List<Driver> availableDrivers = this.driverManager.getDriverService().getAvailableDrivers();
+        if (availableDrivers.isEmpty()) {
+            System.out.println("No available drivers");
+            return;
+        }
 
         while (!this.orderManager.getOrderQueue().isEmpty()) {
             final Order order = this.orderManager.getOrderQueue().dequeue().orElse(null);
@@ -495,65 +548,26 @@ public class DeliverySystemCLI {
 
             System.out.println("\nProcessing order: " + order.getOrderId());
             try {
-                // Try to assign a driver if none assigned
-                if (order.getDriver().isEmpty()) {
-                    final List<Driver> availableDrivers = this.driverManager.getDriverService().getAvailableDrivers();
-                    if (availableDrivers.isEmpty()) {
-                        throw new RuntimeException("No available drivers");
-                    }
-
-                    // Assign to driver with least current orders who is available
-                    Driver selectedDriver = null;
-                    int minOrders = Integer.MAX_VALUE;
-
-                    for (final Driver driver : availableDrivers) {
-                        if (driver.isAvailable() && driver.getActiveOrderCount() < minOrders) {
-                            selectedDriver = driver;
-                            minOrders = driver.getActiveOrderCount();
-                        }
-                    }
-
-                    if (selectedDriver == null) {
-                        throw new RuntimeException("No available drivers found");
-                    }
-
-                    selectedDriver.incrementActiveOrderCount();
-                    selectedDriver.setAvailable(false);
-                    order.setDriver(Optional.of(selectedDriver));
-                    System.out.println(
-                            "Assigned driver: " + selectedDriver.getName() + " (ID: " + selectedDriver.getId() + ")");
+                // Get the least busy available driver
+                availableDrivers = this.driverManager.getDriverService().getAvailableDrivers();
+                if (availableDrivers.isEmpty()) {
+                    throw new RuntimeException("No available drivers");
                 }
 
+                // The first driver in the list will be the least busy due to sorting in
+                // getAvailableDrivers
+                Driver selectedDriver = availableDrivers.get(0);
+                this.driverManager.getDriverService().assignDriverToOrder(selectedDriver, order);
+                System.out.println("Assigned driver " + selectedDriver.getName() + " to order " + order.getOrderId());
+
                 // Update order status
-                order.setStatus(OrderStatus.DELIVERED);
-                order.getDriver().ifPresent(driver -> {
-                    driver.decrementActiveOrderCount();
-                    if (driver.getActiveOrderCount() == 0) {
-                        driver.setAvailable(true);
-                    }
-                });
-                this.notificationService.sendDeliveryCompletionNotification(order);
-                System.out.println("Order " + order.getOrderId() + " delivered successfully!");
-                processedCount++;
-
-            } catch (final Exception e) {
-                System.out.println("Error processing order " + order.getOrderId() + ": " + e.getMessage());
-                order.setStatus(OrderStatus.CANCELLED);
-                // Make sure to decrement driver's order count if order fails
-                order.getDriver().ifPresent(driver -> {
-                    driver.decrementActiveOrderCount();
-                    if (driver.getActiveOrderCount() == 0) {
-                        driver.setAvailable(true);
-                    }
-                });
-                failedCount++;
+                order.setStatus(OrderStatus.IN_PROGRESS);
+                System.out.println("Successfully processed order: " + order.getOrderId());
+            } catch (Exception e) {
+                System.out.println("Failed to process order " + order.getOrderId() + ": " + e.getMessage());
+                // Re-queue the order if processing failed
+                this.orderManager.getOrderQueue().enqueue(order);
             }
-        }
-
-        System.out.println("\nProcessing complete!");
-        System.out.println("Successfully processed: " + processedCount + " orders");
-        if (failedCount > 0) {
-            System.out.println("Failed to process: " + failedCount + " orders");
         }
     }
 }

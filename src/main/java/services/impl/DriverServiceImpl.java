@@ -29,17 +29,15 @@ public class DriverServiceImpl implements DriverService {
         return this.drivers.stream()
                 .filter(Driver::isAvailable)
                 .sorted((d1, d2) -> {
-                    // First, compare by number of active orders
+                    // First, compare by number of active orders (ascending)
                     int orderComparison = Integer.compare(d1.getActiveOrderCount(), d2.getActiveOrderCount());
                     if (orderComparison != 0) {
                         return orderComparison;
                     }
-                    // If same number of orders, compare by average rating (higher rating first)
-                    double avg1 = d1.getRatings().stream().mapToDouble(Integer::doubleValue).average().orElse(0.0);
-                    double avg2 = d2.getRatings().stream().mapToDouble(Integer::doubleValue).average().orElse(0.0);
-                    return Double.compare(avg2, avg1);
+                    // If same number of orders, compare by average rating (descending)
+                    return Double.compare(d2.getAverageRating(), d1.getAverageRating());
                 })
-                .toList();
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @Override
