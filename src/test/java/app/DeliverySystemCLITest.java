@@ -2,10 +2,12 @@ package app;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -28,7 +30,6 @@ import validation.PositiveIntegerValidator;
 public class DeliverySystemCLITest {
     private ByteArrayOutputStream outputStream;
     private PrintStream originalOut;
-    private InputStream originalIn;
     private DeliverySystemCLI cli;
     private DriverManager driverManager;
     private MenuManager menuManager;
@@ -38,13 +39,53 @@ public class DeliverySystemCLITest {
     private DeliverySystem deliverySystem;
     private OrderStatusManager statusManager;
 
+    // Custom Scanner class for testing
+    private static class TestScanner extends Scanner {
+        private final Queue<String> inputQueue;
+
+        public TestScanner(final String... inputs) {
+            super("");
+            this.inputQueue = new LinkedList<>(Arrays.asList(inputs));
+        }
+
+        @Override
+        public String nextLine() {
+            if (this.inputQueue.isEmpty()) {
+                return "9"; // Default to exit if no more input
+            }
+            return this.inputQueue.poll();
+        }
+
+        @Override
+        public boolean hasNextLine() {
+            return true; // Always return true to prevent NoSuchElementException
+        }
+
+        @Override
+        public String next() {
+            return this.nextLine();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return true;
+        }
+
+        @Override
+        public int nextInt() {
+            return Integer.parseInt(this.nextLine());
+        }
+
+        @Override
+        public boolean hasNextInt() {
+            return true;
+        }
+    }
+
     @BeforeEach
     void setup() {
-        // Save original streams
-        this.originalOut = System.out;
-        this.originalIn = System.in;
-
         // Setup output capture
+        this.originalOut = System.out;
         this.outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(this.outputStream));
 
@@ -75,27 +116,17 @@ public class DeliverySystemCLITest {
     @AfterEach
     void cleanup() {
         System.setOut(this.originalOut);
-        System.setIn(this.originalIn);
     }
 
-    private void simulateUserInput(String input) {
-        // Add a newline at the end if not present
-        if (!input.endsWith("\n")) {
-            input += "\n";
-        }
-
-        // Create new scanner with the test input
-        final ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
-        System.setIn(inputStream);
-
-        // Create new CLI instance with the test input
-        this.cli = new DeliverySystemCLI(
+    private DeliverySystemCLI createCLIWithInput(final String... inputs) {
+        return new DeliverySystemCLI(
                 this.menuManager,
                 this.orderManager,
                 this.driverManager,
-                        this.notificationService,
-                this.positiveIntegerHandler,
-                this.deliverySystem);
+                this.notificationService,
+                        this.positiveIntegerHandler,
+                this.deliverySystem,
+                new TestScanner(inputs));
     }
 
     private String getOutput() {
@@ -105,7 +136,7 @@ public class DeliverySystemCLITest {
     @Test
     @DisplayName("Test viewing menu")
     void testViewMenu() {
-        this.simulateUserInput("3\n9");
+        this.cli = this.createCLIWithInput("3");
         this.cli.start();
         final String output = this.getOutput();
         Assertions.assertTrue(output.contains("=== Menu ==="));
@@ -114,7 +145,7 @@ public class DeliverySystemCLITest {
     @Test
     @DisplayName("Test placing order")
     void testPlaceOrder() {
-        this.simulateUserInput("1\n1\n1\n0\n9");
+        this.cli = this.createCLIWithInput("1", "1", "1", "0");
         this.cli.start();
         final String output = this.getOutput();
         Assertions.assertTrue(output.contains("Place") || output.contains("Order"));
@@ -123,7 +154,7 @@ public class DeliverySystemCLITest {
     @Test
     @DisplayName("Test driver management")
     void testDriverManagement() {
-        this.simulateUserInput("4\n4\n9"); // Just enter driver menu and exit
+        this.cli = this.createCLIWithInput("4", "4");
         this.cli.start();
         final String output = this.getOutput();
         Assertions.assertTrue(output.contains("Driver Management"));
@@ -132,7 +163,7 @@ public class DeliverySystemCLITest {
     @Test
     @DisplayName("Test order processing")
     void testOrderProcessing() {
-        this.simulateUserInput("8\n9");
+        this.cli = this.createCLIWithInput("8");
         this.cli.start();
         final String output = this.getOutput();
         Assertions.assertTrue(output.contains("orders"));
@@ -141,7 +172,7 @@ public class DeliverySystemCLITest {
     @Test
     @DisplayName("Test invalid inputs")
     void testInvalidInputs() {
-        this.simulateUserInput("abc\n9");
+        this.cli = this.createCLIWithInput("abc");
         this.cli.start();
         final String output = this.getOutput();
         Assertions.assertTrue(output.contains("Invalid") || output.contains("Please choose"));
@@ -151,14 +182,12 @@ public class DeliverySystemCLITest {
     @DisplayName("Test driver rating")
     void testDriverRating() {
         // First add a driver
-        this.simulateUserInput("4\n1\nJohn Doe\nSedan\nABC123\n4\n9");
+        this.cli = this.createCLIWithInput("4", "1", "John Doe", "Sedan", "ABC123", "4");
         this.cli.start();
-
-        // Clear output buffer
         this.outputStream.reset();
 
         // Try to rate the driver
-        this.simulateUserInput("5\n1\n5\n9");
+        this.cli = this.createCLIWithInput("5", "1", "5");
         this.cli.start();
         final String output = this.getOutput();
         Assertions.assertTrue(output.contains("Rate") || output.contains("Driver"));
@@ -167,7 +196,7 @@ public class DeliverySystemCLITest {
     @Test
     @DisplayName("Test system shutdown")
     void testSystemShutdown() {
-        this.simulateUserInput("9");
+        this.cli = this.createCLIWithInput("9");
         this.cli.start();
         final String output = this.getOutput();
         Assertions.assertTrue(output.contains("=== Online Food Delivery System ==="));
