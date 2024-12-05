@@ -159,16 +159,17 @@ public class OrderManager {
             } else switch (choice) {
                 case 1 -> {
                     // Prompt for specific customer ID using the Long validator
-                    final ConsoleInputHandler<Long> customerIdHandler = new ConsoleInputHandler<>(
+                    try (ConsoleInputHandler<Long> customerIdHandler = new ConsoleInputHandler<>(
                             new InputValidatorImpl<>(
                                     new PositiveLongValidator(),
                                     "Customer ID",
-                                    "Invalid Customer ID"));
-                    final Long customerId = customerIdHandler.handleInput(scanner, "Enter Customer ID: ");
-                    if (customerId != null) {
-                        return customerId;
+                                    "Invalid Customer ID"))) {
+                        final Long customerId = customerIdHandler.handleInput(scanner, "Enter Customer ID: ");
+                        if (customerId != null) {
+                            return customerId;
+                        }
+                        System.out.println("Invalid Customer ID. Please try again.");
                     }
-                    System.out.println("Invalid Customer ID. Please try again.");
                 }
                 case 2 -> {
                     // Use automatic customer ID
