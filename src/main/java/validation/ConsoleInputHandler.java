@@ -25,7 +25,6 @@ import java.util.function.Predicate;
  */
 public class ConsoleInputHandler<T> implements InputHandler<T> {
    private final InputValidator<T> inputValidator;
-   private final Scanner scanner;
 
    /**
     * Constructs a ConsoleInputHandler with the specified InputValidator.
@@ -34,7 +33,6 @@ public class ConsoleInputHandler<T> implements InputHandler<T> {
     */
    public ConsoleInputHandler(final InputValidator<T> inputValidator) {
       this.inputValidator = inputValidator;
-      this.scanner = new Scanner(System.in);
    }
 
    /**
@@ -45,24 +43,7 @@ public class ConsoleInputHandler<T> implements InputHandler<T> {
     */
    @Override
    public T getInput(final String prompt) {
-      T input = null;
-      boolean valid = false;
-      while (!valid) {
-         System.out.print(prompt);
-         final String userInput = this.scanner.nextLine();
-         try {
-            final T parsedInput = this.inputValidator.parse(userInput);
-            if (this.inputValidator.isValid(parsedInput)) {
-               input = parsedInput;
-               valid = true;
-            } else {
-               System.out.println(this.inputValidator.getErrorMessage());
-            }
-         } catch (final Exception e) {
-            System.out.println("Error: " + e.getMessage());
-         }
-      }
-      return input;
+      return this.handleInput(new Scanner(System.in), prompt);
    }
 
    /**
@@ -77,9 +58,13 @@ public class ConsoleInputHandler<T> implements InputHandler<T> {
    @Override
    public T[] getMultipleInputs(final String prompt, final String stopCommand) {
       final List<T> inputs = new ArrayList<>();
+      final Scanner scanner = new Scanner(System.in);
       while (true) {
          System.out.println(prompt);
-         final String input = this.scanner.nextLine();
+         if (!scanner.hasNextLine()) {
+            break;
+         }
+         final String input = scanner.nextLine();
          if (input.equalsIgnoreCase(stopCommand)) {
             break;
          }
@@ -105,6 +90,13 @@ public class ConsoleInputHandler<T> implements InputHandler<T> {
    }
 
    public T handleInput(final Scanner scanner, final String prompt) {
+      final T input = null;
+      final boolean valid = false;
+      while (!valid && scanner.hasNextLine()) {
+         System.out.print(prompt);
+         final String userInput = scanner.nextLine();
+         try {
+            final T parsedInput = this.inputValidator.parse(userInput);
        return this.getInput(prompt);
    }
 
