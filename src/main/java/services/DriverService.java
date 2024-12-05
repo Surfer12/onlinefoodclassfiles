@@ -12,4 +12,5 @@ public interface DriverService {
     void assignDriverToOrder(Driver driver, Order order);
     void rateDriver(Driver driver, Integer rating);
     Optional<Driver> getDriverById(Long driverId);
+    List<Driver> getAllDrivers();
 }
