@@ -111,10 +111,10 @@ public class DeliverySystem {
     }
 
     public Optional<Driver> selectDriverForOrder(final Order order) {
-        return this.findAvailableDriverForOrderType(order);
+        return this.findAvailableDriverForOrderType();
     }
 
-    private Optional<Driver> findAvailableDriverForOrderType(final Order order) {
+    private Optional<Driver> findAvailableDriverForOrderType() {
         final DriverService driverService = new DriverServiceImpl();
         return driverService.getAvailableDrivers().stream().findFirst();
     }

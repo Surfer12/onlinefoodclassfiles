@@ -31,6 +31,9 @@ public class MenuManager {
         System.out.println("\n--- Current Menu ---");
         for (int i = 0; i < menu.size(); i++) {
             final MenuItem item = menu.get(i);
+            if (item == null) {
+                continue;
+            }
             if (item instanceof final Pizza pizza) {
                 System.out.printf("%d. %s - %s - $%.2f (Size: %s)\n",
                     i + 1,
