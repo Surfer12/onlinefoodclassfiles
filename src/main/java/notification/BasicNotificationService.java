@@ -61,8 +61,12 @@ public class BasicNotificationService implements NotificationService {
     * @param order the order for which the delivery is completed
     */
    @Override
-   public void sendDeliveryCompletionNotification(final Long orderId) {
-      this.sendNotification(String.format("Delivery completed for order ID: %d", orderId));
+   public void sendDeliveryCompletionNotification(final Order order) {
+      if (order == null) {
+         throw new IllegalArgumentException("Order cannot be null");
+      }
+      final String message = this.formatDeliveryCompletionMessage(order);
+      this.sendNotification(message);
    }
 
    private String formatOrderConfirmationMessage(final Order order) {
@@ -115,11 +119,5 @@ public class BasicNotificationService implements NotificationService {
          System.err.printf("Failed to send SMS to %s%nMessage: %s%nError: %s%n",
                recipientPhone, message, e.getMessage());
       }
-   }
-
-   @Override
-   public void sendDeliveryCompletionNotification(Order order) {
-      // TODO Auto-generated method stub
-
    }
 }
