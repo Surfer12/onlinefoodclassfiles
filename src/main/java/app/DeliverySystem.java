@@ -1,19 +1,13 @@
 package app;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import CustomException.OrderProcessingException;
-import model.Drink;
 import model.Driver;
-import model.Location;
-import model.MenuItem;
 import model.Order;
-import model.Pizza;
-import model.Size;
 import notification.NotificationService;
 import queue.OrderQueue;
 import services.DriverService;
@@ -55,8 +49,7 @@ public class DeliverySystem {
       try {
          System.out.println("Delivery completed for order " + orderId + " by driver " + driverId);
          this.orderStatuses.put(orderId, "Delivered");
-         final Order order = new Order(orderId, null, null, null);
-         this.notificationService.sendDeliveryCompletionNotification(order);
+         this.notificationService.sendDeliveryCompletionNotification(orderId);
       } catch (final Exception e) {
          throw new OrderProcessingException("Failed to complete delivery: " + e.getMessage(), e);
       }
@@ -76,20 +69,9 @@ public class DeliverySystem {
          final Order order = orderQueue.dequeue().orElse(null);
          if (order != null) {
             System.out.println("Processing order: " + order.getOrderId());
-            // Process the order
+            final Optional<Driver> driver = this.selectDriverForOrder(order);
+            this.assignOrderToDriver(order, driver);
          }
-      }
-   }
-
-   public void processNextOrder() {
-      final OrderQueue orderQueue = new OrderQueue(10); // Create an instance of OrderQueue
-      final Order order = orderQueue.dequeue().orElse(null);
-      if (order != null) {
-         final Optional<Driver> driver = this.selectDriverForOrder(order);
-         this.assignOrderToDriver(order, driver);
-         System.out.println("Order " + order.getOrderId() + " is now being processed.");
-      } else {
-         System.out.println("No orders to process.");
       }
    }
 
@@ -105,48 +87,5 @@ public class DeliverySystem {
       final DriverService driverService = new DriverServiceImpl();
       final List<Driver> availableDrivers = driverService.getAvailableDrivers();
       return availableDrivers.isEmpty() ? Optional.empty() : Optional.of(availableDrivers.get(0));
-   }
-
-   public void demonstrateDeliverySystem() {
-      try {
-         // Create sample menu items
-         final MenuItem pizza = new Pizza(1L, "Margherita Pizza", "Classic Italian pizza", 12.99, Size.MEDIUM, 1);
-         final MenuItem soda = new Drink(2L, "Cola", "Refreshing drink", 2.99, Size.MEDIUM, 1);
-         final List<MenuItem> items = Arrays.asList(pizza, soda);
-
-         // Create a sample order with proper location
-         final Location location = new Location("123 Main St", "12345");
-         final Order sampleOrder = new Order(1L, "customer@example.com", items, location);
-
-         System.out.println("\n=== Starting Delivery System Demonstration ===");
-
-         // Step 1: Submit the order
-         System.out.println("\nStep 1: Submitting Order");
-         this.submitOrder(sampleOrder);
-         System.out.println("Current Status: " + this.getOrderStatus(sampleOrder.getOrderId()));
-
-         // Step 2: Find and assign a driver
-         System.out.println("\nStep 2: Finding and Assigning Driver");
-         final Optional<Driver> selectedDriver = this.selectDriverForOrder(sampleOrder);
-         this.assignOrderToDriver(sampleOrder, selectedDriver);
-         System.out.println("Current Status: " + this.getOrderStatus(sampleOrder.getOrderId()));
-
-         // Step 3: Complete the delivery
-         System.out.println("\nStep 3: Completing Delivery");
-         if (selectedDriver.isPresent()) {
-            this.completeDelivery(sampleOrder.getOrderId(), selectedDriver.get().getId());
-
-            // Step 4: Rate the driver
-            System.out.println("\nStep 4: Rating Driver");
-            this.manageDriverRatings(selectedDriver.get(), 5);
-         }
-
-         System.out.println("\nFinal Order Status: " + this.getOrderStatus(sampleOrder.getOrderId()));
-         System.out.println("\n=== Demonstration Complete ===\n");
-
-      } catch (final Exception e) {
-         System.err.println("Demonstration failed: " + e.getMessage());
-         throw new OrderProcessingException("Demonstration failed", e);
-      }
    }
 }
