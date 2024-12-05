@@ -1,5 +1,8 @@
+
 package rating;
 
+import queue.QueueOperations;
+import queue.RatingsQueue;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Lock;
@@ -7,7 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import CustomException.QueueFullException;
 
-public class RatingsHandler<T> implements RatingsBusinessLogic<T> {
+public class RatingsHandler<T> implements RatingsBusinessLogic<T>, QueueOperations<T> { // impliment queue operations
    private final int maxRatings;
    private final ConcurrentLinkedQueue<T> ratingsQueue;
    private final Lock ratingsLock = new ReentrantLock();
@@ -26,8 +29,8 @@ public class RatingsHandler<T> implements RatingsBusinessLogic<T> {
    }
 
    @Override
-   public void addRating(T rating) { // adds rating to the start of the queue
-      ratingsLock.lock();
+   public void addRating(T rating) { // adds rating to the start of the ratingsQueue
+      ratingsLock.lock(); //
       try {
          if (rating.Optional.isEmpty() == true) {
             throw new IllegalArgumentException("Rating cannot be empty or null");
@@ -38,16 +41,14 @@ public class RatingsHandler<T> implements RatingsBusinessLogic<T> {
          }
          ratingsQueue.enqueue(rating);
          enforceRatingQueueMaxSize();
-      }catch(IllegalArgumentException|
+      } catch (IllegalArgumentException |
 
-   QueueFullException e)
-   {
-      System.err.println("Error in addRating: " + e.getMessage());
-      throw e;
-   }finally
-   {
-      ratingsLock.unlock();
-   }
+            QueueFullException e) {
+         System.err.println("Error in addRating: " + e.getMessage());
+         throw e;
+      } finally {
+         ratingsLock.unlock();
+      }
    }
 
    @Override

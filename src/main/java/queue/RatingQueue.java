@@ -1,5 +1,5 @@
 package queue;
 
-public class RatingQueue {
+public class RatingQueue implements QueueOperations { // impliment
 
 }
