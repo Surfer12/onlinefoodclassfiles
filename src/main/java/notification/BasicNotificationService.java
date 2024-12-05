@@ -64,9 +64,9 @@ public class BasicNotificationService implements NotificationService {
     * @param order the order for which the delivery is completed
     */
    @Override
-   public void sendDeliveryCompletionNotification(final Order order) {
-      final String message = this.formatDeliveryCompletionMessage(order);
-      this.sendEmail(order.getCustomerEmail(), BasicNotificationService.DELIVERY_COMPLETION_SUBJECT, message);
+   public void sendDeliveryCompletionNotification(final Long orderId) {
+      final String message = String.format("Delivery completed for order #%d", orderId);
+      this.sendEmail("customer@example.com", BasicNotificationService.DELIVERY_COMPLETION_SUBJECT, message);
    }
 
    private String formatOrderConfirmationMessage(final Order order) {

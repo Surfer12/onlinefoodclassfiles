@@ -5,8 +5,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import builder.OrderBuilder;
+import factory.MenuItemFactory;
 import managers.OrderStatusManager;
 import model.Driver;
+import model.MenuItem;
 import model.Order;
 import notification.BasicNotificationService;
 import notification.NotificationService;
@@ -24,7 +26,7 @@ public class Application {
             final Order order = new OrderBuilder()
                     .withValidatedCustomerId(1L)
                     .withCustomerEmail("jane.doe@example.com")
-                    .addItem(createSampleMenuItem())
+                    .addItem(Application.createSampleMenuItem())
                     .withDeliveryLocation("456 Elm Street", "12345")
                     .build();
 
@@ -39,5 +41,15 @@ public class Application {
             Application.logger.log(Level.SEVERE, "An error occurred while processing the order", e);
             System.err.println("Error: " + e.getMessage());
         }
+    }
+
+    private static MenuItem createSampleMenuItem() {
+        return MenuItemFactory.createMenuItem(
+                "pizza",
+                "Margherita Pizza",
+                "Classic tomato and mozzarella",
+                12.99,
+                Size.MEDIUM,
+                1);
     }
 }

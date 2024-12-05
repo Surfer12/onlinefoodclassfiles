@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import CustomException.OrderProcessingException;
+import managers.OrderStatusManager;
 import model.Driver;
 import model.Order;
 import model.OrderStatus;
@@ -17,9 +18,11 @@ import services.DriverServiceImpl;
 public class DeliverySystem {
    private final Map<Long, String> orderStatuses = new HashMap<>();
    private final NotificationService notificationService;
+   private final OrderStatusManager statusManager;
 
-   public DeliverySystem(final NotificationService notificationService) {
+   public DeliverySystem(final NotificationService notificationService, final OrderStatusManager statusManager) {
       this.notificationService = notificationService;
+      this.statusManager = statusManager;
    }
 
    public void submitOrder(final Order order) {
@@ -33,13 +36,11 @@ public class DeliverySystem {
    }
 
    public void updateOrderStatus(final Order order, final OrderStatus newStatus) {
-      final OrderStatus oldStatus = order.getStatus();
-      if (this.isValidStatusTransition(oldStatus, newStatus)) {
-         order.setStatus(newStatus);
-         this.notificationService.sendOrderStatusUpdateToCustomer(order, newStatus);
-      } else {
-         throw new IllegalStateException(
-               String.format("Invalid status transition from %s to %s", oldStatus, newStatus));
+      try {
+         this.statusManager.updateOrderStatus(order, newStatus);
+         this.orderStatuses.put(order.getOrderId(), newStatus.toString());
+      } catch (final IllegalStateException e) {
+         throw new OrderProcessingException("Failed to update order status: " + e.getMessage(), e);
       }
    }
 
