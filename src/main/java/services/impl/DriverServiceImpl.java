@@ -11,7 +11,6 @@ import java.util.Optional;
 
 import model.Driver;
 import model.Order;
-import model.OrderStatus;
 import services.DriverService;
 
 public class DriverServiceImpl implements DriverService {
@@ -26,49 +25,57 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Optional<Driver> getDriverForOrder(final Order order) {
-        return this.drivers.stream()
-                .filter(Driver::isAvailable)
-                .findFirst();
+        return order.getDriver();
     }
 
     @Override
     public void assignDriverToOrder(final Driver driver, final Order order) {
-        if (driver != null && order != null) {
-            driver.setAvailable(false);
-            order.setDriver(Optional.of(driver));
-            order.setStatus(OrderStatus.IN_PROGRESS);
+        if (driver == null || order == null) {
+            throw new IllegalArgumentException("Driver and order cannot be null");
         }
+        driver.setAvailable(false);
+        order.setDriver(Optional.of(driver));
     }
 
     @Override
     public void rateDriver(final Driver driver, final Integer rating) {
-        if (driver != null) {
-            if (rating < 1 || rating > 5) {
-                System.out.println("Rating must be between 1 and 5.");
-                return;
-            }
-            driver.addRating(rating);
-        } else {
-            System.out.println("Driver not found.");
+        if (driver == null || rating == null) {
+            throw new IllegalArgumentException("Driver and rating cannot be null");
         }
+        if (rating < 1 || rating > 5) {
+            throw new IllegalArgumentException("Rating must be between 1 and 5");
+        }
+        driver.addRating(rating);
     }
 
     @Override
     public Optional<Driver> getDriverById(final Long driverId) {
-        return this.drivers.stream()
-                .filter(driver -> driver.getId().equals(driverId))
-                .findFirst();
-    }
-
-    public void processOrder(final Order order) {
-        if (order == null) {
-            throw new IllegalArgumentException("Order cannot be null");
+        if (driverId == null) {
+            throw new IllegalArgumentException("Driver ID cannot be null");
         }
-        System.out.println("Order processed: " + order.getOrderId());
+        return this.drivers.stream()
+                .filter(d -> d.getId().equals(driverId))
+                .findFirst();
     }
 
     @Override
     public List<Driver> getAllDrivers() {
         return new ArrayList<>(this.drivers);
+    }
+
+    @Override
+    public void addDriver(final Driver driver) {
+        if (driver == null) {
+            throw new IllegalArgumentException("Driver cannot be null");
+        }
+        this.drivers.add(driver);
+    }
+
+    @Override
+    public boolean removeDriver(final Long driverId) {
+        if (driverId == null) {
+            throw new IllegalArgumentException("Driver ID cannot be null");
+        }
+        return this.drivers.removeIf(d -> d.getId().equals(driverId));
     }
 }

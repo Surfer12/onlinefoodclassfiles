@@ -49,8 +49,9 @@ public class Main {
             final DeliverySystemCLI cli = Main.createDeliverySystemCLI();
             cli.start();
         } catch (final Exception e) {
-            Main.logger.severe("An error occurred while running the application: " + e.getMessage());
+            Main.logger.severe(() -> "An error occurred while running the application: " + e.getMessage());
             System.err.println("Error: " + e.getMessage());
+            System.exit(1); // Exit with error code
         }
     }
 }

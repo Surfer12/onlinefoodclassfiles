@@ -103,6 +103,9 @@ public class MenuManager {
     }
 
     public MenuItem getMenuItemById(final Integer id) {
+        if (id == null) {
+            return null;
+        }
         final List<MenuItem> menuItems = this.menuService.getAllMenuItems();
         return menuItems.stream()
             .filter(item -> item.getId() != null && item.getId().equals(Long.valueOf(id)))

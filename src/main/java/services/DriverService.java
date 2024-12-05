@@ -13,4 +13,9 @@ public interface DriverService {
     void rateDriver(Driver driver, Integer rating);
     Optional<Driver> getDriverById(Long driverId);
     List<Driver> getAllDrivers();
+
+    // Add new methods for driver management
+    void addDriver(Driver driver);
+
+    boolean removeDriver(Long driverId);
 }

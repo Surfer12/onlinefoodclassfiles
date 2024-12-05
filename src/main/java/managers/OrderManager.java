@@ -72,7 +72,7 @@ public class OrderManager {
             }
         } catch (final Exception e) {
             System.out.println("Error checking order status: " + e.getMessage());
-            OrderManager.logger.severe("Error in checkOrderStatus: " + e.getMessage());
+            OrderManager.logger.severe(() -> "Error in checkOrderStatus: " + e.getMessage());
         }
     }
 
@@ -84,7 +84,8 @@ public class OrderManager {
         return this.orderService;
     }
 
-    public void processOrderPlacement(final Scanner scanner, final MenuManager menuManager, final ConsoleInputHandler<Integer> positiveIntegerHandler) {
+    public Order processOrderPlacement(final Scanner scanner, final MenuManager menuManager,
+            final ConsoleInputHandler<Integer> positiveIntegerHandler) {
         // Prompt for customer ID with option to use default
         final Long customerId = this.promptForCustomerId(scanner, positiveIntegerHandler);
 
@@ -136,12 +137,13 @@ public class OrderManager {
 
         if (orderItems.isEmpty()) {
             System.out.println("Order cancelled - no items were added.");
-            return;
+            return null;
         }
 
         // Create the order with the customer ID
         final Order order = this.createOrder(orderItems, customerId);
         System.out.println("Order created successfully with ID: " + order.getOrderId());
+        return order;
     }
 
     public Long promptForCustomerId(final Scanner scanner, final ConsoleInputHandler<Integer> positiveIntegerHandler) {
@@ -187,12 +189,6 @@ public class OrderManager {
         // This could be a simple incremental ID, a random number, or pulled from a configuration
         // For this example, we'll use a timestamp-based approach
         return System.currentTimeMillis();
-    }
-
-    private void assignDriverToNewOrder(final Scanner scanner, final Order order) {
-        // This method could be moved to DriverManager if preferred
-        final DriverManager driverManager = new DriverManager();
-        driverManager.assignDriverToOrder(scanner, order, this.orderIdHandler);
     }
 
     public double calculateOrderTotal(final Order order) {

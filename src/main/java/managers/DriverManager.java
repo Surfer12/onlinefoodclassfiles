@@ -14,6 +14,7 @@ import services.impl.DriverServiceImpl;
 import validation.ConsoleInputHandler;
 import validation.InputValidatorImpl;
 import validation.MenuItemValidator;
+import validation.PositiveLongValidator;
 
 public class DriverManager {
     private static final Logger logger = Logger.getLogger(DriverManager.class.getName());
@@ -161,5 +162,92 @@ public class DriverManager {
 
     public DriverService getDriverService() {
         return this.driverService;
+    }
+
+    public void addDriver(final Scanner scanner) {
+        System.out.println("\nAdd New Driver");
+        System.out.print("Enter driver name: ");
+        final String name = scanner.nextLine().trim();
+
+        System.out.print("Enter vehicle type (Car/Bike/Scooter): ");
+        final String vehicleType = scanner.nextLine().trim();
+
+        System.out.print("Enter license plate: ");
+        final String licensePlate = scanner.nextLine().trim();
+
+        if (name.isEmpty() || vehicleType.isEmpty() || licensePlate.isEmpty()) {
+            System.out.println("All fields are required. Driver not added.");
+            return;
+        }
+
+        try {
+            final Long driverId = System.currentTimeMillis(); // Simple ID generation
+            final Driver newDriver = new Driver(driverId, name, vehicleType, licensePlate);
+            this.driverService.addDriver(newDriver);
+            System.out.println("Driver added successfully! Driver ID: " + driverId);
+        } catch (Exception e) {
+            System.err.println("Error adding driver: " + e.getMessage());
+            DriverManager.logger.log(Level.SEVERE, "Error adding driver", e);
+        }
+    }
+
+    public void removeDriver(final Scanner scanner) {
+        System.out.println("\nRemove Driver");
+        System.out.println("Current drivers:");
+        this.displayAllDrivers();
+
+        // Create a ConsoleInputHandler for Long values
+        final ConsoleInputHandler<Long> longHandler = new ConsoleInputHandler<>(
+                new InputValidatorImpl<>(
+                        new PositiveLongValidator(),
+                        "Driver ID",
+                        "Invalid Driver ID"));
+
+        final Long driverId = longHandler.handleInput(scanner, "Enter driver ID to remove (0 to cancel): ");
+
+        if (driverId == null || driverId == 0) {
+            System.out.println("Operation cancelled.");
+            return;
+        }
+
+        try {
+            if (this.driverService.removeDriver(driverId)) {
+                System.out.println("Driver removed successfully!");
+            } else {
+                System.out.println("Driver not found.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error removing driver: " + e.getMessage());
+            DriverManager.logger.log(Level.SEVERE, "Error removing driver", e);
+        }
+    }
+
+    public void displayAllDrivers() {
+        final List<Driver> drivers = this.driverService.getAllDrivers();
+        if (drivers.isEmpty()) {
+            System.out.println("No drivers registered in the system.");
+            return;
+        }
+
+        System.out.println("\n=== All Drivers ===");
+        for (final Driver driver : drivers) {
+            System.out.printf("ID: %d | Name: %s | Vehicle: %s %s | Status: %s%n",
+                    driver.getId(),
+                    driver.getName(),
+                    driver.getVehicleType(),
+                    driver.getLicensePlate(),
+                    driver.isAvailable() ? "Available" : "Busy");
+
+            // Show rating if any
+            if (!driver.getRatings().isEmpty()) {
+                double avgRating = driver.getAverageRating();
+                System.out.printf("Average Rating: %.1f stars (%d ratings)%n",
+                        avgRating,
+                        driver.getRatings().size());
+            } else {
+                System.out.println("No ratings yet");
+            }
+            System.out.println("-".repeat(50));
+        }
     }
 }
