@@ -53,10 +53,6 @@ public class OrderTracker implements OrderSubject {
       return true;
    }
 
-   private boolean isDeliveryInProgress(final OrderStatus status) {
-      return status == OrderStatus.OUT_FOR_DELIVERY;
-   }
-
    private void updateStatusInDatabase(final Long orderId, final OrderStatus newStatus) {
       this.orderStatuses.put(orderId, newStatus);
    }

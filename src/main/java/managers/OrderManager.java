@@ -142,12 +142,6 @@ public class OrderManager {
         return System.currentTimeMillis();
     }
 
-    private void assignDriverToNewOrder(final Scanner scanner, final Order order) {
-        // This method could be moved to DriverManager if preferred
-        final DriverManager driverManager = new DriverManager();
-        driverManager.assignDriverToOrder(scanner, order, this.orderIdHandler);
-    }
-
     public double calculateOrderTotal(final Order order) {
         return order.getItems().stream()
                 .mapToDouble(MenuItem::getPrice)

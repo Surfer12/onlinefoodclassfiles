@@ -44,16 +44,6 @@ public class DeliverySystem {
       }
    }
 
-   private boolean isValidStatusTransition(final OrderStatus current, final OrderStatus next) {
-      // Define valid transitions
-      return switch (current) {
-         case SUBMITTED -> next == OrderStatus.IN_PROGRESS;
-         case IN_PROGRESS -> next == OrderStatus.OUT_FOR_DELIVERY;
-         case OUT_FOR_DELIVERY -> next == OrderStatus.DELIVERED;
-         default -> false;
-      };
-   }
-
    public void assignOrderToDriver(final Order order, final Optional<Driver> driver) {
       try {
          if (driver.isPresent()) {
