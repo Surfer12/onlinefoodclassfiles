@@ -23,31 +23,49 @@ import validation.ConsoleInputHandler;
 public class DeliverySystemCLI {
     private static final Logger logger = Logger.getLogger(DeliverySystemCLI.class.getName());
 
-    private final Scanner scanner;
+    private Scanner scanner;
     private final MenuManager menuManager;
     private final OrderManager orderManager;
     private final DriverManager driverManager;
     private final NotificationService notificationService;
-    private final DeliverySystem deliverySystem;
-
     private final ConsoleInputHandler<Integer> positiveIntegerHandler;
-
-    private boolean running = true;
+    private final DeliverySystem deliverySystem;
+    private boolean running;
 
     public DeliverySystemCLI(
-                    final MenuManager menuManager,
+            final MenuManager menuManager,
             final OrderManager orderManager,
             final DriverManager driverManager,
             final NotificationService notificationService,
             final ConsoleInputHandler<Integer> positiveIntegerHandler,
             final DeliverySystem deliverySystem) {
-        this.scanner = new Scanner(System.in);
+        this(menuManager, orderManager, driverManager, notificationService,
+                positiveIntegerHandler, deliverySystem, new Scanner(System.in));
+    }
+
+    public DeliverySystemCLI(
+            final MenuManager menuManager,
+                    final OrderManager orderManager,
+            final DriverManager driverManager,
+            final NotificationService notificationService,
+            final ConsoleInputHandler<Integer> positiveIntegerHandler,
+            final DeliverySystem deliverySystem,
+            final Scanner scanner) {
         this.menuManager = menuManager;
         this.orderManager = orderManager;
         this.driverManager = driverManager;
         this.notificationService = notificationService;
         this.positiveIntegerHandler = positiveIntegerHandler;
         this.deliverySystem = deliverySystem;
+        this.scanner = scanner;
+        this.running = true;
+    }
+
+    public void setScanner(final Scanner scanner) {
+        if (this.scanner != null) {
+            this.scanner.close();
+        }
+        this.scanner = scanner;
     }
 
     public void start() {
@@ -92,7 +110,7 @@ public class DeliverySystemCLI {
             return;
         }
 
-        System.out.println("\n=== " + getMenuOptionTitle(choice) + " ===");
+        System.out.println("\n=== " + this.getMenuOptionTitle(choice) + " ===");
 
         switch (choice) {
             case 1 -> this.handlePlaceNewOrder();
@@ -138,7 +156,7 @@ public class DeliverySystemCLI {
             this.menuManager.displayMenu();
 
             // Then process order placement
-            Order order = this.orderManager.processOrderPlacement(
+            final Order order = this.orderManager.processOrderPlacement(
                     this.scanner,
                     this.menuManager,
                     this.positiveIntegerHandler);
@@ -181,7 +199,7 @@ public class DeliverySystemCLI {
             System.out.println("4. Return to main menu");
             System.out.println();
 
-            Integer choice = this.positiveIntegerHandler.handleInput(this.scanner, "Enter your choice (1-4): ");
+            final Integer choice = this.positiveIntegerHandler.handleInput(this.scanner, "Enter your choice (1-4): ");
             if (choice == null || choice < 1 || choice > 4) {
                 System.out.println("Invalid choice. Please enter a number between 1 and 4.");
                 continue;
@@ -197,7 +215,7 @@ public class DeliverySystemCLI {
                     case 2 -> this.driverManager.removeDriver(this.scanner);
                     case 3 -> this.driverManager.displayAllDrivers();
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 System.err.println("Error managing drivers: " + e.getMessage());
                 DeliverySystemCLI.logger.log(Level.SEVERE, "Error in driver management", e);
             }
@@ -300,11 +318,11 @@ public class DeliverySystemCLI {
 
             // Show current ratings
             System.out.println("\nCurrent Ratings for Driver " + driver.get().getName() + ":");
-            List<Integer> ratings = driver.get().getRatings();
+            final List<Integer> ratings = driver.get().getRatings();
             if (ratings.isEmpty()) {
                 System.out.println("No ratings yet.");
             } else {
-                double averageRating = ratings.stream()
+                final double averageRating = ratings.stream()
                         .mapToDouble(Integer::doubleValue)
                         .average()
                         .orElse(0.0);
@@ -313,14 +331,14 @@ public class DeliverySystemCLI {
                 System.out.println("Rating distribution:");
                 for (int i = 1; i <= 5; i++) {
                     final int stars = i;
-                    long count = ratings.stream().filter(r -> r == stars).count();
+                    final long count = ratings.stream().filter(r -> r == stars).count();
                     System.out.printf("%d stars: %d ratings\n", i, count);
                 }
             }
 
             System.out.println("\nWould you like to add a new rating? (Y/N)");
-            String choice = scanner.nextLine().trim().toUpperCase();
-            if (choice.equals("Y")) {
+            final String choice = this.scanner.nextLine().trim().toUpperCase();
+            if ("Y".equals(choice)) {
                 Integer rating;
                 do {
                     System.out.println("Please rate the driver (1-5 stars):");
@@ -373,7 +391,7 @@ public class DeliverySystemCLI {
                         System.out.println("No drivers available. Order will remain in queue.");
                         continue;
                     }
-                    Driver driver = availableDrivers.get(0);
+                    final Driver driver = availableDrivers.get(0);
                     this.driverManager.getDriverService().assignDriverToOrder(driver, order);
                     System.out.println("Assigned driver: " + driver.getName());
                     this.notificationService.sendDriverAssignmentNotification(order, driver);
@@ -399,7 +417,7 @@ public class DeliverySystemCLI {
                 // Make driver available again
                 order.getDriver().ifPresent(driver -> driver.setAvailable(true));
 
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 System.err.println("Error processing order " + order.getOrderId() + ": " + e.getMessage());
                 order.setStatus(OrderStatus.CANCELLED);
                 System.out.println("Order has been cancelled due to an error");
