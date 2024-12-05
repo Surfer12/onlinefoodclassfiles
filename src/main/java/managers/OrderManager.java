@@ -10,6 +10,7 @@ import CustomException.ValidationException;
 import model.Driver;
 import model.MenuItem;
 import model.Order;
+import model.OrderStatus;
 import queue.OrderQueue;
 import services.OrderService;
 import services.impl.OrderServiceImpl;
@@ -25,8 +26,9 @@ public class OrderManager {
     private final OrderService orderService;
     private final OrderQueue orderQueue;
     private final ConsoleInputHandler<Long> orderIdHandler;
+    private final OrderStatusManager statusManager;
 
-    public OrderManager() {
+    public OrderManager(final OrderStatusManager statusManager) {
         this.orderService = new OrderServiceImpl();
         this.orderQueue = new OrderQueue(OrderManager.MAX_QUEUE_SIZE);
         this.orderIdHandler = new ConsoleInputHandler<>(
@@ -34,16 +36,17 @@ public class OrderManager {
                         new PositiveLongValidator(),
                         "Order ID",
                         "Invalid Order ID"));
+        this.statusManager = statusManager;
     }
 
-    public Order createOrder(final List<MenuItem> menuItems) {
+    public Order createOrder(final List<MenuItem> menuItems, final Long customerId) {
         // Validate input
         if (menuItems == null || menuItems.isEmpty()) {
             throw new IllegalArgumentException("Order must contain at least one menu item");
         }
 
-        // Create the order using the OrderService with a default customer ID
-        final Order newOrder = this.orderService.createOrder(menuItems, 0L);
+        // Create the order using the OrderService with the customer ID
+        final Order newOrder = this.orderService.createOrder(menuItems, customerId);
 
         // Add the order to the order queue
         this.orderQueue.enqueue(newOrder);
@@ -137,7 +140,7 @@ public class OrderManager {
         }
 
         // Create the order with the customer ID
-        final Order order = this.createOrder(orderItems);
+        final Order order = this.createOrder(orderItems, customerId);
         System.out.println("Order created successfully with ID: " + order.getOrderId());
     }
 
@@ -153,8 +156,13 @@ public class OrderManager {
                 System.out.println("Invalid choice. Please enter 1 or 2.");
             } else switch (choice) {
                 case 1 -> {
-                    // Prompt for specific customer ID
-                    final Long customerId = this.getOrderIdHandler().handleInput(scanner, "Enter Customer ID: ");
+                    // Prompt for specific customer ID using the Long validator
+                    final ConsoleInputHandler<Long> customerIdHandler = new ConsoleInputHandler<>(
+                            new InputValidatorImpl<>(
+                                    new PositiveLongValidator(),
+                                    "Customer ID",
+                                    "Invalid Customer ID"));
+                    final Long customerId = customerIdHandler.handleInput(scanner, "Enter Customer ID: ");
                     if (customerId != null) {
                         return customerId;
                     }
@@ -203,7 +211,24 @@ public class OrderManager {
             final Order order = orderQueue.dequeue().orElse(null);
             if (order != null) {
                 System.out.println("Processing order: " + order.getOrderId());
-                // Process the order
+                try {
+                    // Process the order through its lifecycle
+                    this.statusManager.updateOrderStatus(order, OrderStatus.IN_PROGRESS);
+                    this.statusManager.updateOrderStatus(order, OrderStatus.PREPARING);
+                    this.statusManager.updateOrderStatus(order, OrderStatus.OUT_FOR_DELIVERY);
+                    this.statusManager.updateOrderStatus(order, OrderStatus.DELIVERED);
+                    System.out.println("Order " + order.getOrderId() + " has been processed and delivered");
+                } catch (final IllegalStateException e) {
+                    System.err.println("Error processing order " + order.getOrderId() + ": " + e.getMessage());
+                    // If there's an error, try to cancel the order
+                    try {
+                        this.statusManager.updateOrderStatus(order, OrderStatus.CANCELLED);
+                        System.out
+                                .println("Order " + order.getOrderId() + " has been cancelled due to processing error");
+                    } catch (final IllegalStateException ex) {
+                        System.err.println("Could not cancel order " + order.getOrderId() + ": " + ex.getMessage());
+                    }
+                }
             }
         }
     }

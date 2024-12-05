@@ -12,15 +12,10 @@ import CustomException.ValidationException;
 import managers.DriverManager;
 import managers.MenuManager;
 import managers.OrderManager;
-import managers.OrderStatusManager;
 import model.Driver;
 import model.Order;
-import notification.BasicNotificationService;
 import notification.NotificationService;
-import services.impl.OrderStatusServiceImpl;
 import validation.ConsoleInputHandler;
-import validation.InputValidatorImpl;
-import validation.PositiveIntegerValidator;
 
 public class DeliverySystemCLI {
     private static final Logger logger = Logger.getLogger(DeliverySystemCLI.class.getName());
@@ -35,30 +30,18 @@ public class DeliverySystemCLI {
 
     private boolean running = true;
 
-    public DeliverySystemCLI(final Scanner scanner, final MenuManager menuManager, final OrderManager orderManager,
-            final DriverManager driverManager, final NotificationService notificationService,
+    public DeliverySystemCLI(
+                    final MenuManager menuManager,
+            final OrderManager orderManager,
+            final DriverManager driverManager,
+            final NotificationService notificationService,
             final ConsoleInputHandler<Integer> positiveIntegerHandler) {
-        this.scanner = scanner;
+        this.scanner = new Scanner(System.in);
         this.menuManager = menuManager;
         this.orderManager = orderManager;
         this.driverManager = driverManager;
         this.notificationService = notificationService;
         this.positiveIntegerHandler = positiveIntegerHandler;
-    }
-
-    public DeliverySystemCLI() {
-        this(
-            new Scanner(System.in),
-            new MenuManager(),
-            new OrderManager(),
-            new DriverManager(),
-                new BasicNotificationService(new OrderStatusServiceImpl()),
-                new ConsoleInputHandler<>(
-                new InputValidatorImpl<>(
-                    new PositiveIntegerValidator(),
-                    "Positive Integer",
-                    "Invalid positive integer"))
-        );
     }
 
     public void start() {
@@ -99,9 +82,11 @@ public class DeliverySystemCLI {
 
     private void handleMenuChoice(final int choice) {
         if (choice < 1 || choice > 9) {
-            System.out.println("Invalid choice. Please enter a number between 1 and 9.");
+            System.out.println("Invalid menu choice. Please enter a number between 1 and 9.");
             return;
         }
+
+        System.out.println("\n=== " + getMenuOptionTitle(choice) + " ===");
 
         switch (choice) {
             case 1 -> this.handlePlaceNewOrder();
@@ -112,12 +97,37 @@ public class DeliverySystemCLI {
             case 6 -> this.handleCalculateOrderTotal();
             case 7 -> this.handleManageDriverRatings();
             case 8 -> this.handleProcessOrdersInCorrectOrder();
-            case 9 -> this.handleExit();
+            case 9 -> {
+                this.handleExit();
+                return;
+            }
         }
+    }
+
+    private String getMenuOptionTitle(final int choice) {
+        return switch (choice) {
+            case 1 -> "Place New Order";
+            case 2 -> "Check Order Status";
+            case 3 -> "View Menu";
+            case 4 -> "Manage Drivers";
+            case 5 -> "Rate Driver";
+            case 6 -> "Calculate Order Total";
+            case 7 -> "Manage Driver Ratings";
+            case 8 -> "Process Orders";
+            case 9 -> "Exit";
+            default -> "Unknown Option";
+        };
     }
 
     private void handlePlaceNewOrder() {
         try {
+            System.out.println("Follow these steps to place your order:");
+            System.out.println("1. First, you'll see the menu");
+            System.out.println("2. Enter the menu item number and quantity for each item you want");
+            System.out.println("3. Enter 0 when you're done adding items");
+            System.out.println("4. Choose how to provide your customer ID");
+            System.out.println();
+
             // First, display the menu
             this.menuManager.displayMenu();
 
@@ -134,6 +144,10 @@ public class DeliverySystemCLI {
 
     private void handleCheckOrderStatus() {
         try {
+            System.out.println("Enter your order ID to check its current status.");
+            System.out.println("The status will show where your order is in the delivery process.");
+            System.out.println();
+
             this.orderManager.checkOrderStatus(this.scanner);
         } catch (final OrderProcessingException e) {
             DeliverySystemCLI.logger.log(Level.SEVERE, "Order processing error occurred", e);
@@ -142,14 +156,27 @@ public class DeliverySystemCLI {
     }
 
     private void handleViewMenu() {
+        System.out.println("Here's our current menu with prices:");
+        System.out.println();
         this.menuManager.displayMenu();
     }
 
     private void handleManageDrivers() {
+        System.out.println("Driver Management Options:");
+        System.out.println("- Add a new driver");
+        System.out.println("- Remove an existing driver");
+        System.out.println("- View all drivers");
+        System.out.println();
+
         this.driverManager.manageDriverMenu(this.scanner, this.orderManager);
     }
 
     private void handleRateDriver() {
+        System.out.println("Rate your delivery driver:");
+        System.out.println("1. Enter your order ID");
+        System.out.println("2. Rate the driver from 1-5 stars");
+        System.out.println();
+
         this.driverManager.rateDriver(
                 this.scanner,
                 this.orderManager.getOrderService().getOrderById(
@@ -161,6 +188,10 @@ public class DeliverySystemCLI {
 
     private void handleCalculateOrderTotal() {
         try {
+            System.out.println("Calculate the total amount for your order:");
+            System.out.println("Enter your order ID to see the itemized bill and total.");
+            System.out.println();
+
             System.out.print("Enter Order ID to calculate total: ");
             final Long orderId = this.orderManager.getOrderIdHandler().handleInput(this.scanner, "Order ID: ");
             if (orderId != null) {
@@ -180,6 +211,12 @@ public class DeliverySystemCLI {
 
     private void handleManageDriverRatings() {
         try {
+            System.out.println("Manage Driver Ratings:");
+            System.out.println("1. Enter the driver ID");
+            System.out.println("2. View current ratings");
+            System.out.println("3. Add a new rating if needed");
+            System.out.println();
+
             System.out.print("Enter Driver ID to manage ratings: ");
             final Long driverId = this.orderManager.getOrderIdHandler().handleInput(this.scanner, "Driver ID: ");
             if (driverId != null) {
@@ -203,30 +240,34 @@ public class DeliverySystemCLI {
     }
 
     private void handleProcessOrdersInCorrectOrder() {
-        new DeliverySystem(this.notificationService, new OrderStatusManager(this.notificationService))
-                .processOrdersInCorrectOrder(this.orderManager.getOrderQueue());
+        System.out.println("Processing all pending orders in the queue:");
+        System.out.println("Each order will go through these stages:");
+        System.out.println("1. IN_PROGRESS - Order is being processed");
+        System.out.println("2. PREPARING - Food is being prepared");
+        System.out.println("3. OUT_FOR_DELIVERY - Order is on its way");
+        System.out.println("4. DELIVERED - Order has been delivered");
+        System.out.println();
+
+        this.orderManager.processOrdersInCorrectOrder(this.orderManager.getOrderQueue());
     }
 
     private void handleExit() {
-        System.out.println("Exiting...");
+        System.out.println("Thank you for using the Online Food Delivery System. Goodbye!");
         this.running = false;
+        System.exit(0);
     }
 
     private void displayMainMenu() {
-        System.out.println("\n--- Online Food Delivery System ---");
-        System.out.println("1. Place a New Order");
-        System.out.println("2. Check Order Status");
-        System.out.println("3. View Menu");
-        System.out.println("4. Manage Drivers");
-        System.out.println("5. Rate Driver");
-        System.out.println("6. Calculate Order Total");
-        System.out.println("7. Manage Driver Ratings");
-        System.out.println("8. Process Orders in Correct Order");
+        System.out.println("\n=== Online Food Delivery System ===");
+        System.out.println("1. Place a New Order (Add items to cart and checkout)");
+        System.out.println("2. Check Order Status (View status of an existing order)");
+        System.out.println("3. View Menu (See available items and prices)");
+        System.out.println("4. Manage Drivers (Add/Remove/List drivers)");
+        System.out.println("5. Rate Driver (Rate a driver for a completed order)");
+        System.out.println("6. Calculate Order Total (View total for an existing order)");
+        System.out.println("7. Manage Driver Ratings (View/Update driver ratings)");
+        System.out.println("8. Process Orders (Process all pending orders for delivery)");
         System.out.println("9. Exit");
-    }
-
-    public static void main(final String[] args) {
-        final DeliverySystemCLI cli = new DeliverySystemCLI();
-        cli.start();
+        System.out.println("=====================================");
     }
 }
