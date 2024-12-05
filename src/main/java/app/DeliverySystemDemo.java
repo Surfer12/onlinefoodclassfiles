@@ -1,11 +1,17 @@
 package app;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import CustomException.OrderProcessingException;
+import model.Drink;
 import model.Driver;
+import model.Location;
+import model.MenuItem;
 import model.Order;
+import model.Pizza;
+import model.Size;
 import notification.BasicNotificationService;
 import notification.NotificationService;
 
@@ -18,8 +24,15 @@ public class DeliverySystemDemo {
 
     public void runDemonstration() {
         try {
-            // Create a sample order
-            final Order sampleOrder = new Order(1L, "123 Main St", "Sample Customer", List.of("Pizza", "Soda"));
+            // Create sample menu items
+            final MenuItem pizza = new Pizza(1L, "Margherita Pizza", "Classic Italian pizza", 12.99, Size.MEDIUM, 1);
+            final MenuItem soda = new Drink(2L, "Cola", "Refreshing drink", 2.99, Size.MEDIUM, 1);
+            final List<MenuItem> items = Arrays.asList(pizza, soda);
+
+            // Create a sample order with proper location
+            final Location location = new Location("123 Main St", "12345");
+            final Order sampleOrder = new Order(1L, "customer@example.com", items, location);
+
             System.out.println("\n=== Starting Delivery System Demonstration ===");
 
             // Step 1: Submit the order
