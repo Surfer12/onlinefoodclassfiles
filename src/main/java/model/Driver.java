@@ -16,6 +16,7 @@ public class Driver {
    private boolean available;
    private final List<Integer> ratings;
    private static final int MAX_RATINGS = 10;
+   private int activeOrderCount;
 
    public Driver(final Long id, final String name, final String vehicleType, final String licensePlate) {
       this.id = Objects.requireNonNull(id, "Driver ID cannot be null");
@@ -24,6 +25,7 @@ public class Driver {
       this.licensePlate = Objects.requireNonNull(licensePlate, "License plate cannot be null");
       this.ratings = new ArrayList<>();
       this.available = true;
+      this.activeOrderCount = 0;
    }
 
    public Long getId() {
@@ -91,5 +93,22 @@ public class Driver {
             .mapToInt(Integer::intValue)
             .average()
             .orElse(0.0);
+   }
+
+   public int getActiveOrderCount() {
+      return this.activeOrderCount;
+   }
+
+   public void incrementActiveOrderCount() {
+      this.activeOrderCount++;
+   }
+
+   public void decrementActiveOrderCount() {
+      if (this.activeOrderCount > 0) {
+         this.activeOrderCount--;
+      }
+      if (this.activeOrderCount == 0) {
+         this.available = true;
+      }
    }
 }

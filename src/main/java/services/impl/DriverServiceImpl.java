@@ -16,10 +16,29 @@ import services.DriverService;
 public class DriverServiceImpl implements DriverService {
     private final List<Driver> drivers = new ArrayList<>();
 
+    public DriverServiceImpl() {
+        // Initialize with some default drivers
+        this.addDriver(new Driver(1L, "John Smith", "Sedan", "ABC123"));
+        this.addDriver(new Driver(2L, "Sarah Johnson", "SUV", "XYZ789"));
+        this.addDriver(new Driver(3L, "Michael Brown", "Sedan", "DEF456"));
+        this.addDriver(new Driver(4L, "Emily Davis", "Hybrid", "GHI789"));
+    }
+
     @Override
     public List<Driver> getAvailableDrivers() {
         return this.drivers.stream()
                 .filter(Driver::isAvailable)
+                .sorted((d1, d2) -> {
+                    // First, compare by number of active orders
+                    int orderComparison = Integer.compare(d1.getActiveOrderCount(), d2.getActiveOrderCount());
+                    if (orderComparison != 0) {
+                        return orderComparison;
+                    }
+                    // If same number of orders, compare by average rating (higher rating first)
+                    double avg1 = d1.getRatings().stream().mapToDouble(Integer::doubleValue).average().orElse(0.0);
+                    double avg2 = d2.getRatings().stream().mapToDouble(Integer::doubleValue).average().orElse(0.0);
+                    return Double.compare(avg2, avg1);
+                })
                 .toList();
     }
 
@@ -34,6 +53,7 @@ public class DriverServiceImpl implements DriverService {
             throw new IllegalArgumentException("Driver and order cannot be null");
         }
         driver.setAvailable(false);
+        driver.incrementActiveOrderCount();
         order.setDriver(Optional.of(driver));
     }
 

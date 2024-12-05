@@ -24,17 +24,28 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order createOrder(final List<MenuItem> items, final Long customerId) {
+        return this.createOrder(items, customerId, "customer@example.com", new Location("Unknown Address", "00000"));
+    }
+
+    public Order createOrder(final List<MenuItem> items, final Long customerId, final String email,
+            final Location location) {
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("Order must contain at least one item");
         }
 
-        final Location defaultLocation = new Location("Unknown Address", "00000");
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
+
+        if (location == null) {
+            throw new IllegalArgumentException("Location cannot be null");
+        }
 
         final Order newOrder = new Order(
             customerId,
-            "customer@example.com",
-            items,
-            defaultLocation
+                email,
+                    items,
+                location
         );
         newOrder.setStatus(OrderStatus.SUBMITTED);
         this.orders.add(newOrder);
