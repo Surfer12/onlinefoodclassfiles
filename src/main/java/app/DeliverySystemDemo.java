@@ -15,6 +15,8 @@ import model.Pizza;
 import model.Size;
 import notification.BasicNotificationService;
 import notification.NotificationService;
+import services.OrderStatusService;
+import services.impl.OrderStatusServiceImpl;
 
 public class DeliverySystemDemo {
     private final DeliverySystem deliverySystem;
@@ -68,7 +70,8 @@ public class DeliverySystemDemo {
 
     public static void main(final String[] args) {
         // Create a demo instance with a basic notification service
-        final DeliverySystemDemo demo = new DeliverySystemDemo(new BasicNotificationService());
+        final OrderStatusService orderStatusService = new OrderStatusServiceImpl();
+        final DeliverySystemDemo demo = new DeliverySystemDemo(new BasicNotificationService(orderStatusService));
         demo.runDemonstration();
     }
 }
