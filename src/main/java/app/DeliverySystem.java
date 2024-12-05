@@ -15,7 +15,7 @@ import model.OrderStatus;
 import notification.NotificationService;
 import queue.OrderQueue;
 import services.DriverService;
-import services.DriverServiceImpl;
+import services.impl.DriverServiceImpl;
 
 public class DeliverySystem {
     private final Map<Long, String> orderStatuses = new HashMap<>();
@@ -29,7 +29,7 @@ public class DeliverySystem {
 
     public void submitOrder(final Order order) {
         try {
-            if (isValidStatusTransition(OrderStatus.SUBMITTED, OrderStatus.PENDING)) {
+            if (this.isValidStatusTransition(OrderStatus.SUBMITTED, OrderStatus.PENDING)) {
                 System.out.println("Order submitted: " + order.getOrderId());
                 this.orderStatuses.put(order.getOrderId(), "Pending");
                 this.notificationService.sendOrderConfirmationToCustomer(order);
@@ -43,7 +43,7 @@ public class DeliverySystem {
 
     public void updateOrderStatus(final Order order, final OrderStatus newStatus) {
         try {
-            if (isValidStatusTransition(order.getStatus(), newStatus)) {
+            if (this.isValidStatusTransition(order.getStatus(), newStatus)) {
                 this.statusManager.updateOrderStatus(order, newStatus);
                 this.orderStatuses.put(order.getOrderId(), newStatus.toString());
             } else {
@@ -67,7 +67,7 @@ public class DeliverySystem {
     public void assignOrderToDriver(final Order order, final Optional<Driver> driver) {
         try {
             if (driver.isPresent()) {
-                if (isValidStatusTransition(order.getStatus(), OrderStatus.IN_PROGRESS)) {
+                if (this.isValidStatusTransition(order.getStatus(), OrderStatus.IN_PROGRESS)) {
                     System.out.println("Order " + order.getOrderId() + " assigned to driver " + driver.get().getName());
                     this.orderStatuses.put(order.getOrderId(), "In Progress");
                     this.notificationService.sendDriverAssignmentNotification(order, driver.get());

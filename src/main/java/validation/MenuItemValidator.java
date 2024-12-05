@@ -23,7 +23,7 @@ public class MenuItemValidator implements Validator<Integer> {
 
     @Override
     public boolean isValid(final Integer value) {
-        return value != null && ((value >= 0 && value <= 9) || (value > 0 && value <= this.maxMenuSize));
+        return value != null && (value == 0 || (value > 0 && value <= this.maxMenuSize));
     }
 
     @Override
