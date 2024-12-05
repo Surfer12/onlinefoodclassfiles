@@ -8,6 +8,7 @@ import java.util.Optional;
 import CustomException.OrderProcessingException;
 import model.Driver;
 import model.Order;
+import model.OrderStatus;
 import notification.NotificationService;
 import queue.OrderQueue;
 import services.DriverService;
@@ -29,6 +30,27 @@ public class DeliverySystem {
       } catch (final Exception e) {
          throw new OrderProcessingException("Failed to submit order: " + e.getMessage(), e);
       }
+   }
+
+   public void updateOrderStatus(final Order order, final OrderStatus newStatus) {
+      final OrderStatus oldStatus = order.getStatus();
+      if (this.isValidStatusTransition(oldStatus, newStatus)) {
+         order.setStatus(newStatus);
+         this.notificationService.sendOrderStatusUpdateToCustomer(order, newStatus);
+      } else {
+         throw new IllegalStateException(
+               String.format("Invalid status transition from %s to %s", oldStatus, newStatus));
+      }
+   }
+
+   private boolean isValidStatusTransition(final OrderStatus current, final OrderStatus next) {
+      // Define valid transitions
+      return switch (current) {
+         case SUBMITTED -> next == OrderStatus.IN_PROGRESS;
+         case IN_PROGRESS -> next == OrderStatus.OUT_FOR_DELIVERY;
+         case OUT_FOR_DELIVERY -> next == OrderStatus.DELIVERED;
+         default -> false;
+      };
    }
 
    public void assignOrderToDriver(final Order order, final Optional<Driver> driver) {
