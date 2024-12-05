@@ -8,6 +8,7 @@ public class MenuItemValidator implements Validator<Integer> {
     }
 
     @Override
+    @SuppressWarnings("UnnecessaryTemporaryOnConversionFromString")
     public Integer parse(final String input) {
         try {
             return Integer.parseInt(input);

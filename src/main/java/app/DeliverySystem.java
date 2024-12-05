@@ -15,16 +15,18 @@ import model.OrderStatus;
 import notification.NotificationService;
 import queue.OrderQueue;
 import services.DriverService;
-import services.impl.DriverServiceImpl;
 
 public class DeliverySystem {
     private final Map<Long, String> orderStatuses = new HashMap<>();
     private final NotificationService notificationService;
     private final OrderStatusManager statusManager;
+    private final DriverService driverService;
 
-    public DeliverySystem(final NotificationService notificationService, final OrderStatusManager statusManager) {
+    public DeliverySystem(final NotificationService notificationService, final OrderStatusManager statusManager,
+            final DriverService driverService) {
         this.notificationService = notificationService;
         this.statusManager = statusManager;
+        this.driverService = driverService;
     }
 
     public void submitOrder(final Order order) {
@@ -57,9 +59,12 @@ public class DeliverySystem {
     private boolean isValidStatusTransition(final OrderStatus current, final OrderStatus next) {
         // Define valid transitions
         return switch (current) {
-            case SUBMITTED -> next == OrderStatus.IN_PROGRESS;
-            case IN_PROGRESS -> next == OrderStatus.OUT_FOR_DELIVERY;
-            case OUT_FOR_DELIVERY -> next == OrderStatus.DELIVERED;
+            case SUBMITTED -> next == OrderStatus.PENDING || next == OrderStatus.CANCELLED;
+            case PENDING -> next == OrderStatus.IN_PROGRESS || next == OrderStatus.CANCELLED;
+            case IN_PROGRESS -> next == OrderStatus.PREPARING || next == OrderStatus.CANCELLED;
+            case PREPARING -> next == OrderStatus.OUT_FOR_DELIVERY || next == OrderStatus.CANCELLED;
+            case OUT_FOR_DELIVERY -> next == OrderStatus.DELIVERED || next == OrderStatus.CANCELLED;
+            case DELIVERED, CANCELLED -> false; // Terminal states
             default -> false;
         };
     }
@@ -115,7 +120,6 @@ public class DeliverySystem {
     }
 
     private Optional<Driver> findAvailableDriverForOrderType() {
-        final DriverService driverService = new DriverServiceImpl();
-        return driverService.getAvailableDrivers().stream().findFirst();
+        return this.driverService.getAvailableDrivers().stream().findFirst();
     }
 }

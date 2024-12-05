@@ -28,6 +28,12 @@ public class Main {
         final OrderManager orderManager = new OrderManager(statusManager);
         final DriverManager driverManager = new DriverManager();
 
+        // Initialize delivery system
+        final DeliverySystem deliverySystem = new DeliverySystem(
+                notificationService,
+                statusManager,
+                driverManager.getDriverService());
+
         // Initialize input handler
         final ConsoleInputHandler<Integer> positiveIntegerHandler = new ConsoleInputHandler<>(
                 new InputValidatorImpl<>(
@@ -41,7 +47,8 @@ public class Main {
                 orderManager,
                 driverManager,
                 notificationService,
-                positiveIntegerHandler);
+                positiveIntegerHandler,
+                deliverySystem);
     }
 
     public static void main(String[] args) {

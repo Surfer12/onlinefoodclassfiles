@@ -18,10 +18,10 @@ public class DriverServiceImpl implements DriverService {
 
     public DriverServiceImpl() {
         // Initialize with some default drivers
-        this.addDriver(new Driver(1L, "John Smith", "Sedan", "ABC123"));
-        this.addDriver(new Driver(2L, "Sarah Johnson", "SUV", "XYZ789"));
-        this.addDriver(new Driver(3L, "Michael Brown", "Sedan", "DEF456"));
-        this.addDriver(new Driver(4L, "Emily Davis", "Hybrid", "GHI789"));
+        this.drivers.add(new Driver(1L, "John Smith", "Sedan", "ABC123"));
+        this.drivers.add(new Driver(2L, "Sarah Johnson", "SUV", "XYZ789"));
+        this.drivers.add(new Driver(3L, "Michael Brown", "Sedan", "DEF456"));
+        this.drivers.add(new Driver(4L, "Emily Davis", "Hybrid", "GHI789"));
     }
 
     @Override

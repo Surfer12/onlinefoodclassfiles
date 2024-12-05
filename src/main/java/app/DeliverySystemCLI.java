@@ -28,6 +28,7 @@ public class DeliverySystemCLI {
     private final OrderManager orderManager;
     private final DriverManager driverManager;
     private final NotificationService notificationService;
+    private final DeliverySystem deliverySystem;
 
     private final ConsoleInputHandler<Integer> positiveIntegerHandler;
 
@@ -38,13 +39,15 @@ public class DeliverySystemCLI {
             final OrderManager orderManager,
             final DriverManager driverManager,
             final NotificationService notificationService,
-            final ConsoleInputHandler<Integer> positiveIntegerHandler) {
+            final ConsoleInputHandler<Integer> positiveIntegerHandler,
+            final DeliverySystem deliverySystem) {
         this.scanner = new Scanner(System.in);
         this.menuManager = menuManager;
         this.orderManager = orderManager;
         this.driverManager = driverManager;
         this.notificationService = notificationService;
         this.positiveIntegerHandler = positiveIntegerHandler;
+        this.deliverySystem = deliverySystem;
     }
 
     public void start() {
@@ -140,9 +143,9 @@ public class DeliverySystemCLI {
                     this.menuManager,
                     this.positiveIntegerHandler);
 
-            // Send order confirmation
+            // Submit order through delivery system
             if (order != null) {
-                this.notificationService.sendOrderConfirmationToCustomer(order);
+                this.deliverySystem.submitOrder(order);
             }
         } catch (final OrderProcessingException e) {
             DeliverySystemCLI.logger.log(Level.SEVERE, "Order processing error occurred", e);
