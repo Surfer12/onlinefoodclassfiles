@@ -2,11 +2,9 @@ package app;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
@@ -38,49 +36,6 @@ public class DeliverySystemCLITest {
     private OrderManager orderManager;
     private DeliverySystem deliverySystem;
     private OrderStatusManager statusManager;
-
-    // Custom Scanner class for testing
-    private static class TestScanner extends Scanner {
-        private final Queue<String> inputQueue;
-
-        public TestScanner(final String... inputs) {
-            super("");
-            this.inputQueue = new LinkedList<>(Arrays.asList(inputs));
-        }
-
-        @Override
-        public String nextLine() {
-            if (this.inputQueue.isEmpty()) {
-                return "9"; // Default to exit if no more input
-            }
-            return this.inputQueue.poll();
-        }
-
-        @Override
-        public boolean hasNextLine() {
-            return true; // Always return true to prevent NoSuchElementException
-        }
-
-        @Override
-        public String next() {
-            return this.nextLine();
-        }
-
-        @Override
-        public boolean hasNext() {
-            return true;
-        }
-
-        @Override
-        public int nextInt() {
-            return Integer.parseInt(this.nextLine());
-        }
-
-        @Override
-        public boolean hasNextInt() {
-            return true;
-        }
-    }
 
     @BeforeEach
     void setup() {
@@ -118,15 +73,27 @@ public class DeliverySystemCLITest {
         System.setOut(this.originalOut);
     }
 
+    private Scanner createTestScanner(final String... inputs) {
+        final StringBuilder input = new StringBuilder();
+        for (final String s : inputs) {
+            input.append(s).append("\n");
+        }
+        // Always append exit command if not present
+        if (!input.toString().trim().endsWith("9")) {
+            input.append("9\n");
+        }
+        return new Scanner(new ByteArrayInputStream(input.toString().getBytes()));
+    }
+
     private DeliverySystemCLI createCLIWithInput(final String... inputs) {
         return new DeliverySystemCLI(
                 this.menuManager,
                 this.orderManager,
                 this.driverManager,
                 this.notificationService,
-                        this.positiveIntegerHandler,
-                this.deliverySystem,
-                new TestScanner(inputs));
+                this.positiveIntegerHandler,
+                        this.deliverySystem,
+                this.createTestScanner(inputs));
     }
 
     private String getOutput() {
