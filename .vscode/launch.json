@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "DeliverySystemCLITest",
+            "request": "launch",
+            "mainClass": "app.DeliverySystemCLITest",
+            "projectName": "onlinefoodclassfiles-2"
+        },
+        {
+            "type": "java",
             "name": "DeliverySystemDemo",
             "request": "launch",
             "mainClass": "app.DeliverySystemDemo",
