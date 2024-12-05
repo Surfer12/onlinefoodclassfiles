@@ -88,7 +88,7 @@ public class DeliverySystem {
    }
 
    public void processOrdersInCorrectOrder(final OrderQueue orderQueue) {
-      orderQueue.stream()
+      orderQueue.getOrders().stream()
          .forEach(order -> {
             System.out.println("Processing order: " + order.getOrderId());
             final Optional<Driver> driver = this.selectDriverForOrder(order);
