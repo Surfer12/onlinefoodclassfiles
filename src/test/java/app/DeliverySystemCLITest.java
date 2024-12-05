@@ -35,6 +35,9 @@ public class DeliverySystemCLITest {
     private MenuManager menuManager;
     private NotificationService notificationService;
     private ConsoleInputHandler<Integer> positiveIntegerHandler;
+    private OrderManager orderManager;
+    private DeliverySystem deliverySystem;
+    private OrderStatusManager statusManager;
 
     @BeforeEach
     void setup() {
@@ -49,11 +52,11 @@ public class DeliverySystemCLITest {
         // Initialize core services
         final OrderStatusService orderStatusService = new OrderStatusServiceImpl();
         this.notificationService = new BasicNotificationService(orderStatusService);
-        final OrderStatusManager statusManager = new OrderStatusManager(this.notificationService);
+        this.statusManager = new OrderStatusManager(this.notificationService);
 
         // Initialize managers
         this.menuManager = new MenuManager();
-        final OrderManager orderManager = new OrderManager(statusManager);
+        this.orderManager = new OrderManager(this.statusManager);
         this.driverManager = new DriverManager();
 
         // Initialize input handler
@@ -64,10 +67,10 @@ public class DeliverySystemCLITest {
                         "Invalid positive integer"));
 
         // Initialize delivery system
-        final DeliverySystem deliverySystem = new DeliverySystem(
+        this.deliverySystem = new DeliverySystem(
                 this.notificationService,
-                statusManager,
-                this.driverManager.getDriverService());
+                this.statusManager,
+                        this.driverManager.getDriverService());
 
         // Create CLI instance with empty input
         this.simulateUserInput(""); // This will be overridden in each test
@@ -87,12 +90,12 @@ public class DeliverySystemCLITest {
         // Create new CLI instance with the test input
         this.cli = new DeliverySystemCLI(
                 this.menuManager,
-                orderManager,
-                this.driverManager,
+                this.orderManager,
+                        this.driverManager,
                 this.notificationService,
                 this.positiveIntegerHandler,
-                deliverySystem,
-                new Scanner(inputStream));
+                this.deliverySystem,
+                        new Scanner(inputStream));
     }
 
     private String getOutput() {
