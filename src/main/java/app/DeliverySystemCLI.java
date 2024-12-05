@@ -347,40 +347,37 @@ public class DeliverySystemCLI {
 
         System.out.println("Current Information:");
         System.out.println("Name: " + driver.getName());
-        System.out.println("Vehicle Type: " + driver.getVehicleType());
-        System.out.println("License Plate: " + driver.getLicensePlate());
+        System.out.println("Vehicle Type: " + driver.getVehicleType() + " (cannot be changed)");
+        System.out.println("Current Vehicle: " + (driver.getVehicle() != null ? driver.getVehicle() : "Not set"));
+        System.out.println("License Plate: " + driver.getLicensePlate() + " (cannot be changed)");
+        System.out.println("Available: " + (driver.isAvailable() ? "Yes" : "No"));
         System.out.println("Average Rating: " + driver.getAverageRating());
 
         System.out.println("\nWhat would you like to update?");
-        System.out.println("1. Vehicle Type");
-        System.out.println("2. Vehicle");
-        System.out.println("3. Availability");
-        System.out.println("4. Cancel");
+        System.out.println("1. Current Vehicle");
+        System.out.println("2. Availability");
+        System.out.println("3. Cancel");
 
-        final Integer choice = this.positiveIntegerHandler.handleInput(this.scanner, "Enter your choice (1-4): ");
-        if (choice == null || choice < 1 || choice > 4) {
+        final Integer choice = this.positiveIntegerHandler.handleInput(this.scanner, "Enter your choice (1-3): ");
+        if (choice == null || choice < 1 || choice > 3) {
             System.out.println("Invalid choice.");
             return;
         }
 
         switch (choice) {
             case 1 -> {
-                System.out.print("Enter new vehicle type: ");
-                final String newVehicleType = this.scanner.nextLine().trim();
-                if (!newVehicleType.isEmpty()) {
-                    driver.setVehicle(newVehicleType);
-                    System.out.println("Vehicle type updated successfully!");
-                }
-            }
-            case 2 -> {
-                System.out.print("Enter new vehicle: ");
+                System.out.print("Enter new vehicle (e.g. Toyota Camry 2020): ");
                 final String newVehicle = this.scanner.nextLine().trim();
                 if (!newVehicle.isEmpty()) {
                     driver.setVehicle(newVehicle);
                     System.out.println("Vehicle updated successfully!");
                 }
             }
-            case 3 -> {
+            case 2 -> {
+                if (driver.getActiveOrderCount() > 0) {
+                    System.out.println("Cannot change availability while driver has active orders.");
+                    return;
+                }
                 System.out.print("Set driver as available? (y/n): ");
                 final String available = this.scanner.nextLine().trim().toLowerCase();
                 driver.setAvailable("y".equals(available));
@@ -405,11 +402,16 @@ public class DeliverySystemCLI {
         }
 
         System.out.println("Rating Driver: " + driver.getName());
+        System.out.println("Current average rating: " + driver.getAverageRating());
         final Integer rating = this.positiveIntegerHandler.handleInput(this.scanner, "Enter rating (1-5): ");
         if (rating != null && rating >= 1 && rating <= 5) {
-            driver.addRating(rating);
-            System.out.println("Rating submitted successfully!");
-            System.out.println("New average rating: " + driver.getAverageRating());
+            try {
+                driver.addRating(rating);
+                System.out.println("Rating submitted successfully!");
+                System.out.println("New average rating: " + driver.getAverageRating());
+            } catch (final IllegalArgumentException e) {
+                System.out.println("Error adding rating: " + e.getMessage());
+            }
         } else {
             System.out.println("Invalid rating. Please enter a number between 1 and 5.");
         }
@@ -500,18 +502,23 @@ public class DeliverySystemCLI {
                         throw new RuntimeException("No available drivers");
                     }
 
-                    // Assign to driver with least current orders
-                    Driver selectedDriver = availableDrivers.get(0);
-                    int minOrders = selectedDriver.getActiveOrderCount();
+                    // Assign to driver with least current orders who is available
+                    Driver selectedDriver = null;
+                    int minOrders = Integer.MAX_VALUE;
 
                     for (final Driver driver : availableDrivers) {
-                        if (driver.getActiveOrderCount() < minOrders) {
+                        if (driver.isAvailable() && driver.getActiveOrderCount() < minOrders) {
                             selectedDriver = driver;
                             minOrders = driver.getActiveOrderCount();
                         }
                     }
 
+                    if (selectedDriver == null) {
+                        throw new RuntimeException("No available drivers found");
+                    }
+
                     selectedDriver.incrementActiveOrderCount();
+                    selectedDriver.setAvailable(false);
                     order.setDriver(Optional.of(selectedDriver));
                     System.out.println(
                             "Assigned driver: " + selectedDriver.getName() + " (ID: " + selectedDriver.getId() + ")");
@@ -519,7 +526,12 @@ public class DeliverySystemCLI {
 
                 // Update order status
                 order.setStatus(OrderStatus.DELIVERED);
-                order.getDriver().ifPresent(Driver::decrementActiveOrderCount);
+                order.getDriver().ifPresent(driver -> {
+                    driver.decrementActiveOrderCount();
+                    if (driver.getActiveOrderCount() == 0) {
+                        driver.setAvailable(true);
+                    }
+                });
                 this.notificationService.sendDeliveryCompletionNotification(order);
                 System.out.println("Order " + order.getOrderId() + " delivered successfully!");
                 processedCount++;
@@ -527,6 +539,13 @@ public class DeliverySystemCLI {
             } catch (final Exception e) {
                 System.out.println("Error processing order " + order.getOrderId() + ": " + e.getMessage());
                 order.setStatus(OrderStatus.CANCELLED);
+                // Make sure to decrement driver's order count if order fails
+                order.getDriver().ifPresent(driver -> {
+                    driver.decrementActiveOrderCount();
+                    if (driver.getActiveOrderCount() == 0) {
+                        driver.setAvailable(true);
+                    }
+                });
                 failedCount++;
             }
         }
