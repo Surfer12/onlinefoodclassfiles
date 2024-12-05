@@ -1,7 +1,6 @@
 package app;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -88,7 +87,7 @@ public class DeliverySystem {
    }
 
    public void processOrdersInCorrectOrder(final OrderQueue orderQueue) {
-      orderQueue.getOrders().stream()
+      orderQueue.getPendingOrders().stream()
          .forEach(order -> {
             System.out.println("Processing order: " + order.getOrderId());
             final Optional<Driver> driver = this.selectDriverForOrder(order);
@@ -97,8 +96,7 @@ public class DeliverySystem {
    }
 
    public Optional<Driver> selectDriverForOrder(final Order order) {
-      return this.findAvailableDriverForOrderType(order)
-         .orElseThrow(() -> new OrderProcessingException("No available drivers to assign to the order."));
+      return this.findAvailableDriverForOrderType(order);
    }
 
    private Optional<Driver> findAvailableDriverForOrderType(final Order order) {
