@@ -68,10 +68,10 @@ public class DeliverySystemCLI {
 
                 final Integer choice = this.menuManager.getMenuChoiceHandler().handleInput(
                         scannerLocal,
-                        "Enter your choice below: ");
+                        "Please choose an option (1-9): ");
 
                 if (choice == null) {
-                    System.out.println("Invalid input. Please try again.");
+                    System.out.println("Invalid input. Please enter a number between 1 and 9.");
                     continue;
                 }
 
@@ -98,6 +98,11 @@ public class DeliverySystemCLI {
     }
 
     private void handleMenuChoice(final int choice) {
+        if (choice < 1 || choice > 9) {
+            System.out.println("Invalid choice. Please enter a number between 1 and 9.");
+            return;
+        }
+
         switch (choice) {
             case 1 -> this.handlePlaceNewOrder();
             case 2 -> this.handleCheckOrderStatus();
@@ -108,7 +113,6 @@ public class DeliverySystemCLI {
             case 7 -> this.handleManageDriverRatings();
             case 8 -> this.handleProcessOrdersInCorrectOrder();
             case 9 -> this.handleExit();
-            default -> System.out.println("Invalid choice. Please enter a number between 1 and 9.");
         }
     }
 
@@ -219,7 +223,6 @@ public class DeliverySystemCLI {
         System.out.println("7. Manage Driver Ratings");
         System.out.println("8. Process Orders in Correct Order");
         System.out.println("9. Exit");
-        System.out.print("Please choose an option from the list above (1-9): ");
     }
 
     public static void main(final String[] args) {

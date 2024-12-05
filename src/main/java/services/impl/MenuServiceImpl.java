@@ -29,7 +29,7 @@ public class MenuServiceImpl implements MenuService {
     public void displayMenu() {
         System.out.println("\n=== Menu ===");
         for (int i = 0; i < this.menu.size(); i++) {
-            MenuItem item = this.menu.get(i);
+            final MenuItem item = this.menu.get(i);
             System.out.printf("%d. %s - $%.2f\n",
                     i + 1,
                     item.getName(),
@@ -43,7 +43,7 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public MenuItem getMenuItemByIndex(int index) {
+    public MenuItem getMenuItemByIndex(final int index) {
         if (index > 0 && index <= this.menu.size()) {
             return this.menu.get(index - 1);
         }
@@ -51,8 +51,11 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public String getMenuItemNameByIndex(int index) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public String getMenuItemNameByIndex(final int index) {
+        if (index >= 0 && index < this.menu.size()) {
+            return this.menu.get(index).getName();
+        }
+        throw new IllegalArgumentException("Invalid menu item index");
     }
 
     @Override
