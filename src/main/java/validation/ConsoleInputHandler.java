@@ -20,9 +20,10 @@ import java.util.function.Predicate;
  */
 public class ConsoleInputHandler<T> implements InputHandler<T>, AutoCloseable {
    private final InputValidator<T> inputValidator;
-    private final Scanner scanner;
-    private final long timeoutSeconds;
+    private Scanner scanner;
     private final ExecutorService executor;
+    private final long timeoutSeconds;
+    private boolean ownsScanner;
 
     /**
      * Constructs a ConsoleInputHandler with the specified InputValidator.
@@ -33,6 +34,7 @@ public class ConsoleInputHandler<T> implements InputHandler<T>, AutoCloseable {
     public ConsoleInputHandler(final InputValidator<T> inputValidator, final long timeoutSeconds) {
        this.inputValidator = inputValidator;
         this.scanner = new Scanner(System.in);
+        this.ownsScanner = true;
         this.timeoutSeconds = timeoutSeconds;
         this.executor = Executors.newSingleThreadExecutor();
      }
@@ -48,8 +50,10 @@ public class ConsoleInputHandler<T> implements InputHandler<T>, AutoCloseable {
 
     @Override
     public void close() {
-       this.scanner.close();
-       this.executor.shutdownNow();
+       if (this.ownsScanner && this.scanner != null) {
+           this.scanner.close();
+         }
+        this.executor.shutdownNow();
     }
 
     private String getInputWithTimeout(final String prompt) throws TimeoutException {
@@ -65,6 +69,24 @@ public class ConsoleInputHandler<T> implements InputHandler<T>, AutoCloseable {
 
     @Override
     public T getInput(final String prompt) {
+       return this.handleInput(prompt);
+    }
+
+    public T handleInput(final Scanner externalScanner, final String prompt) {
+       final boolean previousOwnership = this.ownsScanner;
+       final Scanner previousScanner = this.scanner;
+
+       try {
+          this.scanner = externalScanner;
+          this.ownsScanner = false;
+          return this.handleInput(prompt);
+       } finally {
+          this.scanner = previousScanner;
+          this.ownsScanner = previousOwnership;
+       }
+    }
+
+    public T handleInput(final String prompt) {
        T input = null;
        boolean valid = false;
 
@@ -79,13 +101,13 @@ public class ConsoleInputHandler<T> implements InputHandler<T>, AutoCloseable {
                  } else {
                     System.out.println(this.inputValidator.getErrorMessage());
                  }
-                 } catch (final NumberFormatException e) {
+              } catch (final NumberFormatException e) {
                     System.out.println("Invalid number format: Please enter a valid " +
                           this.inputValidator.getTypeName());
                  } catch (final IllegalArgumentException e) {
                     System.out.println("Invalid input format: " + e.getMessage());
                  } catch (final Exception e) {
-                   System.out.println("Error processing input: " + e.getMessage());
+                    System.out.println("Error processing input: " + e.getMessage());
                 }
              } catch (final TimeoutException e) {
                 System.out.println(e.getMessage() + ". Please try again.");
@@ -93,6 +115,30 @@ public class ConsoleInputHandler<T> implements InputHandler<T>, AutoCloseable {
           }
           return input;
        }
+
+    public T handleInput(final Scanner externalScanner, final String prompt, final Predicate<T> condition) {
+       final boolean previousOwnership = this.ownsScanner;
+       final Scanner previousScanner = this.scanner;
+
+       try {
+          this.scanner = externalScanner;
+          this.ownsScanner = false;
+          return this.handleInput(prompt, condition);
+       } finally {
+          this.scanner = previousScanner;
+          this.ownsScanner = previousOwnership;
+       }
+    }
+
+    public T handleInput(final String prompt, final Predicate<T> condition) {
+       while (true) {
+          final T input = this.handleInput(prompt);
+          if (condition.test(input)) {
+             return input;
+          }
+          System.out.println("Input does not meet the required condition. Please try again.");
+       }
+    }
 
     @Override
     public T[] getMultipleInputs(final String prompt, final String stopCommand) {
@@ -110,8 +156,8 @@ public class ConsoleInputHandler<T> implements InputHandler<T>, AutoCloseable {
                    if (this.inputValidator.isValid(value)) {
                       inputs.add(value);
                    } else {
-                       System.out.println("Invalid input. Please enter a valid " +
-                             this.inputValidator.getTypeName() + ".");
+                      System.out.println("Invalid input. Please enter a valid " +
+                            this.inputValidator.getTypeName() + ".");
                     }
                  } catch (final NumberFormatException e) {
                     System.out.println("Invalid number format: Please enter a valid " +
@@ -126,24 +172,14 @@ public class ConsoleInputHandler<T> implements InputHandler<T>, AutoCloseable {
 
         if (inputs.isEmpty()) {
            @SuppressWarnings("unchecked")
-           final T[] emptyArray = (T[]) Array.newInstance(
-                 this.inputValidator.getClass().getComponentType(), 0);
-           return emptyArray;
+            final T[] emptyArray = (T[]) Array.newInstance(
+                  this.inputValidator.getClass().getComponentType(), 0);
+            return emptyArray;
         }
 
         @SuppressWarnings("unchecked")
         final T[] result = (T[]) Array.newInstance(
               inputs.get(0).getClass(), inputs.size());
         return inputs.toArray(result);
-     }
-
-    public T handleInput(final String prompt, final Predicate<T> condition) {
-       while (true) {
-          final T input = this.getInput(prompt);
-          if (condition.test(input)) {
-             return input;
-          }
-            System.out.println("Input does not meet the required condition. Please try again.");
-         }
      }
 }
