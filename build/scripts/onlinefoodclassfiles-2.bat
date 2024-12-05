@@ -17,7 +17,7 @@
 @if "%DEBUG%"=="" @echo off
 @rem ##########################################################################
 @rem
-@rem  onlinefoodclassfiles startup script for Windows
+@rem  onlinefoodclassfiles-2 startup script for Windows
 @rem
 @rem ##########################################################################
 
@@ -33,7 +33,7 @@ set APP_HOME=%DIRNAME%..
 @rem Resolve any "." and ".." in APP_HOME to make it shorter.
 for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
 
-@rem Add default JVM options here. You can also use JAVA_OPTS and ONLINEFOODCLASSFILES_OPTS to pass JVM options to this script.
+@rem Add default JVM options here. You can also use JAVA_OPTS and ONLINEFOODCLASSFILES_2_OPTS to pass JVM options to this script.
 set DEFAULT_JVM_OPTS=
 
 @rem Find java.exe
@@ -68,22 +68,22 @@ goto fail
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%APP_HOME%\lib\onlinefoodclassfiles.jar
+set CLASSPATH=%APP_HOME%\lib\onlinefoodclassfiles-2.jar
 
 
-@rem Execute onlinefoodclassfiles
-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %ONLINEFOODCLASSFILES_OPTS%  -classpath "%CLASSPATH%" app.Application %*
+@rem Execute onlinefoodclassfiles-2
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %ONLINEFOODCLASSFILES_2_OPTS%  -classpath "%CLASSPATH%" app.Application %*
 
 :end
 @rem End local scope for the variables with windows NT shell
 if %ERRORLEVEL% equ 0 goto mainEnd
 
 :fail
-rem Set variable ONLINEFOODCLASSFILES_EXIT_CONSOLE if you need the _script_ return code instead of
+rem Set variable ONLINEFOODCLASSFILES_2_EXIT_CONSOLE if you need the _script_ return code instead of
 rem the _cmd.exe /c_ return code!
 set EXIT_CODE=%ERRORLEVEL%
 if %EXIT_CODE% equ 0 set EXIT_CODE=1
-if not ""=="%ONLINEFOODCLASSFILES_EXIT_CONSOLE%" exit %EXIT_CODE%
+if not ""=="%ONLINEFOODCLASSFILES_2_EXIT_CONSOLE%" exit %EXIT_CODE%
 exit /b %EXIT_CODE%
 
 :mainEnd

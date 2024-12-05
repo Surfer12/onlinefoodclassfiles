@@ -18,6 +18,7 @@
 		</buildCommand>
 	</buildSpec>
 	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>com.microsoft.gradle.bs.importer.GradleBuildServerProjectNature</nature>
 	</natures>
 	<filteredResources>
