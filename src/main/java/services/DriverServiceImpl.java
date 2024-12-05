@@ -9,7 +9,7 @@ import model.Order;
 import model.OrderStatus;
 
 public class DriverServiceImpl implements DriverService {
-    private List<Driver> drivers = new ArrayList<>();
+    private final List<Driver> drivers = new ArrayList<>();
 
     @Override
     public List<Driver> getAvailableDrivers() {
@@ -19,24 +19,23 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Optional<Driver> getDriverForOrder(Order order) {
+    public Optional<Driver> getDriverForOrder(final Order order) {
         return this.drivers.stream()
                 .filter(Driver::isAvailable)
                 .findFirst();
     }
 
     @Override
-    public void assignDriverToOrder(Driver driver, Order order) {
+    public void assignDriverToOrder(final Driver driver, final Order order) {
         if (driver != null && order != null) {
             driver.setAvailable(false);
-            order.setDriver(driver);
-            // Optionally update order status
-            order.setStatus(OrderStatus.IN_PROGRESS); // Ensure OrderStatus.IN_PROGRESS exists
+            order.setDriver(Optional.of(driver));
+            order.setStatus(OrderStatus.IN_PROGRESS);
         }
     }
 
     @Override
-    public void rateDriver(Driver driver, Integer rating) {
+    public void rateDriver(final Driver driver, final Integer rating) {
         if (driver != null) {
             if (rating < 1 || rating > 5) {
                 System.out.println("Rating must be between 1 and 5.");
@@ -48,7 +47,7 @@ public class DriverServiceImpl implements DriverService {
         }
     }
 
-    public void processOrder(Order order) {
+    public void processOrder(final Order order) {
         if (order == null) {
             throw new IllegalArgumentException("Order cannot be null");
         }
@@ -61,7 +60,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Optional<Driver> getDriverById(Long driverId) {
+    public Optional<Driver> getDriverById(final Long driverId) {
         return this.drivers.stream()
                 .filter(driver -> driver.getId().equals(driverId))
                 .findFirst();

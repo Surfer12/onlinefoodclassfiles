@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import model.Drink;
 import model.MenuItem;
+import model.Pizza;
 import services.MenuService;
 import services.impl.MenuServiceImpl;
 import validation.ConsoleInputHandler;
@@ -30,12 +32,20 @@ public class MenuManager {
         System.out.println("\n--- Current Menu ---");
         for (int i = 0; i < menu.size(); i++) {
             final MenuItem item = menu.get(i);
-            System.out.printf("%d. %s - %s - $%.2f (Size: %s)\n",
-                i + 1,
-                item.getName(),
-                item.getDescription(),
-                item.getPrice(),
-                item.getSize());
+            if (item instanceof Pizza || item instanceof Drink) {
+                System.out.printf("%d. %s - %s - $%.2f (Size: %s)\n",
+                    i + 1,
+                    item.getName(),
+                    item.getDescription(),
+                    item.getPrice(),
+                    ((Pizza) item).getSize());
+            } else {
+                System.out.printf("%d. %s - %s - $%.2f\n",
+                    i + 1,
+                    item.getName(),
+                    item.getDescription(),
+                    item.getPrice());
+            }
         }
     }
 

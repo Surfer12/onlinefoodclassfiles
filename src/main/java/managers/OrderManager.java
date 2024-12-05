@@ -39,8 +39,8 @@ public class OrderManager {
             throw new IllegalArgumentException("Order must contain at least one menu item");
         }
 
-        // Create the order using the OrderService
-        final Order newOrder = this.orderService.createOrder(menuItems);
+        // Create the order using the OrderService with a default customer ID
+        final Order newOrder = this.orderService.createOrder(menuItems, 0L);
 
         // Add the order to the order queue
         this.orderQueue.enqueue(newOrder);

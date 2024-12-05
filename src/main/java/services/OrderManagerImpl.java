@@ -1,8 +1,10 @@
 package services;
 
+import java.util.List;
 import java.util.Scanner;
 
 import managers.MenuManager;
+import model.MenuItem;
 import queue.OrderQueue;
 import validation.ConsoleInputHandler;
 
@@ -26,8 +28,10 @@ public class OrderManagerImpl implements OrderManager {
         // Use locationHandler to get and validate delivery location
         final String location = locationHandler.getInput("Enter delivery location: ");
 
-        // Existing code to process the order with email and location...
-        final List<MenuItem> orderItems = menuManager.getMenuItems();
+        // Use the correct method to get menu items
+        final List<MenuItem> orderItems = menuManager.selectMenuItems(scanner, positiveIntegerHandler);
+
+        // Additional order processing logic...
     }
 
     @Override
