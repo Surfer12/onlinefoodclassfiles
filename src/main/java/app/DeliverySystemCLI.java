@@ -78,8 +78,8 @@ public class DeliverySystemCLI {
                     System.out.println("An unexpected error occurred: " + e.getMessage());
                 }
             }
-        } finally {
-            this.cleanup();
+        } catch (final Exception e) {
+            DeliverySystemCLI.logger.log(Level.SEVERE, "An unexpected error occurred", e);
         }
     }
 
