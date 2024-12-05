@@ -43,7 +43,25 @@ public class ConsoleInputHandler<T> implements InputHandler<T> {
     */
    @Override
    public T getInput(final String prompt) {
-      return this.handleInput(new Scanner(System.in), prompt);
+      final Scanner scanner = new Scanner(System.in);
+      T input = null;
+      boolean valid = false;
+      while (!valid) {
+         System.out.print(prompt);
+         final String userInput = scanner.nextLine();
+         try {
+            final T parsedInput = this.inputValidator.parse(userInput);
+            if (this.inputValidator.isValid(parsedInput)) {
+               input = parsedInput;
+               valid = true;
+            } else {
+               System.out.println(this.inputValidator.getErrorMessage());
+            }
+         } catch (final Exception e) {
+            System.out.println("Error: " + e.getMessage());
+         }
+      }
+      return input;
    }
 
    /**
@@ -57,13 +75,10 @@ public class ConsoleInputHandler<T> implements InputHandler<T> {
 
    @Override
    public T[] getMultipleInputs(final String prompt, final String stopCommand) {
-      final List<T> inputs = new ArrayList<>();
       final Scanner scanner = new Scanner(System.in);
+      final List<T> inputs = new ArrayList<>();
       while (true) {
          System.out.println(prompt);
-         if (!scanner.hasNextLine()) {
-            break;
-         }
          final String input = scanner.nextLine();
          if (input.equalsIgnoreCase(stopCommand)) {
             break;
@@ -80,33 +95,42 @@ public class ConsoleInputHandler<T> implements InputHandler<T> {
          }
       }
 
-      // Create an array of the correct type
       if (inputs.isEmpty()) {
          return (T[]) Array.newInstance(Object.class, 0);
       }
 
-      // Use reflection to create an array of the correct type
       return inputs.toArray((T[]) Array.newInstance(inputs.get(0).getClass(), inputs.size()));
    }
 
    public T handleInput(final Scanner scanner, final String prompt) {
-      final T input = null;
-      final boolean valid = false;
+      T input = null;
+      boolean valid = false;
       while (!valid && scanner.hasNextLine()) {
          System.out.print(prompt);
          final String userInput = scanner.nextLine();
          try {
             final T parsedInput = this.inputValidator.parse(userInput);
-       return this.getInput(prompt);
+            if (this.inputValidator.isValid(parsedInput)) {
+               input = parsedInput;
+               valid = true;
+            } else {
+               System.out.println(this.inputValidator.getErrorMessage());
+            }
+         } catch (final Exception e) {
+            System.out.println("Invalid input. Please try again.");
+         }
+      }
+      return input;
    }
 
    public T handleInput(final Scanner scanner, final String prompt, final Predicate<T> condition) {
-       while (true) {
-           final T input = this.getInput(prompt);
-           if (condition.test(input)) {
-               return input;
-           }
-           System.out.println("Input does not meet the required condition.");
-       }
-    }
+      while (scanner.hasNextLine()) {
+         final T input = this.handleInput(scanner, prompt);
+         if (input != null && condition.test(input)) {
+            return input;
+         }
+         System.out.println("Input does not meet the required condition.");
+      }
+      return null;
+   }
 }
