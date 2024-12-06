@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="Driver Management Tests" tests="2" skipped="1" failures="1" errors="0" timestamp="2024-12-05T23:45:23" hostname="Ryans-MacBook-Pro.local" time="22.492">
+<testsuite name="Driver Management Tests" tests="2" skipped="1" failures="1" errors="0" timestamp="2024-12-06T01:29:24" hostname="Ryans-MacBook-Pro.local" time="23.628">
   <properties/>
   <testcase name="Should generate valid license plates" classname="app.DeliverySystemCLITest$DriverManagementTests" time="0.002">
     <failure message="org.opentest4j.AssertionFailedError: expected: &lt;true&gt; but was: &lt;false&gt;" type="org.opentest4j.AssertionFailedError">org.opentest4j.AssertionFailedError: expected: &lt;true&gt; but was: &lt;false&gt;
@@ -106,11 +106,11 @@
 	at app//worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)
 </failure>
   </testcase>
-  <testcase name="Should prevent availability changes for active drivers" classname="app.DeliverySystemCLITest$DriverManagementTests" time="22.489">
+  <testcase name="Should prevent availability changes for active drivers" classname="app.DeliverySystemCLITest$DriverManagementTests" time="23.625">
     <skipped/>
   </testcase>
   <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[Dec 05, 2024 3:45:23 PM app.DeliverySystemCLI start
+  <system-err><![CDATA[Dec 05, 2024 5:29:24 PM app.DeliverySystemCLI start
 SEVERE: An unexpected error occurred
 java.util.NoSuchElementException: No line found
 	at java.base/java.util.Scanner.nextLine(Unknown Source)

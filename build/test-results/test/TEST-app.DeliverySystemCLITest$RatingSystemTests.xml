@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="Rating System Tests" tests="2" skipped="0" failures="2" errors="0" timestamp="2024-12-05T23:45:23" hostname="Ryans-MacBook-Pro.local" time="0.006">
+<testsuite name="Rating System Tests" tests="2" skipped="0" failures="2" errors="0" timestamp="2024-12-06T01:29:24" hostname="Ryans-MacBook-Pro.local" time="0.007">
   <properties/>
   <testcase name="Should show rating statistics" classname="app.DeliverySystemCLITest$RatingSystemTests" time="0.003">
     <failure message="org.opentest4j.AssertionFailedError: expected: &lt;true&gt; but was: &lt;false&gt;" type="org.opentest4j.AssertionFailedError">org.opentest4j.AssertionFailedError: expected: &lt;true&gt; but was: &lt;false&gt;
@@ -106,7 +106,7 @@
 	at app//worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)
 </failure>
   </testcase>
-  <testcase name="Should validate rating values" classname="app.DeliverySystemCLITest$RatingSystemTests" time="0.002">
+  <testcase name="Should validate rating values" classname="app.DeliverySystemCLITest$RatingSystemTests" time="0.003">
     <failure message="org.opentest4j.AssertionFailedError: expected: &lt;true&gt; but was: &lt;false&gt;" type="org.opentest4j.AssertionFailedError">org.opentest4j.AssertionFailedError: expected: &lt;true&gt; but was: &lt;false&gt;
 	at app//org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at app//org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
@@ -212,7 +212,7 @@
 </failure>
   </testcase>
   <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[Dec 05, 2024 3:45:23 PM app.DeliverySystemCLI start
+  <system-err><![CDATA[Dec 05, 2024 5:29:24 PM app.DeliverySystemCLI start
 SEVERE: An unexpected error occurred
 java.util.NoSuchElementException: No line found
 	at java.base/java.util.Scanner.nextLine(Unknown Source)
@@ -315,7 +315,7 @@ java.util.NoSuchElementException: No line found
 	at worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69)
 	at worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)
 
-Dec 05, 2024 3:45:23 PM app.DeliverySystemCLI start
+Dec 05, 2024 5:29:24 PM app.DeliverySystemCLI start
 SEVERE: An unexpected error occurred
 java.util.NoSuchElementException: No line found
 	at java.base/java.util.Scanner.nextLine(Unknown Source)
