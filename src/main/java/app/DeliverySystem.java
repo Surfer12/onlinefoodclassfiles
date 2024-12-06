@@ -81,16 +81,10 @@ public class DeliverySystem {
                 }
             } else {
                 System.out.println("No available driver for order " + order.getOrderId());
-                handleFailedOrderProcessing(order);
             }
         } catch (final OrderProcessingException | PaymentException | QueueFullException | ValidationException e) {
             throw new OrderProcessingException("Failed to assign order to driver: " + e.getMessage(), e);
         }
-    }
-
-    private void handleFailedOrderProcessing(final Order order) {
-        System.out.println("Failed to process order " + order.getOrderId() + ": No available drivers");
-        this.notificationService.sendNotification("Failed to process order " + order.getOrderId() + ": No available drivers");
     }
 
     public void completeDelivery(final Long orderId, final Long driverId) {
@@ -129,19 +123,18 @@ public class DeliverySystem {
         return this.driverService.getAvailableDrivers().stream().findFirst();
     }
 
-    public void assignOrderToLeastBusyDriver(final Order order) {
+    public void assignOrderToLeastBusyDriver(Order order) {
         Optional<Driver> leastBusyDriver = this.driverService.getAvailableDrivers().stream()
                 .min((d1, d2) -> Integer.compare(d1.getActiveOrderCount(), d2.getActiveOrderCount()));
-        assignOrderToDriver(order, leastBusyDriver);
+        if (leastBusyDriver.isPresent()) {
+            this.assignOrderToDriver(order, leastBusyDriver);
+        } else {
+            this.handleFailedOrderProcessing(order);
+        }
     }
 
-    public void showRatingStatistics() {
-        Map<Driver, Double> ratingStatistics = new HashMap<>();
-        for (Driver driver : driverService.getAllDrivers()) {
-            ratingStatistics.put(driver, driver.getAverageRating());
-        }
-        ratingStatistics.forEach((driver, avgRating) -> {
-            System.out.println("Driver: " + driver.getName() + ", Average Rating: " + avgRating);
-        });
+    public void handleFailedOrderProcessing(Order order) {
+        System.out.println("Failed to process order " + order.getOrderId() + ": No available drivers");
+        this.notificationService.sendOrderFailureNotification(order);
     }
 }
