@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="Driver Management Tests" tests="2" skipped="1" failures="1" errors="0" timestamp="2024-12-06T12:32:46" hostname="Ryans-MacBook-Pro.local" time="33.562">
+<testsuite name="Driver Management Tests" tests="2" skipped="1" failures="1" errors="0" timestamp="2024-12-06T13:45:18" hostname="Ryans-MacBook-Pro.local" time="48.246">
   <properties/>
-  <testcase name="Should generate valid license plates" classname="app.DeliverySystemCLITest$DriverManagementTests" time="0.005">
+  <testcase name="Should generate valid license plates" classname="app.DeliverySystemCLITest$DriverManagementTests" time="0.009">
     <failure message="org.opentest4j.AssertionFailedError: expected: &lt;true&gt; but was: &lt;false&gt;" type="org.opentest4j.AssertionFailedError">org.opentest4j.AssertionFailedError: expected: &lt;true&gt; but was: &lt;false&gt;
 	at app//org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at app//org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
@@ -106,11 +106,11 @@
 	at app//worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)
 </failure>
   </testcase>
-  <testcase name="Should prevent availability changes for active drivers" classname="app.DeliverySystemCLITest$DriverManagementTests" time="33.555">
+  <testcase name="Should prevent availability changes for active drivers" classname="app.DeliverySystemCLITest$DriverManagementTests" time="48.236">
     <skipped/>
   </testcase>
   <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[Dec 06, 2024 4:32:46 AM app.DeliverySystemCLI start
+  <system-err><![CDATA[Dec 06, 2024 5:45:18 AM app.DeliverySystemCLI start
 SEVERE: An unexpected error occurred
 java.util.NoSuchElementException: No line found
 	at java.base/java.util.Scanner.nextLine(Unknown Source)

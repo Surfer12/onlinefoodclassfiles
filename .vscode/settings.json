@@ -4,8 +4,8 @@
     "java.debug.settings.hotCodeReplace": "auto",
     "java.configuration.runtimes": [
         {
-            "name": "JavaSE-17",
-            "path": "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home",
+            "name": "JavaSE-23",
+            "path": "/Library/Java/JavaVirtualMachines/temurin-23.jdk/Contents/Home",
             "default": true
         }
     ],

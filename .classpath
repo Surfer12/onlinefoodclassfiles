@@ -1,120 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" output="build/resources/test" path="src/test/resources">
+	<classpathentry kind="src" output="bin/test" path="src/test/java">
 		<attributes>
+			<attribute name="gradle_scope" value="test"/>
+			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="test" value="true"/>
-			<attribute name="optional" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="resource" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" output="build/classes/java/test" path="src/test/java">
+	<classpathentry kind="src" output="bin/main" path="src/main/java">
 		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="gradle_scope" value="main"/>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" output="build/resources/main" path="src/main/resources">
-		<attributes>
-			<attribute name="optional" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="resource" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" output="build/classes/java/main" path="src/main/java">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" output="build/classes/java/test" path="build/generated/sources/annotationProcessor/java/test">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="optional" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" output="build/classes/java/main" path="build/generated/sources/annotationProcessor/java/main">
-		<attributes>
-			<attribute name="optional" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JavaSE-17">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-engine/5.9.2/572f7a553b53f83ee59cc045ce1c3772864ab76c/junit-jupiter-engine-5.9.2.jar" sourcepath="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-engine/5.9.2/128d5b5b681442f6eeab0c8c17825983cc233d68/junit-jupiter-engine-5.9.2-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/5.9.2/fed843581520eac594bc36bb4b0f55e7b947dda9/junit-jupiter-api-5.9.2.jar" sourcepath="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/5.9.2/5232572dbe6548235580494edb226fed76109643/junit-jupiter-api-5.9.2-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.14.4/3bf5ac1104554908cc623e40e58a00be37c35f36/byte-buddy-agent-1.14.4.jar" sourcepath="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.14.4/996d4bbc74a0bfc5180b442d7be19ce26a1e38fe/byte-buddy-agent-1.14.4-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.opentest4j/opentest4j/1.2.0/28c11eb91f9b6d8e200631d46e20a7f407f2a046/opentest4j-1.2.0.jar" sourcepath="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.opentest4j/opentest4j/1.2.0/41d55b3c2254de9837b4ec8923cbd371b8a7eab5/opentest4j-1.2.0-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-junit-jupiter/5.3.1/d6ac0f6d54addf02def4ba1213f73a15ae6c2308/mockito-junit-jupiter-5.3.1.jar" sourcepath="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-junit-jupiter/5.3.1/6aa189452f42167be3dc9ce5ac029df0f15ba0e5/mockito-junit-jupiter-5.3.1-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.assertj/assertj-core/3.24.2/ebbf338e33f893139459ce5df023115971c2786f/assertj-core-3.24.2.jar" sourcepath="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.assertj/assertj-core/3.24.2/76c425ccc878f91e347fa3cb0d686772679b66e2/assertj-core-3.24.2-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.apiguardian/apiguardian-api/1.1.2/a231e0d844d2721b0fa1b238006d15c6ded6842a/apiguardian-api-1.1.2.jar" sourcepath="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.apiguardian/apiguardian-api/1.1.2/e0787a997746ac32639e0bf3cb27af8dce8a3428/apiguardian-api-1.1.2-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/1.9.2/6f9f8621d8230cd38aa42e58ccbc0c00569131ce/junit-platform-commons-1.9.2.jar" sourcepath="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/1.9.2/44bff8441bcb66b817b5a9d5c1a6717cdf26dbde/junit-platform-commons-1.9.2-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/5.3.1/7cac313592a29ae5e29c52c22b15c3ae5ab561b2/mockito-core-5.3.1.jar" sourcepath="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/5.3.1/cafb8e6597bc015f25eb40141792991f0f39afc2/mockito-core-5.3.1-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.objenesis/objenesis/3.3/1049c09f1de4331e8193e579448d0916d75b7631/objenesis-3.3.jar" sourcepath="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.objenesis/objenesis/3.3/5fef34eeee6816b0ba2170755a8a9db7744990c3/objenesis-3.3-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.14.4/20498aaec9b00a5cfdb831e7bf68feafa833ce4b/byte-buddy-1.14.4.jar" sourcepath="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.14.4/94651fa92930ce2d26e3d5e4a7af5631f2f6cb2c/byte-buddy-1.14.4-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-engine/1.9.2/40aeef2be7b04f96bb91e8b054affc28b7c7c935/junit-platform-engine-1.9.2.jar" sourcepath="/Users/ryanoates/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-engine/1.9.2/819f0849cf19b1f46718c36a4fc8406c87bced45/junit-platform-engine-1.9.2-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-23/"/>
+	<classpathentry kind="con" path="org.eclipse.buildship.core.gradleclasspathcontainer"/>
+	<classpathentry kind="output" path="bin/default"/>
 </classpath>
