@@ -134,6 +134,15 @@ public class DeliverySystemCLITest {
             Assertions.assertTrue(output.contains("Thank you for using"));
             Assertions.assertTrue(output.contains("Have a great day"));
         }
+
+        @Test
+        @DisplayName("Should handle pressing Enter to continue through the process")
+        void testPressEnterToContinue() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput("1", "123456", "test@email.com", "123 Main St", "12345", "0", "y", "");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Order placed successfully!"));
+        }
     }
 
     @Nested
@@ -301,5 +310,15 @@ public class DeliverySystemCLITest {
         this.cli.start();
         final String output = this.getOutput();
         Assertions.assertTrue(output.contains("Order cancelled"));
+    }
+
+    @Test
+    @DisplayName("Should handle newline characters in input")
+    void testNewlineCharactersInInput() {
+        this.cli = this.createCLIWithInput(
+                "4\n", "1\n", "John Doe\n", "1234567890\n", "Sedan\n", "4\n");
+        this.cli.start();
+        final String output = this.getOutput();
+        Assertions.assertTrue(output.contains("Driver added successfully!"));
     }
 }
