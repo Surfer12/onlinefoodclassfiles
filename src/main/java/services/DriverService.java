@@ -18,4 +18,11 @@ public interface DriverService {
     void addDriver(Driver driver);
 
     boolean removeDriver(Long driverId);
+
+    // New methods for driver management
+    void updateDriverInfo(Long driverId, String newVehicle, boolean available);
+
+    void deleteDriver(Long driverId);
+
+    void viewDriverRatings(Long driverId);
 }

@@ -96,4 +96,40 @@ public class DriverServiceImpl implements DriverService {
         }
         return this.drivers.removeIf(d -> d.getId().equals(driverId));
     }
+
+    @Override
+    public void updateDriverInfo(Long driverId, String newVehicle, boolean available) {
+        Optional<Driver> driverOpt = getDriverById(driverId);
+        if (driverOpt.isPresent()) {
+            Driver driver = driverOpt.get();
+            if (newVehicle != null && !newVehicle.trim().isEmpty()) {
+                driver.setVehicle(newVehicle);
+            }
+            driver.setAvailable(available);
+        } else {
+            throw new IllegalArgumentException("Driver not found");
+        }
+    }
+
+    @Override
+    public void deleteDriver(Long driverId) {
+        if (driverId == null) {
+            throw new IllegalArgumentException("Driver ID cannot be null");
+        }
+        this.drivers.removeIf(d -> d.getId().equals(driverId));
+    }
+
+    @Override
+    public void viewDriverRatings(Long driverId) {
+        Optional<Driver> driverOpt = getDriverById(driverId);
+        if (driverOpt.isPresent()) {
+            Driver driver = driverOpt.get();
+            System.out.println("Driver: " + driver.getName());
+            System.out.println("All ratings: " + driver.getRatings());
+            System.out.println("Average rating: " + String.format("%.1f", driver.getAverageRating()));
+            System.out.println("Total ratings: " + driver.getRatings().size());
+        } else {
+            throw new IllegalArgumentException("Driver not found");
+        }
+    }
 }
