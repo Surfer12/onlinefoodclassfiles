@@ -8,6 +8,7 @@ package services.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import model.Driver;
 import model.Order;
@@ -95,5 +96,20 @@ public class DriverServiceImpl implements DriverService {
             throw new IllegalArgumentException("Driver ID cannot be null");
         }
         return this.drivers.removeIf(d -> d.getId().equals(driverId));
+    }
+
+    public String generateRandomLicensePlate() {
+        Random random = new Random();
+        StringBuilder plate = new StringBuilder();
+        // Generate 3 random uppercase letters
+        for (int i = 0; i < 3; i++) {
+            plate.append((char) ('A' + random.nextInt(26)));
+        }
+        plate.append('-');
+        // Generate 4 random digits
+        for (int i = 0; i < 4; i++) {
+            plate.append(random.nextInt(10));
+        }
+        return plate.toString();
     }
 }
