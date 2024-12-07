@@ -15,6 +15,10 @@ Location: src/test/java/app/DeliverySystemCLITest.java:230. Should generate vali
 Location: src/test/java/app/DeliverySystemCLITest.java:190
 Should prevent availability changes for active drivers: SKIPPED
 Location: src/test/java/app/DeliverySystemCLITest.java:198
+Should handle newline characters in input: FAILED
+Location: src/test/java/app/DeliverySystemCLITest.java:310
+Should handle pressing Enter to continue through the process: FAILED
+Location: src/test/java/app/DeliverySystemCLITest.java:320
 Corresponding Required Updates
 Referencing the src/main/java/app/docs/neededupdatesforcli documentation, several updates are necessary to address the test failures:  Initialize Menu on Entry
 Ensure the main application initializes the menu upon starting without requiring additional input (issue: "initial run of main needs enter to initialize menu").
@@ -96,6 +100,12 @@ Solution: Implement validation to ensure that rating values fall within acceptab
 Should generate valid license plates
 Issue: License plates are either hardcoded or not adhering to the required format.
 Solution: Implement the generateRandomLicensePlate method to create random and valid license plates as shown above.
+Should handle newline characters in input
+Issue: The CLI does not handle newline characters in user input, leading to unexpected behavior.
+Solution: Implement input validation to handle newline characters in the processInput and handleMenuChoice methods.
+Should handle pressing Enter to continue through the process
+Issue: The CLI does not handle pressing Enter to continue through the process, leading to unexpected behavior.
+Solution: Implement input validation to handle pressing Enter to continue through the process in the start method.
 Final Steps
 Implement the Required Updates: Start by addressing each of the issues listed above, implementing the necessary code changes.
 Run Tests Iteratively: After making changes, run your test suite to ensure that each test passes before moving on to the next.
@@ -104,4 +114,3 @@ Update Documentation: Reflect the changes in your README.md and other documentat
 Review and Merge: After thorough testing and documentation updates, review the changes and merge them into your main codebase.
 Conclusion
 By systematically addressing each failing test and implementing the corresponding updates, you can enhance the robustness and functionality of your Online Food Delivery System. Ensure to follow best practices in coding, testing, and documentation to maintain a high-quality codebase.
-
