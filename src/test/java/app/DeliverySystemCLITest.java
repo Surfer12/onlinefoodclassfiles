@@ -175,6 +175,17 @@ public class DeliverySystemCLITest {
             Assertions.assertTrue(output.contains("Quantity must be greater than 0"));
             Assertions.assertTrue(output.contains("Please enter a valid number"));
         }
+
+        @Test
+        @DisplayName("Should validate empty or null inputs in handlePlaceNewOrder")
+        void testHandlePlaceNewOrderInputValidation() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "1", "123456", "", "test@email.com", "123 Main St", "12345",
+                    "1", "2", "0", "y");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Email cannot be empty"));
+        }
     }
 
     @Nested
@@ -214,6 +225,26 @@ public class DeliverySystemCLITest {
             DeliverySystemCLITest.this.cli.start();
             final String output = DeliverySystemCLITest.this.getOutput();
             Assertions.assertTrue(output.contains("Cannot change availability while driver has active orders"));
+        }
+
+        @Test
+        @DisplayName("Should validate empty or null inputs in handleAddDriver")
+        void testHandleAddDriverInputValidation() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "4", "1", "", "1234567890", "Sedan", "4");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Driver name cannot be empty"));
+        }
+
+        @Test
+        @DisplayName("Should validate empty or null inputs in handleUpdateDriverInfo")
+        void testHandleUpdateDriverInfoInputValidation() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "4", "4", "1", "1", "");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Vehicle updated successfully"));
         }
     }
 

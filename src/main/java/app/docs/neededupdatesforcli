@@ -1,23 +1,23 @@
-// inital run of main needs enter to initalize menu
-// enter number of customer id ; list number long needed i.e number of digits
-// If we add two of same item after quanaitiy is entered then it may not be added?
-// alter order, add item, change item quantity, delete item
-// add driver, delete driver
-// add rating, delete rating
-// space or null does not list as error entered
-// exit from enter driver manage drivers option 7
-// add license plate random and amount of numbers in it
-// driver add to first not last of hardcoded list.
-// enter driverId to rate driver not orderID
-// 4 and 7 are too similar
-// manager driver gives info, but not update rating
-// process orders didn't grab
-// give driver id
-// remove hardcode of 5 drivers
-// main menu back needs two enter//
-//exit from main menu message
-// input validation for empty or null inputs in handlePlaceNewOrder method
-// input validation for empty or null inputs in handleAddDriver method
-// input validation for empty or null inputs in handleUpdateDriverInfo method
-// assign orders to the least busy driver
-// handle failed order processing in assignOrderToDriver method
+- Initial run of main needs enter to initialize menu
+- Enter number of customer ID; list number long needed i.e., number of digits
+- If we add two of the same item after quantity is entered, then it may not be added?
+- Alter order, add item, change item quantity, delete item
+- Add driver, delete driver
+- Add rating, delete rating
+- Space or null does not list as error entered
+- Exit from enter driver manage drivers option 7
+- Add license plate random and amount of numbers in it
+- Driver add to first not last of hardcoded list.
+- Enter driverId to rate driver not orderID
+- 4 and 7 are too similar
+- Manager driver gives info, but not update rating
+- Process orders didn't grab
+- Give driver ID
+- Remove hardcode of 5 drivers
+- Main menu back needs two enter
+- Exit from main menu message
+- Input validation for empty or null inputs in handlePlaceNewOrder method
+- Input validation for empty or null inputs in handleAddDriver method
+- Input validation for empty or null inputs in handleUpdateDriverInfo method
+- Assign orders to the least busy driver
+- Handle failed order processing in assignOrderToDriver method
