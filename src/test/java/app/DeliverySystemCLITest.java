@@ -246,6 +246,38 @@ public class DeliverySystemCLITest {
             final String output = DeliverySystemCLITest.this.getOutput();
             Assertions.assertTrue(output.contains("Vehicle updated successfully"));
         }
+
+        @Test
+        @DisplayName("Should add a new driver")
+        void testAddDriver() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "4", "1", "Jane Doe", "0987654321", "SUV", "4");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Driver added successfully"));
+        }
+
+        @Test
+        @DisplayName("Should update driver information")
+        void testUpdateDriver() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "4", "1", "Jane Doe", "0987654321", "SUV", "4", // Add driver
+                    "4", "4", "1", "1", "New Vehicle");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Vehicle updated successfully"));
+        }
+
+        @Test
+        @DisplayName("Should delete a driver")
+        void testDeleteDriver() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "4", "1", "Jane Doe", "0987654321", "SUV", "4", // Add driver
+                    "4", "2", "1");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Driver removed successfully"));
+        }
     }
 
     @Nested

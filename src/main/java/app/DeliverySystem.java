@@ -1,146 +1,368 @@
 package app;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import CustomException.OrderProcessingException;
-import CustomException.PaymentException;
-import CustomException.QueueFullException;
-import CustomException.ValidationException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.Scanner;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
+import managers.DriverManager;
+import managers.MenuManager;
+import managers.OrderManager;
 import managers.OrderStatusManager;
-import model.Driver;
-import model.Order;
-import model.OrderStatus;
+import notification.BasicNotificationService;
 import notification.NotificationService;
-import queue.OrderQueue;
-import services.DriverService;
-import validation.ValidationUtils;
+import services.OrderStatusService;
+import services.impl.OrderStatusServiceImpl;
+import validation.ConsoleInputHandler;
+import validation.InputValidatorImpl;
+import validation.PositiveIntegerValidator;
 
-public class DeliverySystem {
-    private final Map<Long, String> orderStatuses = new HashMap<>();
-    private final NotificationService notificationService;
-    private final OrderStatusManager statusManager;
-    private final DriverService driverService;
+@DisplayName("DeliverySystemCLI Tests")
+public class DeliverySystemCLITest {
+    private ByteArrayOutputStream outputStream;
+    private PrintStream originalOut;
+    private DeliverySystemCLI cli;
+    private DriverManager driverManager;
+    private MenuManager menuManager;
+    private NotificationService notificationService;
+    private ConsoleInputHandler<Integer> positiveIntegerHandler;
+    private OrderManager orderManager;
+    private DeliverySystem deliverySystem;
+    private OrderStatusManager statusManager;
 
-    public DeliverySystem(final NotificationService notificationService, final OrderStatusManager statusManager,
-            final DriverService driverService) {
-        this.notificationService = notificationService;
-        this.statusManager = statusManager;
-        this.driverService = driverService;
+    @BeforeEach
+    void setup() {
+        // Setup output capture
+        this.originalOut = System.out;
+        this.outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(this.outputStream));
+
+        // Initialize core services
+        final OrderStatusService orderStatusService = new OrderStatusServiceImpl();
+        this.notificationService = new BasicNotificationService(orderStatusService);
+        this.statusManager = new OrderStatusManager(this.notificationService);
+
+        // Initialize managers
+        this.menuManager = new MenuManager();
+        this.orderManager = new OrderManager(this.statusManager);
+        this.driverManager = new DriverManager();
+
+        // Initialize input handler
+        this.positiveIntegerHandler = new ConsoleInputHandler<>(
+                new InputValidatorImpl<>(
+                        new PositiveIntegerValidator(),
+                        "Positive Integer",
+                        "Invalid positive integer"));
+
+        // Initialize delivery system
+        this.deliverySystem = new DeliverySystem(
+                this.notificationService,
+                this.statusManager,
+                this.driverManager.getDriverService());
     }
 
-    public void submitOrder(final Order order) {
-        try {
-            // Input validation
-            ValidationUtils.validateCustomerId(order.getCustomerId());
-            ValidationUtils.validateItems(order.getItems(), 10); // Assuming max 10 items per order
+    @AfterEach
+    void cleanup() {
+        System.setOut(this.originalOut);
+    }
 
-            if (this.isValidStatusTransition(OrderStatus.SUBMITTED, OrderStatus.PENDING)) {
-                System.out.println("Order submitted: " + order.getOrderId());
-                this.orderStatuses.put(order.getOrderId(), "Pending");
-                this.notificationService.sendOrderConfirmationToCustomer(order);
-            } else {
-                throw new OrderProcessingException("Invalid status transition from SUBMITTED to PENDING");
-            }
-        } catch (final OrderProcessingException | PaymentException | QueueFullException | ValidationException e) {
-            throw new OrderProcessingException("Failed to submit order: " + e.getMessage(), e);
+    private Scanner createTestScanner(final String... inputs) {
+        final StringBuilder input = new StringBuilder();
+        for (final String s : inputs) {
+            input.append(s).append("\n");
+        }
+        // Always append exit command if not present
+        if (!input.toString().trim().endsWith("9")) {
+            input.append("9\n");
+        }
+        return new Scanner(new ByteArrayInputStream(input.toString().getBytes()));
+    }
+
+    private DeliverySystemCLI createCLIWithInput(final String... inputs) {
+        return new DeliverySystemCLI(
+                this.menuManager,
+                this.orderManager,
+                this.driverManager,
+                this.notificationService,
+                this.positiveIntegerHandler,
+                this.deliverySystem,
+                        this.createTestScanner(inputs));
+    }
+
+    private String getOutput() {
+        return this.outputStream.toString();
+    }
+
+    @Nested
+    @DisplayName("Menu Navigation Tests")
+    class MenuNavigationTests {
+        @Test
+        @DisplayName("Should initialize with single enter press")
+        void testInitialization() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput("");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Welcome to the Online Food Delivery System"));
+            Assertions.assertTrue(output.contains("Press Enter to start"));
+        }
+
+        @Test
+        @DisplayName("Should handle invalid menu choices")
+        void testInvalidMenuChoice() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput("10", "abc", "-1");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Invalid menu choice"));
+            Assertions.assertTrue(output.contains("Please enter a number between 1 and 9"));
+        }
+
+        @Test
+        @DisplayName("Should exit gracefully")
+        void testGracefulExit() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput("9");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Thank you for using"));
+            Assertions.assertTrue(output.contains("Have a great day"));
         }
     }
 
-    public void updateOrderStatus(final Order order, final OrderStatus newStatus) {
-        try {
-            if (this.isValidStatusTransition(order.getStatus(), newStatus)) {
-                this.statusManager.updateOrderStatus(order, newStatus);
-                this.orderStatuses.put(order.getOrderId(), newStatus.toString());
-            } else {
-                throw new OrderProcessingException("Invalid status transition from " + order.getStatus() + " to " + newStatus);
-            }
-        } catch (final OrderProcessingException | PaymentException | QueueFullException | ValidationException e) {
-            throw new OrderProcessingException("Failed to update order status: " + e.getMessage(), e);
+    @Nested
+    @DisplayName("Order Management Tests")
+    class OrderManagementTests {
+        @Test
+        @DisplayName("Should validate customer ID format")
+        void testCustomerIdValidation() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput("1", "12345", "123456",
+                    "test@email.com", "123 Main St", "12345");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Customer ID must be exactly 6 digits"));
+        }
+
+        @Test
+        @DisplayName("Should handle duplicate items in order")
+        void testDuplicateItems() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "1", "123456", "test@email.com", "123 Main St", "12345",
+                    "1", "2", // First item with quantity 2
+                    "1", "3", // Same item with quantity 3
+                    "0", "y" // Complete order
+            );
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Updated quantity"));
+        }
+
+        @Test
+        @DisplayName("Should validate item quantities")
+        void testItemQuantityValidation() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "1", "123456", "test@email.com", "123 Main St", "12345",
+                    "1", "0", "-1", "abc", "2",
+                    "0", "y");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Quantity must be greater than 0"));
+            Assertions.assertTrue(output.contains("Please enter a valid number"));
+        }
+
+        @Test
+        @DisplayName("Should validate empty or null inputs in handlePlaceNewOrder")
+        void testHandlePlaceNewOrderInputValidation() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "1", "123456", "", "test@email.com", "123 Main St", "12345",
+                    "1", "2", "0", "y");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Email cannot be empty"));
         }
     }
 
-    private boolean isValidStatusTransition(final OrderStatus current, final OrderStatus next) {
-        // Define valid transitions
-        return switch (current) {
-            case SUBMITTED -> next == OrderStatus.PENDING || next == OrderStatus.CANCELLED;
-            case PENDING -> next == OrderStatus.IN_PROGRESS || next == OrderStatus.CANCELLED;
-            case IN_PROGRESS -> next == OrderStatus.PREPARING || next == OrderStatus.CANCELLED;
-            case PREPARING -> next == OrderStatus.OUT_FOR_DELIVERY || next == OrderStatus.CANCELLED;
-            case OUT_FOR_DELIVERY -> next == OrderStatus.DELIVERED || next == OrderStatus.CANCELLED;
-            case DELIVERED, CANCELLED -> false; // Terminal states
-            default -> false;
-        };
-    }
+    @Nested
+    @DisplayName("Driver Management Tests")
+    class DriverManagementTests {
+        @Test
+        @DisplayName("Should generate valid license plates")
+        void testLicensePlateGeneration() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput("4", "1", "John Doe",
+                    "1234567890", "Sedan", "4");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Generated license plate"));
+            Assertions.assertTrue(output.matches(".*[A-Z]{3}-\\d{4}.*"));
+        }
 
-    public void assignOrderToDriver(final Order order, final Optional<Driver> driver) {
-        try {
-            if (driver.isPresent()) {
-                if (this.isValidStatusTransition(order.getStatus(), OrderStatus.IN_PROGRESS)) {
-                    System.out.println("Order " + order.getOrderId() + " assigned to driver " + driver.get().getName());
-                    this.orderStatuses.put(order.getOrderId(), "In Progress");
-                    this.notificationService.sendDriverAssignmentNotification(order, driver.get());
-                } else {
-                    throw new OrderProcessingException("Invalid status transition from " + order.getStatus() + " to IN_PROGRESS");
-                }
-            } else {
-                System.out.println("No available driver for order " + order.getOrderId());
-                this.handleFailedOrderProcessing(order);
-            }
-        } catch (final OrderProcessingException | PaymentException | QueueFullException | ValidationException e) {
-            throw new OrderProcessingException("Failed to assign order to driver: " + e.getMessage(), e);
+        @Test
+        @DisplayName("Should validate phone numbers")
+        void testPhoneNumberValidation() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput("4", "1", "John Doe", "123",
+                    "4");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Please enter a valid 10-digit phone number"));
+        }
+
+        @Test
+        @DisplayName("Should prevent availability changes for active drivers")
+        void testActiveDriverAvailability() {
+            // First add a driver and assign an order
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "4", "1", "John Doe", "1234567890", "Sedan", "4", // Add driver
+                    "1", "123456", "test@email.com", "123 Main St", "12345", "1", "1", "0", "y", // Place order
+                    "8", // Process orders
+                    "4", "4", "2", "y" // Try to change availability
+            );
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Cannot change availability while driver has active orders"));
+        }
+
+        @Test
+        @DisplayName("Should validate empty or null inputs in handleAddDriver")
+        void testHandleAddDriverInputValidation() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "4", "1", "", "1234567890", "Sedan", "4");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Driver name cannot be empty"));
+        }
+
+        @Test
+        @DisplayName("Should validate empty or null inputs in handleUpdateDriverInfo")
+        void testHandleUpdateDriverInfoInputValidation() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "4", "4", "1", "1", "");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Vehicle updated successfully"));
+        }
+
+        @Test
+        @DisplayName("Should add a new driver")
+        void testAddDriver() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "4", "1", "Jane Doe", "0987654321", "SUV", "4");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Driver added successfully"));
+        }
+
+        @Test
+        @DisplayName("Should update driver information")
+        void testUpdateDriver() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "4", "1", "Jane Doe", "0987654321", "SUV", "4", // Add driver
+                    "4", "4", "1", "1", "New Vehicle");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Vehicle updated successfully"));
+        }
+
+        @Test
+        @DisplayName("Should delete a driver")
+        void testDeleteDriver() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "4", "1", "Jane Doe", "0987654321", "SUV", "4", // Add driver
+                    "4", "2", "1");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Driver removed successfully"));
         }
     }
 
-    public void completeDelivery(final Long orderId, final Long driverId) {
-        try {
-            System.out.println("Delivery completed for order " + orderId + " by driver " + driverId);
-            this.orderStatuses.put(orderId, "Delivered");
-            this.notificationService.sendDeliveryCompletionNotification(orderId);
-        } catch (final OrderProcessingException | PaymentException | QueueFullException | ValidationException e) {
-            throw new OrderProcessingException("Failed to complete delivery: " + e.getMessage(), e);
+    @Nested
+    @DisplayName("Rating System Tests")
+    class RatingSystemTests {
+        @Test
+        @DisplayName("Should validate rating values")
+        void testRatingValidation() {
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput("5", "1", "0", "6", "abc",
+                    "3");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Invalid rating"));
+            Assertions.assertTrue(output.contains("Please enter a number between 1 and 5"));
+        }
+
+        @Test
+        @DisplayName("Should show rating statistics")
+        void testRatingStatistics() {
+            // Add driver and submit multiple ratings
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "4", "1", "John Doe", "1234567890", "Sedan", "4", // Add driver
+                    "5", "1", "4", // First rating
+                    "5", "1", "5", // Second rating
+                    "4", "5" // View ratings
+            );
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Average rating"));
+            Assertions.assertTrue(output.contains("Total ratings"));
         }
     }
 
-    public String getOrderStatus(final Long orderId) {
-        return this.orderStatuses.getOrDefault(orderId, "Order Not Found");
-    }
+    @Nested
+    @DisplayName("Order Processing Tests")
+    class OrderProcessingTests {
+        @Test
+        @DisplayName("Should assign orders to least busy driver")
+        void testDriverAssignment() {
+            // Add two drivers and create multiple orders
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput(
+                    "4", "1", "Driver1", "1234567890", "Sedan", "4", // First driver
+                    "4", "1", "Driver2", "0987654321", "Sedan", "4", // Second driver
+                    "1", "123456", "test@email.com", "123 Main St", "12345", "1", "1", "0", "y", // Order 1
+                    "1", "123457", "test2@email.com", "456 Main St", "12345", "1", "1", "0", "y", // Order 2
+                    "8" // Process orders
+            );
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("Assigned driver"));
+            Assertions.assertTrue(output.contains("Successfully processed"));
+        }
 
-    public void manageDriverRatings(final Driver driver, final int rating) {
-        driver.addRating(rating);
-        System.out.println("Driver " + driver.getName() + " rated with " + rating + " stars.");
-    }
-
-    public void processOrdersInCorrectOrder(final OrderQueue orderQueue) {
-        orderQueue.getPendingOrders().stream()
-            .forEach(order -> {
-                System.out.println("Processing order: " + order.getOrderId());
-                final Optional<Driver> driver = this.selectDriverForOrder(order);
-                this.assignOrderToDriver(order, driver);
-            });
-    }
-
-    public Optional<Driver> selectDriverForOrder(final Order order) {
-        return this.findAvailableDriverForOrderType();
-    }
-
-    private Optional<Driver> findAvailableDriverForOrderType() {
-        return this.driverService.getAvailableDrivers().stream().findFirst();
-    }
-
-    public void assignOrderToLeastBusyDriver(Order order) {
-        Optional<Driver> leastBusyDriver = this.driverService.getAvailableDrivers().stream()
-                .min((d1, d2) -> Integer.compare(d1.getActiveOrderCount(), d2.getActiveOrderCount()));
-        if (leastBusyDriver.isPresent()) {
-            this.assignOrderToDriver(order, leastBusyDriver);
-        } else {
-            this.handleFailedOrderProcessing(order);
+        @Test
+        @DisplayName("Should handle failed order processing")
+        void testFailedOrderProcessing() {
+            // Try to process orders without any available drivers
+            DeliverySystemCLITest.this.cli = DeliverySystemCLITest.this.createCLIWithInput("8");
+            DeliverySystemCLITest.this.cli.start();
+            final String output = DeliverySystemCLITest.this.getOutput();
+            Assertions.assertTrue(output.contains("No orders to process") || output.contains("No available drivers"));
         }
     }
 
-    public void handleFailedOrderProcessing(Order order) {
-        System.out.println("Failed to process order " + order.getOrderId() + ": No available drivers");
-        this.notificationService.sendOrderFailureNotification(order);
+    @Test
+    @DisplayName("Should handle empty/null inputs")
+    void testEmptyInputs() {
+        this.cli = this.createCLIWithInput(
+                "4", "1", "", " ", "John Doe", // Empty name
+                "1234567890", "Sedan", "4");
+        this.cli.start();
+        final String output = this.getOutput();
+        Assertions.assertTrue(output.contains("cannot be empty"));
+    }
+
+    @Test
+    @DisplayName("Should maintain consistent state after errors")
+    void testStateConsistency() {
+        this.cli = this.createCLIWithInput(
+                "4", "1", "John Doe", "1234567890", "Sedan", "4", // Add driver
+                "1", "invalid", "123456", "test@email.com", "123 Main St", "12345", // Invalid then valid order
+                "1", "1", "0", "n" // Cancel order
+        );
+        this.cli.start();
+        final String output = this.getOutput();
+        Assertions.assertTrue(output.contains("Order cancelled"));
     }
 }

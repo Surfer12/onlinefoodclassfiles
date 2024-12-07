@@ -30,3 +30,7 @@
 - Validate rating values
 - Show rating statistics
 - Maintain consistent state after errors
+- Add options to the main menu for managing duplicate items, drivers, and ratings
+- Implement methods to add, update, and delete items in an order
+- Implement methods to add, update, and delete drivers
+- Improve user input validation for all CLI operations

@@ -30,4 +30,16 @@ public class OrderProcessor {
     private void handleFailedOrderProcessing(Order order) {
         System.out.println("Failed to process order " + order.getOrderId() + ": No available drivers");
     }
+
+    public void processOrder(Order order) {
+        // Implement order processing logic here
+        System.out.println("Processing order: " + order.getOrderId());
+        assignOrder(order);
+    }
+
+    public void updateOrderStatus(Order order, String status) {
+        // Implement order status update logic here
+        System.out.println("Updating order " + order.getOrderId() + " status to " + status);
+        order.setStatus(OrderStatus.valueOf(status));
+    }
 }
