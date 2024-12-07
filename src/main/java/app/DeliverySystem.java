@@ -81,6 +81,7 @@ public class DeliverySystem {
                 }
             } else {
                 System.out.println("No available driver for order " + order.getOrderId());
+                this.handleFailedOrderProcessing(order);
             }
         } catch (final OrderProcessingException | PaymentException | QueueFullException | ValidationException e) {
             throw new OrderProcessingException("Failed to assign order to driver: " + e.getMessage(), e);

@@ -158,14 +158,32 @@ public class DeliverySystemCLI {
             }
         }
 
-        System.out.print("Enter your email: ");
-        final String email = this.scanner.nextLine().trim();
+        String email = null;
+        while (email == null || email.trim().isEmpty()) {
+            System.out.print("Enter your email: ");
+            email = this.scanner.nextLine().trim();
+            if (email.isEmpty()) {
+                System.out.println("Email cannot be empty");
+            }
+        }
 
-        System.out.print("Enter delivery address: ");
-        final String address = this.scanner.nextLine().trim();
+        String address = null;
+        while (address == null || address.trim().isEmpty()) {
+            System.out.print("Enter delivery address: ");
+            address = this.scanner.nextLine().trim();
+            if (address.isEmpty()) {
+                System.out.println("Address cannot be empty");
+            }
+        }
 
-        System.out.print("Enter postal code: ");
-        final String postalCode = this.scanner.nextLine().trim();
+        String postalCode = null;
+        while (postalCode == null || postalCode.trim().isEmpty()) {
+            System.out.print("Enter postal code: ");
+            postalCode = this.scanner.nextLine().trim();
+            if (postalCode.isEmpty()) {
+                System.out.println("Postal code cannot be empty");
+            }
+        }
 
         this.menuManager.displayMenu();
         final Order order = new Order(customerId, email, new ArrayList<>(), new Location(address, postalCode));
