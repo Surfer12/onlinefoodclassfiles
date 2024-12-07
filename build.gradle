@@ -21,11 +21,14 @@ dependencies {
 
     // AssertJ for fluent assertions
     testImplementation 'org.assertj:assertj-core:3.24.2'
+
+    // Apache Commons Lang for utility functions
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_23
-    targetCompatibility = JavaVersion.VERSION_23
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 application {
