@@ -21,3 +21,12 @@
 - Input validation for empty or null inputs in handleUpdateDriverInfo method
 - Assign orders to the least busy driver
 - Handle failed order processing in assignOrderToDriver method
+- Validate customer ID format
+- Handle duplicate items in order
+- Validate item quantities
+- Generate valid license plates
+- Validate phone numbers
+- Prevent availability changes for active drivers
+- Validate rating values
+- Show rating statistics
+- Maintain consistent state after errors
