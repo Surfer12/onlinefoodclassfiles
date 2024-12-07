@@ -15,6 +15,7 @@ import model.OrderStatus;
 import notification.NotificationService;
 import queue.OrderQueue;
 import services.DriverService;
+import validation.ValidationUtils;
 
 public class DeliverySystem {
     private final Map<Long, String> orderStatuses = new HashMap<>();
@@ -31,6 +32,10 @@ public class DeliverySystem {
 
     public void submitOrder(final Order order) {
         try {
+            // Input validation
+            ValidationUtils.validateCustomerId(order.getCustomerId());
+            ValidationUtils.validateItems(order.getItems(), 10); // Assuming max 10 items per order
+
             if (this.isValidStatusTransition(OrderStatus.SUBMITTED, OrderStatus.PENDING)) {
                 System.out.println("Order submitted: " + order.getOrderId());
                 this.orderStatuses.put(order.getOrderId(), "Pending");
