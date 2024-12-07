@@ -4,7 +4,7 @@ Welcome to the Online Food Delivery System project. This guide will help you set
 
 ## Prerequisites
 
-- Java Development Kit (JDK) 8 or higher
+- Java Development Kit (JDK) 11 or higher
 - Gradle (for dependency management and building the project)
 
 ## Folder Structure
@@ -96,3 +96,34 @@ The codebase is modularized by separating different concerns into distinct packa
 ## Documentation
 
 Javadoc comments are added to all public classes and methods to improve code documentation and maintainability. The `README.md` file provides detailed instructions on how to set up and run the application, as well as an overview of the project's structure and functionality.
+
+## Updates
+
+The following updates have been made to address the test failures and CLI issues documented in the repository:
+
+### Input Validation
+- Implemented input validation in `DeliverySystemCLI.java` to handle empty or null inputs gracefully.
+
+### Order Management
+- Enabled altering orders, such as adding/removing items and changing quantities.
+- Ensured duplicate items update existing entries instead of preventing addition.
+
+### Driver Management
+- Implemented functionalities to add and delete drivers dynamically.
+- Assigned drivers based on the least busy criteria.
+
+### Rating System
+- Allowed drivers to be rated using their driver IDs.
+- Implemented the ability for managers to update driver ratings.
+- Ensured validation of rating values.
+
+### License Plate Generation
+- Implemented a method to generate random license plates with a specified number of digits or characters.
+
+### CLI Navigation and User Experience
+- Adjusted menu options to avoid confusion between similar numbered options.
+- Implemented clear exit messages and ensured smooth transitions between different CLI menus.
+
+### Test Cases
+- Updated test cases to align with the implemented functionalities.
+- Ran tests iteratively during development to catch and fix issues early.
