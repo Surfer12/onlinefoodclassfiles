@@ -251,4 +251,55 @@ public class DriverManager {
             System.out.println("-".repeat(50));
         }
     }
+
+    public void updateDriverInfo(final Scanner scanner) {
+        System.out.println("\nUpdate Driver Information");
+        System.out.print("Enter driver ID: ");
+        final Long driverId = scanner.nextLong();
+        scanner.nextLine(); // Consume newline
+
+        final Optional<Driver> driverOpt = this.driverService.getDriverById(driverId);
+        if (driverOpt.isEmpty()) {
+            System.out.println("Driver not found.");
+            return;
+        }
+
+        final Driver driver = driverOpt.get();
+        System.out.println("Current Information:");
+        System.out.println("Name: " + driver.getName());
+        System.out.println("Vehicle Type: " + driver.getVehicleType());
+        System.out.println("License Plate: " + driver.getLicensePlate());
+        System.out.println("Vehicle: " + driver.getVehicle());
+
+        System.out.print("Enter new vehicle (leave blank to keep current): ");
+        final String newVehicle = scanner.nextLine().trim();
+        if (!newVehicle.isEmpty()) {
+            driver.setVehicle(newVehicle);
+        }
+
+        System.out.print("Set driver as available? (y/n): ");
+        final String available = scanner.nextLine().trim().toLowerCase();
+        driver.setAvailable("y".equals(available));
+
+        System.out.println("Driver information updated successfully!");
+    }
+
+    public void viewDriverRatings(final Scanner scanner) {
+        System.out.println("\nView Driver Ratings");
+        System.out.print("Enter driver ID: ");
+        final Long driverId = scanner.nextLong();
+        scanner.nextLine(); // Consume newline
+
+        final Optional<Driver> driverOpt = this.driverService.getDriverById(driverId);
+        if (driverOpt.isEmpty()) {
+            System.out.println("Driver not found.");
+            return;
+        }
+
+        final Driver driver = driverOpt.get();
+        System.out.println("Driver: " + driver.getName());
+        System.out.println("All ratings: " + driver.getRatings());
+        System.out.println("Average rating: " + String.format("%.1f", driver.getAverageRating()));
+        System.out.println("Total ratings: " + driver.getRatings().size());
+    }
 }

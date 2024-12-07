@@ -313,7 +313,7 @@ public class DeliverySystemCLI {
             try {
                 switch (choice) {
                     case 1 -> this.handleAddDriver();
-                    case 2 -> this.driverManager.removeDriver(this.scanner);
+                    case 2 -> this.handleDeleteDriver();
                     case 3 -> this.driverManager.displayAllDrivers();
                     case 4 -> this.handleUpdateDriverInfo();
                     case 5 -> this.handleViewDriverRatings();
@@ -441,6 +441,30 @@ public class DeliverySystemCLI {
                 driver.setAvailable("y".equals(available));
                 System.out.println("Availability updated successfully!");
             }
+        }
+    }
+
+    private void handleDeleteDriver() {
+        System.out.println("\n=== Remove Driver ===");
+        final Long driverId = this.orderManager.getOrderIdHandler().handleInput(this.scanner, "Enter Driver ID: ");
+        if (driverId == null) {
+            System.out.println("Invalid driver ID.");
+            return;
+        }
+
+        final Driver driver = this.driverManager.getDriverService().getDriverById(driverId).orElse(null);
+        if (driver == null) {
+            System.out.println("Driver not found.");
+            return;
+        }
+
+        System.out.print("Are you sure you want to remove driver " + driver.getName() + "? (y/n): ");
+        final String confirm = this.scanner.nextLine().trim().toLowerCase();
+        if ("y".equals(confirm)) {
+            this.driverManager.getDriverService().removeDriver(driverId);
+            System.out.println("Driver removed successfully!");
+        } else {
+            System.out.println("Operation cancelled.");
         }
     }
 
