@@ -8,7 +8,7 @@ This alteration is significant a requires careful analysis of the project menu n
 
 1. Object-Oriented Design Implementation
 
-1.1 Encapsulation Our project demonstrates encapsulation through classes like Driver,which encapsulates driver-related data and behaviors:
+## Encapsulation Our project demonstrates encapsulation through classes like Driver,which encapsulates driver-related data and behaviors:
 
 
 public class Driver {
@@ -59,9 +59,7 @@ public class Driver {
     }
 }
 
-1.2
-
-Inheritance&Polymorphism
+## Inheritance&Polymorphism
 
 The system implements
 inheritance through
@@ -75,9 +73,7 @@ polymorphic
 behavior in
 order processing.
 
-1.3
-
-Abstraction
+## Abstraction
 
 Weuse interfaces and
 abstract classes to
@@ -90,19 +86,19 @@ Payment handling
 Driver management
 Menu item management
 
-2.
-System Weaknesses & Limitations
+## System Weaknesses & Limitations
 
+## User Interface Issues
 
-2.1
+### 2.1
 User Interface Issues
 
-Menu
+#### Menu
 Navigation
 
-Double
-Enter required for
-menu initialization
+### Double Enter required for menu initialization
+
+Should use a \ or / to navigate menus forwards and backwards.
 
 
 Welcome to the Online Food Delivery System!
@@ -159,6 +155,92 @@ Handling Lack
 of proper validation for empty/null
 inputs as enter is used to navigate menus. This lack of proper null and empty validation is a major issue, as it can lead to unexpected behavior and errors in the system.
 
+Current CLI Implementation (referenced in):
+```java
+    public void start() {
+        System.out.println("Welcome to the Online Food Delivery System!");
+        System.out.println("Press Enter to start...");
+        this.scanner.nextLine(); // Single enter to initialize
+
+        try {
+            while (this.running && this.scanner.hasNextLine()) {
+                this.displayMainMenu();
+
+                final String input = this.scanner.nextLine().trim();
+
+                // Handle exit command directly
+                if ("exit".equalsIgnoreCase(input) || "9".equals(input)) {
+                    this.cleanup();
+                    break;
+                }
+
+                if (input.isEmpty()) {
+                    System.out.println("Please enter a valid option.");
+                    continue;
+                }
+
+                try {
+                    final int choice = Integer.parseInt(input);
+                    if (choice < 1 || choice > 9) {
+                        System.out.println("Invalid menu choice. Please enter a number between 1 and 9.");
+                        continue;
+                    }
+                    this.handleMenuChoice(choice);
+                } catch (final NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a number between 1 and 9.");
+                } catch (final Exception e) {
+                    DeliverySystemCLI.logger.log(Level.SEVERE, "An unexpected error occurred", e);
+                    System.out.println("An unexpected error occurred: " + e.getMessage());
+                }
+            }
+        } catch (final Exception e) {
+            DeliverySystemCLI.logger.log(Level.SEVERE, "An unexpected error occurred", e);
+        }
+    }
+
+Proposed improvement for the input handling and navigation system using a forward and back navigation system with the slash character as the forward navigation and the backslash character as the back navigation. This will allow for a more intuitive and user-friendly navigation experience.
+
+
+```java
+public class DeliverySystemCLI {
+    private static final String FORWARD_NAVIGATION = "/";
+    private static final String BACK_NAVIGATION = "\\";
+
+    public void processInput(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            notificationService.showError("Input cannot be empty. Use '/' to proceed or '\\' to go back.");
+            return;
+        }
+
+        switch (input.trim()) {
+            case FORWARD_NAVIGATION -> handleForwardNavigation();
+            case BACK_NAVIGATION -> handleBackNavigation();
+            default -> processMenuChoice(input);
+        }
+    }
+
+    private void handleForwardNavigation() {
+        if (currentMenu.hasNextLevel()) {
+            currentMenu = currentMenu.getNextLevel();
+            displayCurrentMenu();
+        } else {
+            notificationService.showInfo("Already at deepest menu level");
+        }
+    }
+
+    private void handleBackNavigation() {
+        if (currentMenu.hasPreviousLevel()) {
+            currentMenu = currentMenu.getPreviousLevel();
+            displayCurrentMenu();
+        } else {
+            notificationService.showInfo("Already at main menu");
+        }
+    }
+}
+```
+
+## Standardized Customer ID Format
+
 No
 standardized format for
 customer IDs
@@ -166,8 +248,7 @@ customer IDs
 Missing input constraints for
 numerical values
 
-2.2
-Functional Limitations
+## Functional Limitations
 Order Management
 Duplicate item
 handling issues
@@ -187,20 +268,23 @@ absent
 driver assignment
 algorithm
 
-Proposed Improvements 3.1 Short-term Enhancements
-User Interface
+## Proposed Improvements
+### Short-term Enhancements
+#### User Interface
 - Implement single-press menu initialization
 - Add consistent exit options across all menus
 - Standardize navigation patterns
 - Add clear error messages and user prompts
-Prompts
-Input
+
+### Prompts
+#### Input
 - Implement comprehensive input validation
 - Add format requirements for IDs and numbers
 - Create user-friendly error messages
 - Handle empty/null inputs gracefully
 
-Validation gracefully 3.2 Long-term Improvements
+### Validation gracefully
+#### Long-term Improvements
 System Architecture
 - Implement database integration for persistent storage
 - Add user authentication system
@@ -217,5 +301,5 @@ Business Logic Enhancements for Online System Creation
 - Enhanced rating system with detailed feedback
 - Comprehensive order modification capabilities
 
-Validation for types and values
+## Validation for types and values
 
