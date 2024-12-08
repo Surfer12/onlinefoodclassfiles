@@ -136,7 +136,7 @@ This alteration is significant and requires careful analysis of the project menu
 1. Object-Oriented Design Implementation
 
 
-# Encapsulation
+# Encapsulation code snippets detailed
 
 
 ### Our project demonstrates encapsulation through classes like
@@ -201,7 +201,7 @@ public class Driver {
 ```
 
 
-## Encapsulation
+## Encapsulation code snippets detailed
 - seen in the CLI class
 ```java
 public class DeliverySystemCLI {
@@ -241,7 +241,7 @@ public class DeliverySystemCLI {
 ```
 
 
-Encapsulation: All fields are private and final where appropriate
+Encapsulation properties: All fields are private and final where appropriate
 
 
 Immutability: Using final fields to prevent modification after initialization
@@ -627,8 +627,8 @@ algorithm
 - Handle empty/null inputs gracefully
 
 
-### Validation gracefully
-#### Long-term Improvements
+### Validation
+#### Long-term Improvements of online systmm
 System Architecture
 - Implement database integration for persistent storage
 - Add user authentication system
@@ -638,9 +638,6 @@ Tracking and logging of business logic through the system by improving the custo
 
 
 The use of these custom errors were invaluable in initial development, as they provided a clear and concise explanation of the issue at hand.
-
-
-
 
 Business Logic Enhancements for Online System Creation
 - Dynamic driver pool management
