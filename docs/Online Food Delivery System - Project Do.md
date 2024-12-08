@@ -191,8 +191,6 @@ public class DeliverySystemCLI {
 
 Encapsulation: All fields are private and final where appropriate
 
-Single Responsibility: The class handles only CLI-related operations
-
 Immutability: Using final fields to prevent modification after initialization
 
 ## Inheritance & Polymorphism
@@ -258,13 +256,23 @@ public class DeliverySystemCLI {
 We use interfaces and abstract classes to
 - provide abstraction layers
 - provide referencable and maintainable code
-
-
+as seen in
 - src/main/java/model
+
+
 
 ## 2.0 System Weaknesses & Limitations
 
-### 2.1 User Interface Issues
+### 2.1 Further abstraction needed of the main application package CLI methods
+
+- DelieverySystemCLI class is the main class for the application and is responsible for handling user input from the CLI and calling the appropriate methods in the DeliverySystem class.
+- The DeliverySystem class is responsible for handling the business logic of the application, including managing orders, drivers, and menu items.
+- The DeliverySystem class should be responsible for handling the business logic of the application, including managing orders, drivers, and menu items.
+
+
+
+
+
 
 #### MenuNavigation
 
