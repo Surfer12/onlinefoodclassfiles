@@ -253,6 +253,8 @@ public class DeliverySystemCLI {
 
 ## Abstraction
 
+We use interfaces and abstract classes to provide abstraction layers and referencable and maintainable code
+
 We use interfaces and abstract classes to
 - provide abstraction layers
 - provide referencable and maintainable code
@@ -267,11 +269,57 @@ as seen in
 
 - DelieverySystemCLI class is the main class for the application and is responsible for handling user input from the CLI and calling the appropriate methods in the DeliverySystem class.
 - The DeliverySystem class is responsible for handling the business logic of the application, including managing orders, drivers, and menu items.
-- The DeliverySystem class should be responsible for handling the business logic of the application, including managing orders, drivers, and menu items.
+- The DeliverySystem class should be responsible for handling the business logic of the application, including managing orders, drivers, and menu items that are inputted from the CLI.
+
+### 2.2 User Interface Issues
 
 
+// Handle exit command directly
+                if ("exit".equalsIgnoreCase(input) || "9".equals(input)) {
+                    this.cleanup();
+                    break;
+                }
+
+The input is first checked for "exit" or "9"
+Then it's parsed as a number and passed to handleMenuChoice()
+This means handleMenuChoice() will never actually receive the "exit" string - it's handled earlier in the flow.
+
+We weren't seeing explicit empty input errors from this method.
+                final String input = this.scanner.nextLine().trim();
+
+                // Handle exit command directly
+                if ("exit".equalsIgnoreCase(input) || "9".equals(input)) {
+                    this.cleanup();
+                    break;
+                }
+
+                if (input.isEmpty()) {
+                    System.out.println("Please enter a valid option.");  // This message isn't showing
+                    continue;
+                }
+
+                try {
+                    final int choice = Integer.parseInt(input);
 
 
+The issue is that we're using scanner.nextLine() in multiple places throughout the code, and the behavior depends on where and how it's being called. When you press enter:
+The first scanner.nextLine() at program start is explicitly used for initialization
+Subsequent empty lines are being consumed by other scanner.nextLine() calls within various menu handlers and input processors
+To fix this and ensure we actually catch empty inputs, we should modify the code to:
+
+                final String input = this.scanner.nextLine().trim();
+
+                // Handle exit command directly
+                if ("exit".equalsIgnoreCase(input) || "9".equals(input)) {
+                    this.cleanup();
+                    break;
+                }
+
+                if (input.isEmpty() || input.isBlank()) {
+                    System.out.println("Error: Empty input is not allowed");
+                    System.out.println("Please enter a valid option (1-9)");
+                    continue;
+                }
 
 
 #### MenuNavigation
