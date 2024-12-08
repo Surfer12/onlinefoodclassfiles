@@ -1,4 +1,92 @@
+Start of requirements doc.
 
+Requirements for our project as well as the documentation of improvement areas.
+
+Source Code: Include all source code files for your project.
+
+Screenshots: Include screenshots showcasing the functionality of your system.
+
+Objective: Submit your project source code and report.
+Submission (Single ZIP file):
+
+Source Code: Include all source code files for your project.
+Screenshots: Include screenshots showcasing the functionality of your system.
+Report (PDF): A PDF document addressing the following:
+Object-Oriented Design: Describe how you applied object-oriented principles (encapsulation, inheritance, polymorphism, abstraction) in your project. Provide specific examples from your code to illustrate these concepts.
+
+System Weaknesses: Critically evaluate your system. Identify any limitations, potential bugs, or areas for improvement.
+
+Future Enhancements: Outline how you would address the identified weaknesses in future iterations of your project. Propose concrete solutions and explain the anticipated benefits.
+
+Name your Zip file : CSS233_GROUPNAME
+Grading Rubric:
+Code (60%):
+
+Clarity: Code is well-formatted, readable, and uses meaningful variable and function names.
+
+Functionality: Code functions correctly and meets the assignment requirements.
+
+Efficiency: Code is optimized for performance and avoids unnecessary complexity.
+
+Object-Oriented Principles (20%):
+
+Application: Object-oriented principles are correctly and effectively applied throughout the project.
+
+Explanation: The report clearly demonstrates an understanding of
+object-oriented concepts and their implementation.
+
+Report (20%):
+
+Clarity: The report is well-written, organized, and free of grammatical errors.
+
+Analysis: Weaknesses are identified with specific examples and explanations.
+
+Future Work: Proposed improvements are realistic, well-defined, and demonstrate critical thinking
+Project Documentation and Transition to Online System
+Goals:
+
+Thoroughly document the current Java CLI system. This includes:
+Explaining the implementation details of each component (where and how it's used).
+
+Providing a clear rationale behind design choices (why it's used).
+Including code snippets for each section to illustrate functionality
+and decision-making.
+
+Analyze and propose theoretical improvements for transitioning to an online system. This involves:
+
+Considering the implications of moving from limited CLI input to potentially unlimited input in an online environment.
+
+Addressing the challenges of transitioning from a CLI navigation paradigm (using "enter") to a more interactive online interface.
+
+Exploring how existing components can be adapted or reused with minimal changes.
+
+Emphasis:
+
+Clarity: Provide comprehensive explanations and information to ensure readers fully understand the system and the proposed transition.
+
+Depth: Delve deeply into the technical details and potential challenges of moving to an online system.
+
+Adaptability: Focus on creating a flexible foundation for the online system that can accommodate evolving requirements and input variations.
+
+end of reqirements doc.
+
+
+## Document Submission Structure: Personal ideas
+To achieve these goals, we'll approach the documentation and analysis in a structured manner:
+
+Current System Documentation:
+For each component:
+Implementation: Detail where and how the component is implemented within the system.
+Rationale: Explain the reasons behind choosing this particular implementation approach.
+Code Snippets: Include relevant code snippets to demonstrate the component's functionality.
+Transition to Online System:
+Input Handling: Analyze the differences between handling limited CLI input and the potential for unlimited, diverse input in an online system. Propose strategies for managing this transition effectively.
+Navigation Paradigm: Discuss the shift from CLI-based navigation (using "enter") to a more interactive and user-friendly online navigation approach.
+Component Adaptation: Evaluate the existing components and identify how they can be adapted or reused in the online system with minimal modifications.
+Theoretical Improvements: Explore potential enhancements and optimizations specific to the online environment, considering scalability, performance, and user experience.
+Remember: This is an ongoing process. We'll maintain flexibility and be prepared to provide further clarification and details as needed.
+
+By following this structured approach, we can create comprehensive documentation that not only explains the current system but also lays the groundwork for a smooth and successful transition to an online platform.
 
 Notes on new implementation of the project :
 "We are now onto theoretical improvements and online systems with less limited to unlimited input qualities and not constrained to the java cli input."
@@ -7,13 +95,11 @@ Notes on new implementation of the project :
 This alteration is significant and requires careful analysis of the project menu navigation, the driver assignment algorithm creation, and the order processing.
 
 
-
-
 1. Object-Oriented Design Implementation
 
-## Encapsulation
+# Encapsulation
 
-# Our project demonstrates encapsulation through classes like
+## Our project demonstrates encapsulation through classes like
 - Driver,which encapsulates driver-related data and behaviors:
     - src/main/java/model/Driver.java
 ```java
