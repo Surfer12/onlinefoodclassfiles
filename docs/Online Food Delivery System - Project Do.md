@@ -1,5 +1,3 @@
-```markdown
-
 Start of requirements doc.
 
 
@@ -118,28 +116,17 @@ Input Handling: Analyze the differences between handling limited CLI input and t
 Navigation Paradigm: Discuss the transition from CLI-based navigation (using "enter") to a more interactive and user-friendly online navigation approach.
 Component Adaptation: Evaluate the existing components and identify how they can be adapted or reused in the online system with minimal modifications.
 Theoretical Improvements: Explore potential enhancements and optimizations specific to the online environment, considering scalability, performance, and user experience.
-Remember: This is an ongoing process. We'll maintain flexibility and be prepared to provide further clarification and details as needed.
-
 
 By following this structured approach, we can create comprehensive documentation that not only explains the current system but also lays the groundwork for a smooth and successful transition to an online platform.
-
 
 Notes on new implementation of the project :
 "We are now onto theoretical improvements and online systems with less limited to unlimited input qualities and not constrained to the java cli input."
 
-
-
-
-This alteration is significant and requires careful analysis of the project menu navigation, the driver assignment algorithm creation, and the order processing.
-
-
-
+This alteration is significant and requires careful analysis of the project menu navigation, the driver assignment algorithm creation
 
 1. Object-Oriented Design Implementation
 
-
 # Encapsulation code snippets detailed
-
 
 ### Our project demonstrates encapsulation through classes like
 - Driver,which encapsulates driver-related data and behaviors:
@@ -151,6 +138,13 @@ public class Driver {
    private final List<Integer> ratings;
    private final List<Order> currentOrders;
 
+### Driver Class Rationale
+The `Driver` class implementation demonstrates strong encapsulation principles for several key reasons:
+- Private fields with public getters ensure data integrity
+- Immutable fields (name, licensePlate) prevent unauthorized modifications
+- ArrayList usage for ratings and orders enables dynamic collection management
+- Methods like `getAverageRating` encapsulate complex calculations
+- Clear separation between data storage and business logic
 
    public Driver(final String name, final String licensePlate) {
        this.name = name;
@@ -159,48 +153,46 @@ public class Driver {
        this.currentOrders = new ArrayList<>();
    }
 
+### Order Class Rationale
+The Order class implementation focuses on:
+- Simple, focused responsibility for order data management
+- Status tracking with controlled state transitions
+- Immutable order ID for tracking integrity
+- Clear getter/setter patterns for controlled data access
 
-   public int getCurrentOrderCount() {
-       return this.currentOrders.size();
-   }
+#### src/main/java/service/MenuManager.java
+- Centralizes menu item management
+- Provides factory methods for menu item creation
+- Maintains menu consistency across the system
+- Enables easy menu modifications and updates
 
+#### src/main/java/service/OrderManager.java
+- Handles order lifecycle management
+- Maintains order state transitions
+- Provides order lookup and modification capabilities
+- Ensures order processing integrity
 
-   public void assignOrder(final Order order) {
-       this.currentOrders.add(order);
-   }
+#### src/main/java/service/DriverManager.java
+- Manages driver pool and availability
+- Handles driver ratings
 
+#### src/main/java/service/NotificationService.java
+- Centralizes system messaging
+- Provides consistent error handling
+- Enables future expansion to different notification channels
+- Maintains clean separation of notification logic
 
-   public void addRating(final int rating) {
-       this.ratings.add(rating);
-   }
+#### src/main/java/util/ConsoleInputHandler.java
+- Abstracts input validation logic
+- Provides type-safe input processing
+- Reduces code duplication
+- Enables consistent error handling
 
-
-   public double getAverageRating() {
-       if (this.ratings.isEmpty())
-           return 0.0;
-       return this.ratings.stream()
-               .mapToInt(Integer::intValue)
-               .average()
-               .orElse(0.0);
-   }
-
-
-   public int getRatingCount() {
-       return this.ratings.size();
-   }
-
-
-   // Getters
-   public String getName() {
-       return this.name;
-   }
-
-
-   public String getLicensePlate() {
-       return this.licensePlate;
-   }
-}
-```
+#### src/main/java/model/MenuItem.java (Abstract Class)
+- Defines common behavior for all menu items
+- Enables polymorphic menu item handling
+- Provides base implementation for shared features
+- Ensures consistent menu item structure
 
 
 ## Encapsulation code snippets detailed
@@ -245,14 +237,13 @@ public class DeliverySystemCLI {
 
 Encapsulation properties: All fields are private and final where appropriate
 
-
-Immutability: Using final fields to prevent modification after initialization
+Immutability using final fields to prevent modification after initialization
 
 
 ## Inheritance & Polymorphism
 
 
-The system implements inheritance through the menu item hierarchy
+The system implements polymorphism and inheritance through the menu item hierarchy.
 
 
 - src/main/java/model
@@ -261,9 +252,6 @@ The system implements inheritance through the menu item hierarchy
 - Model.Hamburger (extends MenuItem)
 - Model.MenuItem (abstract class)
 - Model.Drink (extends MenuItem)
-
-
-
 
 ```java
 public class Order {
@@ -301,7 +289,7 @@ public class Order {
 ```
 
 
-- Polymorphic behavior in order processing
+- Polymorphic behavior in input processing
 
 
 ```java
@@ -322,9 +310,7 @@ public class DeliverySystemCLI {
 
 ## Abstraction
 
-
 We use interfaces and abstract classes to provide abstraction layers and referenceable and maintainable code
-
 
 We use interfaces and abstract classes to
 - provide abstraction layers
@@ -332,9 +318,13 @@ We use interfaces and abstract classes to
 as seen in the package with relative path
 - src/main/java/model
 
+# Key areas of development:
+src/main/java/CustomException
+
+- Tracking and logging of business logic through the system by improving the custom errors that were created.
 
 
-
+- The use of these custom errors were invaluable in initial development, as they provided a clear and concise explanation of the issue at hand.
 
 
 ## 2.0 System Weaknesses & Limitations
@@ -363,12 +353,11 @@ This and calling the appropriate methods in the DeliverySystem class for handlin
                }
 
 
-The input is first checked for "exit" or "9"
-Then it's parsed as a number and passed to handleMenuChoice()
+The input is first checked for "exit" or "9" however the input is then parsed as a number and passed to handleMenuChoice()
 This means handleMenuChoice() will never actually receive the "exit" string - it's handled earlier in the flow.
 
 
-We weren't seeing explicit empty input errors from this method.
+We weren't seeing explicit lack of input errors from this method.
                final String input = this.scanner.nextLine().trim();
 
 
@@ -391,13 +380,10 @@ We weren't seeing explicit empty input errors from this method.
 
 
 
-The issue is that we're using scanner.nextLine() in multiple places throughout the code, and the behavior depends on where and how it's being called. When you press enter:
-The first scanner.nextLine() at program start is explicitly used for initialization
-Subsequent empty lines are being consumed by other scanner.nextLine() calls within various menu handlers and input processors
-To fix this and ensure we actually catch empty inputs, we should modify the code to:
+The issue is that we're using scanner.nextLine() to consume the input in multiple places throughout the code.
 
-
-               final String input = this.scanner.nextLine().trim();
+Subsequent empty lines are being consumed by other scanner.nextLine() calls within various menu handlers and input processors correctly however not for our 'exit' command string.
+To fix this and ensure we actually catch this string as well as empty string inputs we should modify the code to:
 
 
                // Handle exit command directly
@@ -470,17 +456,62 @@ Order not found. // we then get this once it's not found
 No clear exit option from sub-menus
 
 
-Inconsistent menu navigation patterns
+Inconsistent menu navigation patterns and lack of an exit option from sub-menus from input handling and navigation.
 
 
 ```
 Input Handling
-Lack of proper validation for empty/null inputs as enter is used to navigate menus.
+Lack of proper validation for empty/null inputs as an empty string is used as the escape sequence to reinitalize the menu.
 
 
-Eliminates the confusion around menu initialization
+3. The current input validation implementation in ConsoleInputHandler:
+
+```93:117:src/main/java/validation/ConsoleInputHandler.java
+        while (!valid) {
+           try {
+              final String userInput = this.getInputWithTimeout(prompt);
+              try {
+                 final T parsedInput = this.inputValidator.parse(userInput);
+                 if (this.inputValidator.isValid(parsedInput)) {
+                    input = parsedInput;
+                    valid = true;
+                 } else {
+                    System.out.println(this.inputValidator.getErrorMessage());
+                 }
+              } catch (final NumberFormatException e) {
+                    System.out.println("Invalid number format: Please enter a valid " +
+                          this.inputValidator.getTypeName());
+                 } catch (final IllegalArgumentException e) {
+                    System.out.println("Invalid input format: " + e.getMessage());
+                 } catch (final Exception e) {
+                    System.out.println("Error processing input: " + e.getMessage());
+                }
+             } catch (final TimeoutException e) {
+                System.out.println(e.getMessage() + ". Please try again.");
+             }
+          }
+          return input;
+       }
+```
 
 
+4. The InputValidationUtils class provides a better approach:
+
+```25:34:src/main/java/validation/InputValidationUtils.java
+   public static void validateTextInput(String input, String fieldName) {
+      try {
+         if (input == null || input.trim().isEmpty()) {
+            throw new ValidationException(fieldName + " cannot be null or empty");
+         }
+      } catch (ValidationException e) {
+         System.err.println("Error in validateTextInput: " + e.getMessage());
+         throw e;
+      }
+   }
+```
+
+
+This ensures that the input is not null or empty and throws a ValidationException if it is.
 
 
 Current CLI Implementation (referenced in):
@@ -578,164 +609,7 @@ public class DeliverySystemCLI {
 }
 ```
 
-
-## Standardized Customer ID Format
-
-
-- No standardized format for customer IDs
-- Missing input constraints for numerical values
-
-
-## Functional Limitations
-Order Management
-Duplicate item
-handling issues
-
-
-Limited order
-modification capabilities
-
-
-No order
-history tracking
-
-
-Driver System
-Hardcoded limit of 5
-
-
-drivers
-
-
-absent
-driver assignment
-algorithm
-
-
-## Proposed Improvements
-### Short-term Enhancements
-#### User Interface
-- Implement single-press menu initialization
-- Add consistent exit options across all menus
-- Standardize navigation patterns
-- Add clear error messages and user prompts
-
-
-### Prompts
-#### Input
-- Implement comprehensive input validation
-- Add format requirements for IDs and numbers
-- Create user-friendly error messages
-- Handle empty/null inputs gracefully
-
-
-### Validation
-#### Long-term Improvements of online systmm
-System Architecture
-- Implement database integration for persistent storage
-- Add user authentication system
-- Create separate admin and user interfaces
-- Implement real-time order tracking
-Tracking and logging of business logic through the system by improving the custom errors that were created.
-
-
-The use of these custom errors were invaluable in initial development, as they provided a clear and concise explanation of the issue at hand.
-
-Business Logic Enhancements for Online System Creation
-- Dynamic driver pool management
-- Improved order assignment algorithm
-- Enhanced rating system with detailed feedback
-- Comprehensive order modification capabilities
-- Consistent validation for types and values
-
-## Implementation Details
-
-### Input Handling Specifications
-1. **System Navigation**
-   - Initial menu requires double-enter initialization
-   - Main menu back navigation requires two enter presses
-   - Exit commands need standardization across all menus
-
-2. **Data Validation Requirements**
-   - Customer ID: Implement specific digit length validation
-   - License Plate: Standardize format and random generation
-   - Input Validation: Add proper null/empty input handling
-
-### Order Processing Implementation
-1. **Item Management**
-   - Duplicate item detection after quantity entry
-   - Order modification capabilities:
-     - Add/remove items
-     - Quantity adjustments
-     - Item deletion
-
-2. **Driver System Implementation**
-   - Remove hardcoded 5-driver limit
-   - Implement dynamic driver list
-   - Add drivers to beginning of list rather than end
-   - Standardize driver ID assignment
-   - Separate overlapping functionality between options 4 and 7
-
-3. **Rating System Implementation**
-   - Switch from OrderID to DriverID for rating assignment
-   - Implement rating modification in manager view
-   - Add rating deletion functionality
-
-4. **Process Orders Enhancement**
-   - Improve order grabbing mechanism
-   - Implement proper order status tracking
-   - Add exit message for main menu
-
-These specifications should be addressed in the transition to the online system to improve overall functionality and user experience.
-
 ## Test Analysis and Implementation Status
-
-### Failed Test Overview
-1. **CLI Input Handling Tests**
-   - Empty/null input handling (FAILED)
-   - License plate generation (FAILED)
-   - Driver availability changes (SKIPPED)
-
-### Required Implementation Updates
-
-#### Input Validation
-- Implement robust empty/null input handling
-- Add graceful error handling for invalid inputs
-- Improve input validation across all user interactions
-
-#### Order Management
-- Fix duplicate item quantity handling
-- Implement comprehensive order modification:
-  - remove items
-  - alter and update quantities
-  - remove items
-- Enhance order processing assignment logic
-
-#### Driver System
-- Remove hardcoded driver limit
-- Implement least-busy driver assignment
-- Fix driver list ordering (first vs. last) for easy understanding of new drivers added are first on the list and being viewed as most available
-
-#### User Interface
-- Fix double-enter initialization
-- Standardize menu navigation
-- Use of exit phrase stop menu navigation in addition to case 9
-- Improve error messages with clearer explanations to user for feedback
-
-### Implementation Priorities
-1. Critical System Functionality
-   - Input validation for online system
-   - Driver management for online system
-
-2. User Experience Improvements
-   - Menu navigation
-   - Error messages
-   - Exit handling
-
-3. Feature Enhancements
-   - Rating system
-   - License plate and vehicle stored information for drivers to improve driver management and easy of system use
-   - Order management updates.
 
 ### Test Case Updates
 - Update test cases to reflect new functionality
@@ -743,4 +617,4 @@ These specifications should be addressed in the transition to the online system 
 - continue to implement comprehensive validation testing as needed
 - Add mockito testing for complex workflow testing
 
-```
+
