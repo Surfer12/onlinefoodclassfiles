@@ -1,47 +1,54 @@
 {
     "version": "0.2.0",
     "configurations": [
-        {
-            "type": "java",
-            "name": "DeliverySystemCLITest",
-            "request": "launch",
-            "mainClass": "app.DeliverySystemCLITest",
-            "projectName": "onlinefoodclassfiles-2"
-        },
-        {
-            "type": "java",
-            "name": "DeliverySystemDemo",
-            "request": "launch",
-            "mainClass": "app.DeliverySystemDemo",
-            "projectName": "onlinefoodclassfiles-2"
-        },
-        {
-            "type": "java",
-            "name": "Main",
-            "request": "launch",
-            "mainClass": "app.Main",
-            "projectName": "onlinefoodclassfiles-2"
-        },
-        {
-            "type": "java",
-            "name": "Run Main Application",
-            "request": "launch",
-            "mainClass": "app.Main",
-            "projectName": "online-food-delivery"
-        },
-        {
-            "type": "java",
-            "name": "Run CLI Tests",
-            "request": "launch",
-            "mainClass": "app.DeliverySystemCLITest",
-            "projectName": "online-food-delivery"
-        },
-        {
-            "type": "java",
-            "name": "Run Demo",
-            "request": "launch",
-            "mainClass": "app.DeliverySystemDemo",
-            "projectName": "online-food-delivery"
-        }
+      {
+        "type": "java",
+        "name": "Main",
+        "request": "launch",
+        "mainClass": "app.Main",
+        "projectName": "onlinefoodclassfilesnewnewnew"
+      },
+      {
+        "type": "java",
+        "name": "DeliverySystemCLITest",
+        "request": "launch",
+        "mainClass": "app.DeliverySystemCLITest",
+        "projectName": "onlinefoodclassfiles-2"
+      },
+      {
+        "type": "java",
+        "name": "DeliverySystemDemo",
+        "request": "launch",
+        "mainClass": "app.DeliverySystemDemo",
+        "projectName": "onlinefoodclassfiles-2"
+      },
+      {
+        "type": "java",
+        "name": "Main",
+        "request": "launch",
+        "mainClass": "app.Main",
+        "projectName": "onlinefoodclassfiles-2"
+      },
+      {
+        "type": "java",
+        "name": "Run Main Application",
+        "request": "launch",
+        "mainClass": "app.Main",
+        "projectName": "online-food-delivery"
+      },
+      {
+        "type": "java",
+        "name": "Run CLI Tests",
+        "request": "launch",
+        "mainClass": "app.DeliverySystemCLITest",
+        "projectName": "online-food-delivery"
+      },
+      {
+        "type": "java",
+        "name": "Run Demo",
+        "request": "launch",
+        "mainClass": "app.DeliverySystemDemo",
+        "projectName": "online-food-delivery"
+      }
     ]
 }
