@@ -1,3 +1,5 @@
+```markdown
+
 Start of requirements doc.
 
 
@@ -644,13 +646,46 @@ Business Logic Enhancements for Online System Creation
 - Improved order assignment algorithm
 - Enhanced rating system with detailed feedback
 - Comprehensive order modification capabilities
+- Consistent validation for types and values
 
+## Implementation Details
 
-## Validation for types and values
+### Input Handling Specifications
+1. **System Navigation**
+   - Initial menu requires double-enter initialization
+   - Main menu back navigation requires two enter presses
+   - Exit commands need standardization across all menus
 
+2. **Data Validation Requirements**
+   - Customer ID: Implement specific digit length validation
+   - License Plate: Standardize format and random generation
+   - Input Validation: Add proper null/empty input handling
 
+### Order Processing Implementation
+1. **Item Management**
+   - Duplicate item detection after quantity entry
+   - Order modification capabilities:
+     - Add/remove items
+     - Quantity adjustments
+     - Item deletion
 
+2. **Driver System Implementation**
+   - Remove hardcoded 5-driver limit
+   - Implement dynamic driver list
+   - Add drivers to beginning of list
+   - Standardize driver ID assignment
+   - Separate overlapping functionality between options 4 and 7
 
+3. **Rating System Implementation**
+   - Switch from OrderID to DriverID for rating assignment
+   - Implement rating modification in manager view
+   - Add rating deletion functionality
 
+4. **Process Orders Enhancement**
+   - Improve order grabbing mechanism
+   - Implement proper order status tracking
+   - Add exit message for main menu
 
+These specifications should be addressed in the transition to the online system to improve overall functionality and user experience.
 
+```

@@ -71,6 +71,54 @@ The system is being upgraded to work better online with new features like:
 - Ability to modify orders
 - Better order Handling of busy times for concurrent orders
 
+## Current System Behaviors and Known Issues
+
+### Navigation and Interface
+- System initialization requires pressing enter twice to start
+- Main menu navigation requires double enter when going back
+- Exit option is needed from sub-menus (especially in driver management)
+- Space or null inputs don't trigger proper error messages
+
+### Order Management
+- Customer ID requires specific number of digits (to be specified)
+- Duplicate items may not be added properly after quantity is entered
+- Order modifications available:
+  - Add new items
+  - Change item quantities
+  - Delete items from order
+
+### Driver System
+- Currently limited to 5 hardcoded drivers
+- New drivers are added to the beginning of the list
+- License plate format needs standardization
+- Driver ID is required for various operations
+- Options 4 (Manage Drivers) and 7 (Manage Driver Ratings) have overlapping functionality
+- Driver management:
+  - Can add/delete drivers
+  - Can view driver information
+  - Rating updates not available in manager view
+
+### Rating System
+- Ratings are tied to Driver ID (not Order ID)
+- Can add and delete ratings
+- Process orders functionality needs improvement
+
+## Known Limitations
+
+1. **Input Validation**
+   - Inconsistent error handling for empty inputs
+   - Need better validation for customer IDs
+   - License plate format needs standardization
+
+2. **Driver Management**
+   - Fixed limit of 5 drivers
+   - Incomplete rating management in driver info view
+   - Process orders functionality needs enhancement
+
+3. **User Interface**
+   - Multiple enter keypresses required for navigation
+   - Unclear exit paths from sub-menus
+   - Similar menu options causing confusion
 
 ## Simple Terms for Technical Words
 
