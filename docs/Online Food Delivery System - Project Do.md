@@ -37,11 +37,10 @@ object-oriented concepts and their implementation.
 
 Report (20%):
 
-Clarity: The report is well-written, organized, and free of grammatical errors.
+- Clarity: The report is well-written, organized, and free of grammatical errors.
+- Analysis: Weaknesses are identified with specific examples and explanations.
+- Future Work: Proposed improvements are realistic, well-defined, and demonstrate critical thinking
 
-Analysis: Weaknesses are identified with specific examples and explanations.
-
-Future Work: Proposed improvements are realistic, well-defined, and demonstrate critical thinking
 Project Documentation and Transition to Online System
 Goals:
 
@@ -62,12 +61,9 @@ Exploring how existing components can be adapted or reused with minimal changes.
 
 Emphasis:
 
-Clarity: Provide comprehensive explanations and information to ensure readers fully understand the system and the proposed transition.
-
-Depth: Delve deeply into the technical details and potential challenges of moving to an online system.
-
-Adaptability: Focus on creating a flexible foundation for the online system that can accommodate evolving requirements and input variations.
-
+- Clarity: Provide comprehensive explanations and information to ensure readers fully understand the system and the proposed transition.
+    - Depth: Delve deeply into the technical details and potential challenges of moving to an online system.
+    - Adaptability: Focus on creating a flexible foundation for the online system that can accommodate evolving requirements and input variations.
 end of reqirements doc.
 
 
@@ -77,9 +73,13 @@ To achieve these goals, we'll approach the documentation and analysis in a struc
 Current System Documentation:
 For each component:
 Implementation: Detail where and how the component is implemented within the system.
+
 Rationale: Explain the reasons behind choosing this particular implementation approach.
+
 Code Snippets: Include relevant code snippets to demonstrate the component's functionality.
+
 Transition to Online System:
+
 Input Handling: Analyze the differences between handling limited CLI input and the potential for unlimited, diverse input in an online system. Propose strategies for managing this transition effectively.
 Navigation Paradigm: Discuss the shift from CLI-based navigation (using "enter") to a more interactive and user-friendly online navigation approach.
 Component Adaptation: Evaluate the existing components and identify how they can be adapted or reused in the online system with minimal modifications.
@@ -99,7 +99,7 @@ This alteration is significant and requires careful analysis of the project menu
 
 # Encapsulation
 
-## Our project demonstrates encapsulation through classes like
+### Our project demonstrates encapsulation through classes like
 - Driver,which encapsulates driver-related data and behaviors:
     - src/main/java/model/Driver.java
 ```java
@@ -152,42 +152,121 @@ public class Driver {
 }
 ```
 
+## Encapsulation
+- seen in the CLI class
+```java
+public class DeliverySystemCLI {
+    private static final String FORWARD_NAVIGATION = "/";
+    private static final String BACK_NAVIGATION = "\\";
+    private static final Logger logger = Logger.getLogger(DeliverySystemCLI.class.getName());
+
+    private final MenuManager menuManager;
+    private final OrderManager orderManager;
+    private final DriverManager driverManager;
+    private final NotificationService notificationService;
+    private final ConsoleInputHandler<Integer> positiveIntegerHandler;
+    private final DeliverySystem deliverySystem;
+    private final Scanner scanner;
+    private boolean running;
+
+    public DeliverySystemCLI(
+            final MenuManager menuManager,
+            final OrderManager orderManager,
+            final DriverManager driverManager,
+            final NotificationService notificationService,
+            final ConsoleInputHandler<Integer> positiveIntegerHandler,
+            final DeliverySystem deliverySystem,
+            final Scanner scanner) {
+        this.menuManager = menuManager;
+        this.orderManager = orderManager;
+        this.driverManager = driverManager;
+        this.notificationService = notificationService;
+        this.positiveIntegerHandler = positiveIntegerHandler;
+        this.deliverySystem = deliverySystem;
+        this.scanner = scanner;
+        this.running = true;
+    }
+}
+```
+
+Encapsulation: All fields are private and final where appropriate
+
+Single Responsibility: The class handles only CLI-related operations
+
+Immutability: Using final fields to prevent modification after initialization
+
 ## Inheritance & Polymorphism
 
-The system implements
-inheritance through
-the
+The system implements inheritance through the menu item hierarchy
 
-menu
-item hierarchy
-and
+- src/main/java/model
+- Model.Order (extends MenuItem)
+- Model.Fries (extends MenuItem)
+- Model.Hamburger (extends MenuItem)
+- Model.MenuItem (abstract class)
+- Model.Drink (extends MenuItem)
 
-polymorphic
-behavior in
-order processing.
+
+```java
+public class Order {
+    private String id;
+    private String deliveryAddress;
+    private String status;
+
+    public Order(String id, String deliveryAddress) {
+        this.id = id;
+        this.deliveryAddress = deliveryAddress;
+        this.status = "PENDING";
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+}
+```
+
+- Polymorphic behavior in order processing
+
+```java
+public class DeliverySystemCLI {
+    // ... other fields and methods
+
+    public void processInput(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            System.out.println("Error: Input cannot be empty");
+            return;
+        }
+        // rest of the method...
+    }
+}
+```
 
 ## Abstraction
 
-Weuse interfaces and
-abstract classes to
-provide abstraction layers,
-particularly in:
+We use interfaces and abstract classes to
+- provide abstraction layers
+- provide referencable and maintainable code
 
 
-Order processing
-Payment handling
-Driver management
-Menu item management
+- src/main/java/model
 
-## System Weaknesses & Limitations
+## 2.0 System Weaknesses & Limitations
 
-## User Interface Issues
+### 2.1 User Interface Issues
 
-### 2.1
-User Interface Issues
-
-#### Menu
-Navigation
+#### MenuNavigation
 
 ### Double Enter required for menu initialization
 
@@ -226,6 +305,7 @@ Please choose an option (1-9):
 === Check Order Status ===
 Enter your order ID to check its current status.
 Enter Order ID to check status: 9
+
 // should be have an option to exit the chooseing of an option without returning needing to enter an incorrect number option
 Order not found. // we then get this once it's not found
 // Then press enter to get the menu.
@@ -241,7 +321,7 @@ Lack of proper validation for empty/nul inputs as enter is used to navigate menu
 
 Eliminates the confusion around menu initialization
 
-```
+
 Current CLI Implementation (referenced in):
 ```java
     public void start() {
