@@ -51,7 +51,7 @@ public class Main {
                 deliverySystem);
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         try {
             final DeliverySystemCLI cli = Main.createDeliverySystemCLI();
             cli.start();

@@ -170,6 +170,7 @@ public class DeliverySystemCLI {
         final Order order = new Order(customerId, email, new ArrayList<>(), new Location(address, postalCode));
 
         final Map<MenuItem, Integer> orderItems = new HashMap<>();
+        final int MAX_QUANTITY = 10; // Add maximum quantity constant
 
         while (true) {
             System.out.print("\nEnter menu item number (0 to finish): ");
@@ -186,13 +187,15 @@ public class DeliverySystemCLI {
                     break;
                 }
 
-                final MenuItem menuItem = this.menuManager.getMenuItemById(itemNumber);
+                // Get menu item using the menuManager's service
+                final MenuItem menuItem = this.menuManager.getMenuService().getMenuItemByIndex(itemNumber - 1);
                 if (menuItem == null) {
-                    System.out.println("Error: Invalid menu item number");
+                    System.out.println("Error: Invalid menu item number. Please choose from 1 to " +
+                            this.menuManager.getMenuService().getMenuSize());
                     continue;
                 }
 
-                System.out.print("Enter quantity: ");
+                System.out.print("Enter quantity (1-" + MAX_QUANTITY + "): ");
                 final String quantityInput = this.scanner.nextLine().trim();
 
                 if (quantityInput.isEmpty() || quantityInput.isBlank()) {
@@ -202,14 +205,25 @@ public class DeliverySystemCLI {
 
                 try {
                     final int quantity = Integer.parseInt(quantityInput);
-                    if (quantity <= 0) {
-                        System.out.println("Error: Quantity must be greater than 0");
+                    if (quantity <= 0 || quantity > MAX_QUANTITY) {
+                        System.out.println("Error: Quantity must be between 1 and " + MAX_QUANTITY);
+                        continue;
+                    }
+
+                    // Calculate total quantity after adding new items
+                    final int currentQuantity = orderItems.getOrDefault(menuItem, 0);
+                    final int newTotalQuantity = currentQuantity + quantity;
+
+                    if (newTotalQuantity > MAX_QUANTITY) {
+                        System.out.println("Error: Cannot add more than " + MAX_QUANTITY +
+                                " of the same item. Current quantity: " + currentQuantity);
                         continue;
                     }
 
                     // Add or update item quantity
                     orderItems.merge(menuItem, quantity, Integer::sum);
-                    System.out.println("Updated quantity for " + menuItem.getName());
+                    System.out.printf("Updated quantity for %s (Total: %d)%n",
+                            menuItem.getName(), orderItems.get(menuItem));
 
                 } catch (final NumberFormatException e) {
                     System.out.println("Error: Please enter a valid number for quantity");
@@ -217,6 +231,9 @@ public class DeliverySystemCLI {
 
             } catch (final NumberFormatException e) {
                 System.out.println("Error: Please enter a valid number for menu item");
+            } catch (final IndexOutOfBoundsException e) {
+                System.out.println("Error: Invalid menu item number. Please choose from 1 to " +
+                        this.menuManager.getMenuService().getMenuSize());
             }
         }
 
@@ -351,7 +368,7 @@ public class DeliverySystemCLI {
                     licensePlate);
             this.driverManager.getDriverService().addDriver(driver);
             System.out.println("Driver added successfully!");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             System.out.println("Error adding driver: " + e.getMessage());
         }
     }
@@ -451,7 +468,7 @@ public class DeliverySystemCLI {
                     System.out.println("Invalid rating. Please enter a number between 1 and 5");
                     rating = null;
                 }
-            } catch (NumberFormatException e) {
+            } catch (final NumberFormatException e) {
                 System.out.println("Invalid rating. Please enter a number between 1 and 5");
                 rating = null;
             }
@@ -556,14 +573,14 @@ public class DeliverySystemCLI {
 
                 // The first driver in the list will be the least busy due to sorting in
                 // getAvailableDrivers
-                Driver selectedDriver = availableDrivers.get(0);
+                final Driver selectedDriver = availableDrivers.get(0);
                 this.driverManager.getDriverService().assignDriverToOrder(selectedDriver, order);
                 System.out.println("Assigned driver " + selectedDriver.getName() + " to order " + order.getOrderId());
 
                 // Update order status
                 order.setStatus(OrderStatus.IN_PROGRESS);
                 System.out.println("Successfully processed order: " + order.getOrderId());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 System.out.println("Failed to process order " + order.getOrderId() + ": " + e.getMessage());
                 // Re-queue the order if processing failed
                 this.orderManager.getOrderQueue().enqueue(order);
