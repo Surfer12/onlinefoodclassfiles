@@ -1,16 +1,22 @@
-Online Food Delivery System-Project Documentation
+
 
 Notes on new implementation of the project :
- "We are now onto theroretical improvements and online systems with less limited to unlimited input qualitities and not constrained to the java cli input."
+"We are now onto theoretical improvements and online systems with less limited to unlimited input qualities and not constrained to the java cli input."
 
-This alteration is significant a requires careful analysis of the project menu navigation, the driver assignement algorithm creation, and the order processing.
+
+This alteration is significant and requires careful analysis of the project menu navigation, the driver assignment algorithm creation, and the order processing.
+
+
 
 
 1. Object-Oriented Design Implementation
 
-## Encapsulation Our project demonstrates encapsulation through classes like Driver,which encapsulates driver-related data and behaviors:
+## Encapsulation
 
-
+# Our project demonstrates encapsulation through classes like
+- Driver,which encapsulates driver-related data and behaviors:
+    - src/main/java/model/Driver.java
+```java
 public class Driver {
     private final String name;
     private final String licensePlate;
@@ -58,8 +64,9 @@ public class Driver {
         return this.licensePlate;
     }
 }
+```
 
-## Inheritance&Polymorphism
+## Inheritance & Polymorphism
 
 The system implements
 inheritance through
@@ -99,13 +106,11 @@ Navigation
 ### Double Enter required for menu initialization
 
 Should use a \ or / to navigate menus forwards and backwards.
-
-
+```
 Welcome to the Online Food Delivery System!
 Press Enter to start... // this is pressed twice to get the menu
 
-
-
+```
 === Online Food Delivery System ===
 1. Place a New Order (Add items to cart and checkout)
 2. Check Order Status (View status of an existing order)
@@ -139,22 +144,18 @@ Enter Order ID to check status: 9
 Order not found. // we then get this once it's not found
 // Then press enter to get the menu.
 
+```
+No clear exit option from sub-menus
 
-No clear
-exit option
-from sub-
-menus
+Inconsistent menu navigation patterns
 
-Inconsistent
-menu navigation
-patterns
+```
+Input Handling
+Lack of proper validation for empty/nul inputs as enter is used to navigate menus.
 
+Eliminates the confusion around menu initialization
 
-Input
-Handling Lack
-of proper validation for empty/null
-inputs as enter is used to navigate menus. This lack of proper null and empty validation is a major issue, as it can lead to unexpected behavior and errors in the system.
-
+```
 Current CLI Implementation (referenced in):
 ```java
     public void start() {
@@ -200,7 +201,7 @@ Current CLI Implementation (referenced in):
 
 Proposed improvement for the input handling and navigation system using a forward and back navigation system with the slash character as the forward navigation and the backslash character as the back navigation. This will allow for a more intuitive and user-friendly navigation experience.
 
-
+```
 ```java
 public class DeliverySystemCLI {
     private static final String FORWARD_NAVIGATION = "/";
@@ -241,12 +242,8 @@ public class DeliverySystemCLI {
 
 ## Standardized Customer ID Format
 
-No
-standardized format for
-customer IDs
-
-Missing input constraints for
-numerical values
+- No standardized format for customer IDs
+- Missing input constraints for numerical values
 
 ## Functional Limitations
 Order Management
